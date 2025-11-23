@@ -29,7 +29,7 @@ from routechoices.lib.helpers import epoch_to_datetime
 
 class EssentialApiBase(APITestCase):
     def setUp(self):
-        self.client = APIClient(HTTP_HOST="api.routechoices.dev")
+        self.client = APIClient(HTTP_HOST="api.routechoices.com")
         self.user = User.objects.create_user(
             "alice", f"alice{random.randrange(1000)}@example.com", "pa$$word123"
         )
@@ -44,7 +44,7 @@ class EssentialApiBase(APITestCase):
         prefix=None,
     ):
         url = reverse(path, host=host, kwargs=extra_kwargs, host_kwargs=host_kwargs)
-        self.assertEqual(url, f"//{prefix or host}.routechoices.dev{expected}")
+        self.assertEqual(url, f"//{prefix or host}.routechoices.com{expected}")
         return url
 
     def get_device_id(self):
