@@ -1,7 +1,7 @@
 wsgi_app = "routechoices.wsgi:application"
 preload_app = True
 daemon = False
-raw_env = ["DJANGO_SETTINGS_MODULE=routechoices.settings"]
+raw_env = ["DJANGO_SETTINGS_MODULE=routechoices.conf.settings"]
 workers = 3
 threads = 3
 max_requests = 3000
