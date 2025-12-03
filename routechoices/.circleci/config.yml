@@ -1,0 +1,146 @@
+version: 2.1
+orbs:
+  browser-tools: circleci/browser-tools@1.4.0
+  codecov: codecov/codecov@3.2.5
+
+commands:
+  prepare-docker:
+    steps:
+      - checkout
+      - run: ./gen-local-certs.sh
+      - run: chmod -R 755 ./letsencrypt/live/routechoices.dev/
+      - run: echo "127.0.0.1 routechoices.dev api.routechoices.dev www.routechoices.dev events.routechoices.dev dashboard.routechoices.dev halden-sk.routechoices.dev kangasala-sk.routechoices.dev registration.routechoices.dev livelox.routechoices.dev loggator.routechoices.dev gpsseuranta.routechoices.dev" | sudo tee -a /etc/hosts
+      - run: mkdir -p media/routechoices/maps/
+      - run: mv ./.env.dev ./.env
+      - run: echo "SECURE_SSL_REDIRECT = False" > ./routechoices/settings_overrides.py
+      - run: echo "DEBUG = False" >> ./routechoices/settings_overrides.py
+      - run: ./dc up -d
+      - run: ./da migrate
+      - run: ./da collectstatic
+      - run: ./da compress
+      - run: ./dc restart nginx
+
+  setup-docker:
+    steps:
+      - run:
+          name: Setup buildx and qemu
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y qemu-user-static
+            sudo apt-get install -y binfmt-support
+      - run:
+          name: Check versions
+          command: |
+            qemu-aarch64-static --version
+            update-binfmts --version
+      - run:
+          name: Create builder
+          command: |
+            export DOCKER_CLI_EXPERIMENTAL=enabled
+            docker buildx create --name arm-builder
+            docker buildx use arm-builder
+            docker buildx inspect --bootstrap
+
+jobs:
+  build-and-python-tests:
+    machine:
+      image: ubuntu-2204:current
+      docker_layer_caching: false
+    resource_class: large
+    steps:
+      - prepare-docker
+      - run: ./dc restart django
+      - run: timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' https://www.routechoices.dev/)" != "200" ]]; do sleep 5; done' || false
+      - run: ./test
+      - codecov/upload:
+          file: coverage.xml
+          flags: unittests
+
+  build-and-e2e-tests:
+    machine:
+      image: ubuntu-2204:current
+      docker_layer_caching: false
+    resource_class: large
+    steps:
+      - prepare-docker
+      - run: ./dc stop django
+      - run:
+          command: ./dc up -d
+          environment:
+            WSGI_FILE: wsgi-with-cov
+            NUM_PROCESSES: 1
+      - run: timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' https://www.routechoices.dev/)" != "200" ]]; do sleep 5; done' || false
+      - run: sudo apt update
+      - run: sudo apt install -y libgbm-dev
+      - browser-tools/install-chrome
+      - run:
+          name: Install Node.js and run cypress
+          # https://www.cloudesire.com/how-to-upgrade-node-on-circleci-machine-executor/
+          command: |
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+            nvm install v20 && nvm use v20 && nvm alias default v20
+            node -v
+            npm install --global pnpm
+            pnpm install
+            TZ=Europe/Helsinki pnpm cypress run --browser chrome
+      - run: docker kill --signal=HUP rc_django
+      - run: sleep 5
+      - run: ./dc exec django coverage xml
+      - codecov/upload:
+         file: coverage.xml
+         flags: e2e
+      - store_artifacts:
+          path: cypress/videos
+      - store_artifacts:
+          path: cypress/screenshots
+
+  deploy:
+    machine:
+        image: ubuntu-2204:current
+        docker_layer_caching: false
+    steps:
+      - run:
+          name: Deploy
+          command: |
+            export DEPLOY_CMD="/apps/routechoices-server/bin/deploy $CIRCLE_SHA1"
+            ssh apps@routechoices.com $DEPLOY_CMD
+
+  build-docker:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large
+    steps:
+      - checkout
+      - setup-docker
+      - run:
+          name: Connect account
+          command: |
+            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+      - run:
+          name: Build docker images
+          command: |
+            DOCKER_CLI_EXPERIMENTAL=enabled docker buildx build --progress plain --platform linux/amd64 --push -t rphlo/routechoices-dev-server:latest -f docker/django.dockerfile .
+
+workflows:
+  version: 2
+  test-and-deploy:
+    jobs:
+      - build-and-python-tests
+      - build-and-e2e-tests
+      - deploy:
+          requires:
+            - build-and-python-tests
+            - build-and-e2e-tests
+          filters:
+            branches:
+              only:
+                - master
+  build_image:
+    jobs:
+      - build-docker:
+          filters:
+            tags:
+              only: /v.*/
+            branches:
+              ignore: /.*/

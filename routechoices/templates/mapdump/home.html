@@ -1,0 +1,12 @@
+{% extends "mapdump/base.html" %}
+
+{% block content %}
+{% if page %}
+<h1>Welcome {{ user.username }}!</h1>
+<div>
+<a href="/{{ user.username }}">Your efforts</a>
+</div>
+{% else %}
+<h1>Coming Soon…</h1>
+{% endif %}
+{% endblock %}
