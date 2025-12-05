@@ -801,7 +801,8 @@ class Map(models.Model, SomewhereOnEarth):
         extension = mime_type[6:]
 
         doc_kml = render_to_string(
-            "kml.xml", {"name": self.name, "bound": self.bound, "extension": extension}
+            "kml.xml",
+            {"name": self.name, "bound": self.bound_api, "extension": extension},
         )
         kmz = BytesIO()
         with ZipFile(kmz, "w") as fp:
