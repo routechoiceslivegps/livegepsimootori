@@ -3,4 +3,3 @@ systemctl --user restart routechoices-django@1
 sleep 5
 systemctl --user restart routechoices-django@2
 echo "All done"
-
