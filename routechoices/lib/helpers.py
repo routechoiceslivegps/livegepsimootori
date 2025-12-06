@@ -378,6 +378,8 @@ def general_2d_projection(from_bound, to_bound):
 
 
 def project(matrix, xy_coordinate):
+    if isinstance(xy_coordinate, tuple):
+        xy_coordinate = Point(xy_coordinate)
     x, y = xy_coordinate.xy
     a, b, c = multiply_matrix_vector(matrix, [x, y, 1])
     if c == 0:
