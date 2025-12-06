@@ -9,8 +9,4 @@ class Migration(migrations.Migration):
         ("core", "0100_rename_corners_coordinates_map_calibration_string_raw"),
     ]
 
-    operations = [
-        migrations.DeleteModel(
-            name="SpotDevice",
-        ),
-    ]
+    operations = []
