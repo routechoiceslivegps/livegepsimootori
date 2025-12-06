@@ -2076,7 +2076,7 @@ def third_party_event(request, provider, uid):
     if event.map:
         map_data = {
             "title": "main",
-            "coordinates": event.map.bound,
+            "coordinates": event.map.bound_api,
             "rotation": event.map.north_declination,
             "hash": event.map.hash,
             "max_zoom": event.map.max_zoom,

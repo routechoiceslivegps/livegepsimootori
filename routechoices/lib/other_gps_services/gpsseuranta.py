@@ -94,8 +94,7 @@ class GpsSeurantaNet(ThirdPartyTrackingSolutionWithProxy):
             width=width,
             height=height,
         )
-        bound = wgs84_bound_from_3_ref_points(wgs84_coords, image_points, size)
-        map_obj.bound = bound
+        map_obj.bound = wgs84_bound_from_3_ref_points(wgs84_coords, image_points, size)
         return map_obj
 
     def get_competitor_devices_data(self, event):

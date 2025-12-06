@@ -1,5 +1,5 @@
-if (Sentry) {
-	Sentry.init({ dsn: window.local.sentryDsn });
+if (window.Sentry) {
+	window.Sentry.init({ dsn: window.local.sentryDsn });
 }
 
 function getStoredTheme() {
