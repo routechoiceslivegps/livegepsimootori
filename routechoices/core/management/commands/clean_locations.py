@@ -40,12 +40,16 @@ class Command(BaseCommand):
                 return
 
         deleted_count = 0
-        devices = Device.objects.prefetch_related(
-            Prefetch(
-                "competitor_set",
-                queryset=Competitor.objects.select_related("event"),
+        devices = (
+            Device.objects.prefetch_related(
+                Prefetch(
+                    "competitor_set",
+                    queryset=Competitor.objects.select_related("event"),
+                )
             )
-        ).exclude(_location_count=0)
+            .filter(virtual=False)
+            .exclude(_location_count=0)
+        )
         if date_since:
             devices = devices.filter(modification_date__gte=date_since)
         two_weeks_ago = now() - timedelta(days=14)
