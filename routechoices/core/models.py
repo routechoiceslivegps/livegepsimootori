@@ -25,13 +25,11 @@ from dateutil.parser import parse as parse_date
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.gis.geos import LinearRing, Polygon
-from django.core.exceptions import (BadRequest, PermissionDenied,
-                                    ValidationError)
+from django.core.exceptions import BadRequest, PermissionDenied, ValidationError
 from django.core.files.base import ContentFile, File
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
-from django.core.validators import (MaxValueValidator, MinValueValidator,
-                                    validate_slug)
+from django.core.validators import MaxValueValidator, MinValueValidator, validate_slug
 from django.db import models
 from django.db.models import F, Max, Q
 from django.db.models.functions import ExtractMonth, ExtractYear, Upper
@@ -49,29 +47,49 @@ from routechoices.lib import cache, plausible
 from routechoices.lib.duration_constants import DURATION_ONE_MONTH
 from routechoices.lib.geojson import get_geojson_coordinates
 from routechoices.lib.globalmaptiles import GlobalMercator
-from routechoices.lib.helpers import (COUNTRIES, Point, Wgs84Coordinate,
-                                      XYMeters, adjugate_matrix, avg_angles,
-                                      calibration_string_from_wgs84_bound,
-                                      country_code_at_coords, delete_domain,
-                                      distance_between_locations,
-                                      epoch_to_datetime, general_2d_projection,
-                                      get_current_site,
-                                      gpsseuranta_encode_data, int_base32,
-                                      project, random_device_id, random_key,
-                                      safe64encodedsha, short_random_key,
-                                      short_random_slug, shortsafe64encodedsha,
-                                      simplify_line, simplify_periods,
-                                      time_base32, timezone_at_coords,
-                                      triangle_area, wgs84_to_meters)
+from routechoices.lib.helpers import (
+    COUNTRIES,
+    Point,
+    Wgs84Coordinate,
+    XYMeters,
+    adjugate_matrix,
+    avg_angles,
+    calibration_string_from_wgs84_bound,
+    country_code_at_coords,
+    delete_domain,
+    distance_between_locations,
+    epoch_to_datetime,
+    general_2d_projection,
+    get_current_site,
+    gpsseuranta_encode_data,
+    int_base32,
+    project,
+    random_device_id,
+    random_key,
+    safe64encodedsha,
+    short_random_key,
+    short_random_slug,
+    shortsafe64encodedsha,
+    simplify_line,
+    simplify_periods,
+    time_base32,
+    timezone_at_coords,
+    triangle_area,
+    wgs84_to_meters,
+)
 from routechoices.lib.jxl import register_jxl_opener
 from routechoices.lib.storages import OverwriteImageStorage
-from routechoices.lib.validators import (color_hex_validator,
-                                         validate_calibration_string,
-                                         validate_domain_name,
-                                         validate_domain_slug, validate_emails,
-                                         validate_esn, validate_imei,
-                                         validate_latitude, validate_longitude,
-                                         validate_nice_slug)
+from routechoices.lib.validators import (
+    color_hex_validator,
+    validate_calibration_string,
+    validate_domain_name,
+    validate_domain_slug,
+    validate_emails,
+    validate_imei,
+    validate_latitude,
+    validate_longitude,
+    validate_nice_slug,
+)
 
 register_jxl_opener()
 
@@ -2900,36 +2918,3 @@ class UserSettings(models.Model):
 
 
 User.settings = property(lambda u: UserSettings.objects.get_or_create(user=u)[0])
-
-
-class SpotFeed(models.Model):
-    feed_id = models.CharField(
-        max_length=64,
-        unique=True,
-    )
-    last_fetched = models.DateTimeField(blank=True, null=True)
-
-    def __str__(self):
-        return self.feed_id
-
-
-class SpotDevice(models.Model):
-    creation_date = models.DateTimeField(auto_now_add=True)
-    messenger_id = models.CharField(
-        max_length=32,
-        unique=True,
-        validators=[
-            validate_esn,
-        ],
-    )
-    device = models.OneToOneField(
-        Device, related_name="spot_device", on_delete=models.CASCADE
-    )
-
-    class Meta:
-        ordering = ["messenger_id"]
-        verbose_name = "spot device"
-        verbose_name_plural = "spot devices"
-
-    def __str__(self):
-        return self.messenger_id
