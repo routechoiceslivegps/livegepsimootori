@@ -157,7 +157,7 @@
                                                     margin-left: 25px;
                                                     max-width: calc(100% - 25px)">
                                             By <a class="link-primary-alt"
-    href="{{ event_set.events.0.club.get_absolute_url }}">
+                                                href="{{ event_set.events.0.club.get_absolute_url }}">
                                             {% if event_set.events.0.club.logo %}
                                                 <img src="{{ event_set.events.0.club.logo_url }}"
                                                      width="25"
@@ -180,10 +180,11 @@
                                     <div class="bd-highlight">
                                         <div class="px-2 py-1 bd-highlight">
                                             <div>
-                                                <a class="link-primary-alt stretched-link text-decoration-none"
-                                                   href="{{ event.get_absolute_url }}"><b style="font-size: 1.5em;">{{ event.name }}</b></a> <span class="mx-2 py-1 px-1 badge bg-danger"
-       style="font-size: 0.9em;
-              vertical-align: top"><b>LIVE</b></span>
+                                                <a class="link-primary-alt stretched-link text-decoration-none" href="{{ event.get_absolute_url }}">
+                                                    <b style="font-size: 1.5em;" class="flags-polyfill me-2" title="{{ event.country_name }}">{{ event.country_flag }}</b>
+                                                    <b style="font-size: 1.5em;">{{ event.name }}</b>
+                                                </a>
+                                                <span class="mx-2 py-1 px-1 badge bg-danger" style="font-size: 0.9em;vertical-align: top"><b>LIVE</b></span>
                                             </div>
                                             <div class="d-inline-block"
                                                  style="color:grey;
@@ -257,8 +258,7 @@
                                          style="font-size: 0.8em;
                                                 margin-left: 25px;
                                                 max-width: calc(100% - 25px)">
-                                        By <a class="link-primary-alt"
-    href="{{ event_set.events.0.club.get_absolute_url }}">
+                                        By <a class="link-primary-alt" href="{{ event_set.events.0.club.get_absolute_url }}">
                                         {% if event_set.events.0.club.logo %}
                                             <img src="{{ event_set.events.0.club.logo_url }}"
                                                  width="25"
@@ -282,6 +282,7 @@
                                         <div>
                                             <a class="link-primary-alt stretched-link text-decoration-none"
                                                href="{{ event.get_absolute_url }}">
+                                                <b style="font-size: 1.5em;" class="flags-polyfill me-2" title="{{ event.country_name }}">{{ event.country_flag }}</b>
                                                 <b style="font-size: 1.5em;">{{ event.name }}</b>
                                             </a>
                                         </div>
@@ -435,8 +436,10 @@
                         <div class="bd-highlight">
                             <div class="px-2 py-1 bd-highlight">
                                 <div>
-                                    <a class="link-primary-alt stretched-link text-decoration-none"
-                                       href="{{ event.get_absolute_url }}"><b style="font-size: 1.5em;">{{ event.name }}</b></a>
+                                    <a class="link-primary-alt stretched-link text-decoration-none" href="{{ event.get_absolute_url }}">
+                                        <b style="font-size: 1.5em;" class="flags-polyfill me-2" title="{{ event.country_name }}">{{ event.country_flag }}</b>
+                                        <b style="font-size: 1.5em;">{{ event.name }}</b>
+                                    </a>
                                 </div>
                                 <div>
                                     <span class="date-utc" data-date="{{ event.start_date|date:'c' }}">{{ event.start_date|date:'Y-m-d H:i' }}</span>
