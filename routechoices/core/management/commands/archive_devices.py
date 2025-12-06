@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
+from datetime import timedelta
 
 from routechoices.core.models import Competitor
 
@@ -12,9 +13,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         force = options["force"]
-
+        two_weeks_ago = now() - timedelta(days=14)
         chilling_competitor = Competitor.objects.filter(
-            event__freezed_at__lt=now(),
+            event__end_date__lt=two_weeks_ago,
             device__virtual=False,
         )
         competitor_released = 0
