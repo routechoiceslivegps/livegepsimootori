@@ -16,8 +16,14 @@ from django_hosts.resolvers import reverse
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
-from routechoices.core.models import (PRIVACY_PRIVATE, Club, Competitor,
-                                      Device, Event, Map)
+from routechoices.core.models import (
+    PRIVACY_PRIVATE,
+    Club,
+    Competitor,
+    Device,
+    Event,
+    Map,
+)
 from routechoices.lib.helpers import epoch_to_datetime
 
 
@@ -1122,7 +1128,10 @@ class LocationApiTestCase(EssentialApiBase):
                 client.close()
 
         validated_apps_user = User.objects.create_user(
-            "apps", f"apps{random.randrange(1000)}@example.com", "pa$$word123"
+            "apps",
+            f"apps{random.randrange(1000)}@example.com",
+            "pa$$word123",
+            is_superuser=True,
         )
         self.client.force_login(validated_apps_user)
         device = Device.objects.create()
