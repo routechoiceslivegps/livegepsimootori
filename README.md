@@ -1,21 +1,19 @@
-[![circleci](https://circleci.com/gh/routechoiceslivegps/routechoices-server.svg?style=shield)](https://circleci.com/gh/routechoiceslivegps/routechoices-server) [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/routechoiceslivegps/routechoices-server/master.svg)](https://results.pre-commit.ci/latest/github/routechoiceslivegps/routechoices-server/master) [![codecov](https://codecov.io/gh/routechoiceslivegps/routechoices-server/branch/master/graph/badge.svg?token=OZLCAY280V)](https://codecov.io/gh/routechoiceslivegps/routechoices-server)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/routechoiceslivegps/livegepsimootori/master.svg)](https://results.pre-commit.ci/latest/github/routechoiceslivegps/livegepsimootori/master) [![codecov](https://codecov.io/gh/routechoiceslivegps/livegepsimootori/branch/master/graph/badge.svg?token=OZLCAY280V)](https://codecov.io/gh/routechoiceslivegps/livegepsimootori)
 
 
-Routechoices server
-===================
+Routechoices Live GPS Engine
+============================
 
-Code for the server of the "Routechoices — Live GPS Tracking" platform.
+Includes:
 
-It includes:
-
-  - The site static content.
-  - A frontend server for listing and displaying live and archived events.
-  - A dashboard for users to manage their events, maps, devices...
+  - A Dedicated TCP server for listening to GPS trackers.
   - A REST API and its documentation.
-  - A TCP server for listening to dedicated GPS trackers.
-  - A WMS server for serving events maps.
+  - A Static file server.
   - A Tile server for serving background layers tiles.
-  - An admin interface for the staff.
+  - A Web dashboard for clubs to manage their events, maps, devices.
+  - A Web frontend server for listing and displaying live and archived events.
+  - A Web admin interface for the staff.
+  - A WMS server for serving events maps.
 
 This project heavily rely on the Django and the Tornado Web python frameworks.
 
