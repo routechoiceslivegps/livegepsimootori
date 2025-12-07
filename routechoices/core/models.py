@@ -797,7 +797,7 @@ class Map(models.Model, SomewhereOnEarth):
         top_rot = (math.atan2(*top_diff.xy)) * 180 / math.pi
         bottom_rot = (math.atan2(*bottom_diff.xy)) * 180 / math.pi
 
-        vertical_rot = (avg_angles(left_rot, right_rot)) % 360
+        vertical_rot = (avg_angles(left_rot, right_rot) - 90) % 360
         horizontal_rot = (avg_angles(top_rot, bottom_rot)) % 360
         return round(avg_angles(vertical_rot, horizontal_rot), 2)
 
