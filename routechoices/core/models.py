@@ -797,13 +797,13 @@ class Map(models.Model, SomewhereOnEarth):
         top_rot = (math.atan2(*top_diff.xy)) * 180 / math.pi
         bottom_rot = (math.atan2(*bottom_diff.xy)) * 180 / math.pi
 
-        vertical_rot = (avg_angles(left_rot, right_rot) - 180) % 360
+        vertical_rot = (avg_angles(left_rot, right_rot) - 90) % 360
         horizontal_rot = (avg_angles(top_rot, bottom_rot)) % 360
         return round(avg_angles(vertical_rot, horizontal_rot), 2)
 
     @property
     def north_declination(self):
-        rot = self.rotation + 180
+        rot = self.rotation + 90
         if rot > 45:
             rot = (rot - 45) % 90 - 45
         return round(rot, 2)
