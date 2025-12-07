@@ -6,7 +6,7 @@ cryptography
 curl_cffi
 defusedxml
 diskcache
-django>=5.0
+django<6
 django-admincommand @ git+https://github.com/rphlo/django-admincommand.git
 django-allauth
 django-background-tasks @ git+https://github.com/rphlo/django-background-tasks@6b247d0b3a7565613656d0ec07b55f6c66aa03cc
