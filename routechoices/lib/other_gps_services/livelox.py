@@ -249,7 +249,7 @@ class Livelox(ThirdPartyTrackingSolutionWithProxy):
                 course_map.height = height
                 course_maps.append(course_map)
                 course_img_found = True
-            if not course.get("courseImages") and not course_img_found:
+            if not course_img_found and not course.get("courseImages"):
                 route = course["controls"]
                 map_resolution = (
                     map_resolution_orig
@@ -529,10 +529,7 @@ class Livelox(ThirdPartyTrackingSolutionWithProxy):
                 course_map.height = map_drawing.height
                 course_maps.append(course_map)
         if course_maps:
-            try:
-                map_obj = map_obj.overlay(*course_maps)
-            except Exception:
-                pass
+            map_obj = map_obj.overlay(*course_maps)
         return ContentFile(map_obj.data)
 
     def get_competitor_devices_data(self, event):

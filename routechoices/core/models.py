@@ -620,7 +620,7 @@ class Map(models.Model, SomewhereOnEarth):
     def hash(self):
         return shortsafe64encodedsha(f"{self.path}:{self.calibration_string_raw}")[:8]
 
-    @cached_property
+    @property
     def calibration_values(self):
         return [float(x) for x in self.calibration_string_raw.split(",")]
 
@@ -1116,20 +1116,11 @@ class Map(models.Model, SomewhereOnEarth):
         new_image = Image.open(BytesIO(self.data)).convert("RGBA")
         for i, other_map in enumerate(other_maps):
             w, h = other_map.quick_size
-            bound = other_map.bound
-            corners = [
-                self.wsg84_to_map_xy(bound[xx]["lat"], bound[xx]["lon"])
-                for xx in ("top_left", "top_right", "bottom_right", "bottom_left")
-            ]
             p1 = np.float32([[0, 0], [w, 0], [w, h], [0, h]])
-            p2 = np.float32(
-                [
-                    [corners[0][0], corners[0][1]],
-                    [corners[1][0], corners[1][1]],
-                    [corners[2][0], corners[2][1]],
-                    [corners[3][0], corners[3][1]],
-                ]
-            )
+
+            bound = other_map.bound
+            p2 = np.float32([self.wsg84_to_map_xy(bound[i]).xy for i in range(4)])
+
             coeffs = cv2.getPerspectiveTransform(p1, p2)
 
             src_data = other_map.data
