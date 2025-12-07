@@ -22,7 +22,7 @@ cssselect2==0.8.0
 curl-cffi==0.13.0
 defusedxml==0.7.1
 diskcache==5.6.3
-django==5.2.9
+django==5.2.8
 django-admincommand @ git+https://github.com/rphlo/django-admincommand.git@09f8b0ad150754be88d20c0e7c6a1473b8006872
 django-allauth==65.13.1
 django-appconf==1.2.0
