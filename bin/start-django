@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-systemctl --user start routechoices-django
+systemctl --user start 'routechoices-django@*'

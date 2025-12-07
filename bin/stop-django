@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-systemctl --user stop routechoices-django
+systemctl --user stop 'routechoices-django@*'
