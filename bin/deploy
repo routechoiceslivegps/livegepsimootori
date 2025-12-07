@@ -5,20 +5,33 @@ BASEDIR=$(dirname $DIR)
 PID_FILE=${BASEDIR}/var/tasks.pid
 
 cd $BASEDIR
+echo -e "\e[96mComparing requirements\e[0m"
 PREV_MD5SUM="$(md5sum requirements.txt)"
-git fetch
-git reset --hard ${1:-origin/master}
-source $BASEDIR/env/bin/activate
-NEW_MD5SUM="$(md5sum requirements.txt)"
-if [ "$PREV_MD5SUM" != "$NEW_MD5SUM" ]
+curl -s -O -L https://raw.github.com/routechoiceslivegps/livegepsimootori/${1:-live}/requirements.txt
+MD5SUM="$(md5sum requirements.txt)"
+if [ "$MD5SUM" != "$NEW_MD5SUM" ]
 then
-  source $BASEDIR/env/bin/activate
+  echo "Installing new requirements"
+  source $BASEDIR/venv/bin/activate
   source ~/.cargo/env
   source ~/.local/bin/env
   uv pip install --no-cache --requirement requirements.txt
+else
+  echo "No new requirements"
 fi
+source $BASEDIR/venv/bin/activate
+echo -e "\e[96mUpdating env variables\e[0m"
 doppler secrets download --no-file --format=env 1> ".env"
-./manage.py collectstatic --noinput
-./manage.py compress
-./manage.py migrate --noinput
+echo "Done"
+echo -e "\e[96mFetching new code\e[0m"
+git fetch
+git reset --hard ${1:-origin/live}
+echo -e "\e[96mCollecting static files\e[0m"
+uv run manage.py collectstatic --noinput
+echo -e "\e[96mCompressing assets\e[0m"
+uv run manage.py compress
+uv run manage.py migrate --noinput
+echo -e "\e[96mRestart services\e[0m"
 ./bin/restart-all
+echo "Done"
+echo -e "\e[92mNew version deployed\e[0m"
