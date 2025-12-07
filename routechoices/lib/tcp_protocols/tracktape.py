@@ -71,5 +71,5 @@ class TrackTapeConnection(GenericConnection):
             )
 
 
-class TrackTapeServer(GenericTCPServer):
+class TCPServer(GenericTCPServer):
     connection_class = TrackTapeConnection

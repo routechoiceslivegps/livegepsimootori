@@ -29,37 +29,57 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
 
-from routechoices.core.models import (BOTTOM_LEFT,
-                                      EVENT_CACHE_INTERVAL_ARCHIVED,
-                                      EVENT_CACHE_INTERVAL_LIVE,
-                                      LOCATION_LATITUDE_INDEX,
-                                      LOCATION_LONGITUDE_INDEX,
-                                      LOCATION_TIMESTAMP_INDEX, MAP_BLANK,
-                                      MAP_CHOICES, PRIVACY_PRIVATE,
-                                      PRIVACY_PUBLIC, PRIVACY_SECRET, TOP_LEFT,
-                                      TOP_RIGHT, Club, Competitor, Device,
-                                      DeviceClubOwnership, Event, EventSet,
-                                      ImeiDevice, Map, MapAssignation)
+from routechoices.core.models import (
+    BOTTOM_LEFT,
+    EVENT_CACHE_INTERVAL_ARCHIVED,
+    EVENT_CACHE_INTERVAL_LIVE,
+    LOCATION_LATITUDE_INDEX,
+    LOCATION_LONGITUDE_INDEX,
+    LOCATION_TIMESTAMP_INDEX,
+    MAP_BLANK,
+    MAP_CHOICES,
+    PRIVACY_PRIVATE,
+    PRIVACY_PUBLIC,
+    PRIVACY_SECRET,
+    TOP_LEFT,
+    TOP_RIGHT,
+    Club,
+    Competitor,
+    Device,
+    DeviceClubOwnership,
+    Event,
+    EventSet,
+    ImeiDevice,
+    Map,
+    MapAssignation,
+)
 from routechoices.lib import cache
 from routechoices.lib.duration_constants import DURATION_ONE_MINUTE
-from routechoices.lib.globalmaptiles import GlobalMercator
-from routechoices.lib.helpers import (epoch_to_datetime,
-                                      get_image_mime_from_request,
-                                      git_master_hash, initial_of_name,
-                                      random_device_id, safe64encodedsha,
-                                      set_content_disposition,
-                                      short_random_key, short_random_slug)
+from routechoices.lib.helpers import (
+    epoch_to_datetime,
+    get_image_mime_from_request,
+    git_master_hash,
+    initial_of_name,
+    random_device_id,
+    safe64encodedsha,
+    set_content_disposition,
+    short_random_key,
+    short_random_slug,
+)
 from routechoices.lib.other_gps_services.gpsseuranta import GpsSeurantaNet
 from routechoices.lib.other_gps_services.livelox import Livelox
 from routechoices.lib.other_gps_services.loggator import Loggator
 from routechoices.lib.s3 import serve_from_s3, serve_image_from_s3
 from routechoices.lib.streaming_response import StreamingHttpRangeResponse
-from routechoices.lib.validators import (color_hex_validator, validate_imei,
-                                         validate_latitude, validate_longitude,
-                                         validate_nice_slug)
+from routechoices.lib.validators import (
+    color_hex_validator,
+    validate_imei,
+    validate_latitude,
+    validate_longitude,
+    validate_nice_slug,
+)
 
 logger = logging.getLogger(__name__)
-GLOBAL_MERCATOR = GlobalMercator()
 
 api_GET_view = api_view(["GET"])
 api_GET_HEAD_view = api_view(["GET", "HEAD"])

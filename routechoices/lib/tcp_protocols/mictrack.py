@@ -175,5 +175,5 @@ class MicTrackConnection(GenericConnection):
             )
 
 
-class MicTrackServer(GenericTCPServer):
+class TCPServer(GenericTCPServer):
     connection_class = MicTrackConnection

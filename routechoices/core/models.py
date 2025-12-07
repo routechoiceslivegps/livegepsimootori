@@ -46,7 +46,6 @@ from PIL import Image, ImageDraw, ImageFile
 from routechoices.lib import cache, plausible
 from routechoices.lib.duration_constants import DURATION_ONE_MONTH
 from routechoices.lib.geojson import get_geojson_coordinates
-from routechoices.lib.globalmaptiles import GlobalMercator
 from routechoices.lib.helpers import (
     COUNTRIES,
     Point,
@@ -76,6 +75,7 @@ from routechoices.lib.helpers import (
     timezone_at_coords,
     triangle_area,
     wgs84_to_meters,
+    meters_to_wgs84,
 )
 from routechoices.lib.jxl import register_jxl_opener
 from routechoices.lib.storages import OverwriteImageStorage
@@ -94,8 +94,6 @@ from routechoices.lib.validators import (
 register_jxl_opener()
 
 logger = logging.getLogger(__name__)
-
-GLOBAL_MERCATOR = GlobalMercator()
 
 EVENT_CACHE_INTERVAL_LIVE = 5
 EVENT_CACHE_INTERVAL_ARCHIVED = 7 * 24 * 3600
@@ -786,24 +784,22 @@ class Map(models.Model, SomewhereOnEarth):
     @cached_property
     def rotation(self):
         width, height = self.quick_size
-        tl = self.map_xy_to_spherical_mercator((0, 0))
-        tr = self.map_xy_to_spherical_mercator((width, 0))
-        br = self.map_xy_to_spherical_mercator((width, height))
-        bl = self.map_xy_to_spherical_mercator((0, height))
+        tl, tr, br, bl = (corner.xy_meters for corner in self.bound)
 
-        rot_vert_left = (
-            (math.atan2(tl.y - bl.y, tl.x - bl.x) - math.pi / 2) * 180 / math.pi
-        )
-        rot_vert_right = (
-            (math.atan2(tr.y - br.y, tr.x - br.x) - math.pi / 2) * 180 / math.pi
-        )
-        rot_vert = (avg_angles(rot_vert_left, rot_vert_right)) % 360
+        left_diff = Point(tl.x - bl.x, tl.y - bl.y)
+        right_diff = Point(tr.x - br.x, tr.y - br.y)
+        top_diff = Point(tl.x - tr.x, tl.y - tr.y)
+        bottom_diff = Point(br.x - bl.x, br.y - bl.y)
 
-        rot_hori_top = (math.atan2(tr.y - tl.y, tr.x - tl.x)) * 180 / math.pi
-        rot_hori_bottom = (math.atan2(br.y - bl.y, br.x - bl.x)) * 180 / math.pi
-        rot_hori = avg_angles(rot_hori_top, rot_hori_bottom) % 360
+        left_rot = (math.atan2(*left_diff.xy) - math.pi / 2) * 180 / math.pi
+        right_rot = (math.atan2(*right_diff.xy) - math.pi / 2) * 180 / math.pi
 
-        return round(avg_angles(rot_vert, rot_hori), 2)
+        top_rot = (math.atan2(*top_diff.xy)) * 180 / math.pi
+        bottom_rot = (math.atan2(*bottom_diff.xy)) * 180 / math.pi
+
+        vertical_rot = (avg_angles(left_rot, right_rot)) % 360
+        horizontal_rot = (avg_angles(top_rot, bottom_rot)) % 360
+        return round(avg_angles(vertical_rot, horizontal_rot), 2)
 
     @property
     def north_declination(self):
@@ -1016,10 +1012,10 @@ class Map(models.Model, SomewhereOnEarth):
             min_lon = min(min_lon, min(lons))
             max_lon = max(max_lon, max(lons))
 
-        tl_xy = GLOBAL_MERCATOR.latlon_to_meters({"lat": max_lat, "lon": min_lon})
-        tr_xy = GLOBAL_MERCATOR.latlon_to_meters({"lat": max_lat, "lon": max_lon})
-        br_xy = GLOBAL_MERCATOR.latlon_to_meters({"lat": min_lat, "lon": max_lon})
-        bl_xy = GLOBAL_MERCATOR.latlon_to_meters({"lat": min_lat, "lon": min_lon})
+        tl_xy = wgs84_to_meters((max_lat, min_lon))
+        tr_xy = wgs84_to_meters((max_lat, max_lon))
+        br_xy = wgs84_to_meters((min_lat, max_lon))
+        bl_xy = wgs84_to_meters((min_lat, min_lon))
 
         res_scale = 4
         MAX_SIZE = 4000
@@ -1034,24 +1030,14 @@ class Map(models.Model, SomewhereOnEarth):
         width = (tr_xy["x"] - tl_xy["x"]) / scale + 2 * offset
         height = (tr_xy["y"] - br_xy["y"]) / scale + 2 * offset
 
-        corners = [
-            GLOBAL_MERCATOR.meters_to_latlon(
-                {"x": tl_xy["x"] - offset * scale, "y": tl_xy["y"] + offset * scale}
-            ),
-            GLOBAL_MERCATOR.meters_to_latlon(
-                {"x": tr_xy["x"] + offset * scale, "y": tr_xy["y"] + offset * scale}
-            ),
-            GLOBAL_MERCATOR.meters_to_latlon(
-                {"x": br_xy["x"] + offset * scale, "y": br_xy["y"] - offset * scale}
-            ),
-            GLOBAL_MERCATOR.meters_to_latlon(
-                {"x": bl_xy["x"] - offset * scale, "y": bl_xy["y"] - offset * scale}
-            ),
+        bound = [
+            meters_to_wgs84([tl_xy["x"] - offset * scale, tl_xy["y"] + offset * scale]),
+            meters_to_wgs84([tr_xy["x"] + offset * scale, tr_xy["y"] + offset * scale]),
+            meters_to_wgs84([br_xy["x"] + offset * scale, br_xy["y"] - offset * scale]),
+            meters_to_wgs84([bl_xy["x"] - offset * scale, bl_xy["y"] - offset * scale]),
         ]
 
-        new_map.bound = ",".join(
-            f"{round(c['lat'], 5)},{round(c['lon'], 5)}" for c in corners
-        )
+        new_map.bound = bound
 
         im = Image.new(
             "RGBA",
@@ -1173,8 +1159,8 @@ class Map(models.Model, SomewhereOnEarth):
         for i, other_map in enumerate(other_maps):
             bound = other_map.bound
             corners = [
-                self.wsg84_to_map_xy(bound[xx]["lat"], bound[xx]["lon"])
-                for xx in ("top_left", "top_right", "bottom_right", "bottom_left")
+                self.wsg84_to_map_xy(bound[i].latitude, bound[i].longitude)
+                for i in range(4)
             ]
             all_corners.append(corners)
 
@@ -1229,13 +1215,12 @@ class Map(models.Model, SomewhereOnEarth):
         map_obj.image.save("imported_image", out_file, save=False)
         map_obj.width = new_image.width
         map_obj.height = new_image.height
-
-        new_tl = self.map_xy_to_wsg84((min_x, min_y))
-        new_tr = self.map_xy_to_wsg84((max_x, min_y))
-        new_br = self.map_xy_to_wsg84((max_x, max_y))
-        new_bl = self.map_xy_to_wsg84((min_x, max_y))
-        map_obj.calibration_string_raw = f'{round(new_tl["lat"], 5)},{round(new_tl["lon"], 5)},{round(new_tr["lat"], 5)},{round(new_tr["lon"], 5)},{round(new_br["lat"], 5)},{round(new_br["lon"], 5)},{round(new_bl["lat"], 5)},{round(new_bl["lon"], 5)}'
-
+        map_obj.bound = (
+            self.map_xy_to_wsg84((min_x, min_y)),
+            self.map_xy_to_wsg84((max_x, min_y)),
+            self.map_xy_to_wsg84((max_x, max_y)),
+            self.map_xy_to_wsg84((min_x, max_y)),
+        )
         return map_obj.overlay(*other_maps)
 
 
@@ -2286,41 +2271,37 @@ class Device(models.Model, SomewhereOnEarth):
             end = period[1]
             if end < until:
                 periods_used_till_limit.append(period)
-
         if periods_used_till_limit:
             last_start = periods_used_till_limit[-1][0]
-        periods_to_gather = periods_used_till_limit[:-1]
 
-        locs_to_archive = self.get_locations_over_periods(periods_to_gather)
-
-        if locs_to_archive:
-            archive_dev = Device(
+        modified_competitors = [
+            c for c in self.competitor_set.all() if c.start_time < last_start
+        ]
+        archives = []
+        for competitor in modified_competitors:
+            archive = Device(
                 aid=f"{short_random_key()}_ARC",
                 virtual=True,
             )
-            arc_reference = DeviceArchiveReference(original=self, archive=archive_dev)
-            archive_dev.add_locations(locs_to_archive, save=False)
-            modified_competitors = [
-                c for c in self.competitor_set.all() if c.start_time < last_start
-            ]
-
-            for competitor in modified_competitors:
-                competitor.device = archive_dev
-
-            left_locations, _ = self.get_locations_between_dates(
-                last_start,
-                self.last_location_datetime,
-            )
-            self.add_locations(left_locations, reset=True, save=False)
-
+            archive.add_locations(competitor.locations, save=False)
+            competitor.device = archive
+            ref = DeviceArchiveReference(original=self, archive=archive)
+            archives.append(archive)
             if save:
-                archive_dev.save()
-                arc_reference.save()
-                for competitor in modified_competitors:
-                    competitor.save()
-                self.save()
-            return archive_dev
-        return None
+                archive.save()
+                ref.save()
+                competitor.save()
+
+        left_locations, _ = self.get_locations_between_dates(
+            last_start,
+            self.last_location_datetime,
+        )
+        self.add_locations(left_locations, reset=True, save=False)
+
+        if save:
+            self.save()
+
+        return archives
 
     def get_locations_over_periods(self, periods):
         locs = []

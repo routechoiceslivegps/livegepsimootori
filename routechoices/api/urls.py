@@ -3,7 +3,7 @@ from django.urls import include, path, re_path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
-
+from oauth2_provider.urls import app_name, base_urlpatterns
 from routechoices.api import views
 
 schema_view = get_schema_view(
@@ -35,7 +35,7 @@ urlpatterns = [
         views.map_kmz_download,
         name="map_kmz_download",
     ),
-    re_path(r"^oauth2/", include("oauth2_provider.urls", namespace="oauth2_provider")),
+    re_path(r"^oauth2/", include((base_urlpatterns, app_name), namespace=app_name)),
     re_path(r"^time/?$", views.get_time, name="time_api"),
     re_path(r"^user/?$", views.user_view, name="user_view_api"),
     re_path(r"^version/?$", views.get_version, name="version"),

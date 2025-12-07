@@ -244,5 +244,5 @@ class Xexun2Connection(GenericConnection):
                 )
 
 
-class Xexun2Server(GenericTCPServer):
+class TCPServer(GenericTCPServer):
     connection_class = Xexun2Connection

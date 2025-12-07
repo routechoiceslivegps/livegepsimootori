@@ -169,5 +169,5 @@ class TMT250Connection(GenericConnection):
             await self.stream.write(self.decoder.generate_response())
 
 
-class TMT250Server(GenericTCPServer):
+class TCPServer(GenericTCPServer):
     connection_class = TMT250Connection

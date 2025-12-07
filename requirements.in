@@ -49,3 +49,4 @@ tornado
 pyproj
 reverse-geocode
 emoji-country-flag
+timezonefinder[numba]

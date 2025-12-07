@@ -5,15 +5,26 @@ from django.http.response import Http404
 from django.test import TestCase, override_settings
 
 from . import plausible
-from .helpers import (check_dns_records, get_device_name,
-                      get_image_mime_from_request, simplify_periods)
+from .helpers import (
+    check_dns_records,
+    get_device_name,
+    get_image_mime_from_request,
+    simplify_periods,
+)
 from .kmz import extract_ground_overlay_info
+
 # from .mtb_decoder import MtbDecoder
 from .slippy_tiles import latlon_to_tile_xy, tile_xy_to_north_west_latlon
-from .validators import (validate_calibration_string, validate_domain_slug,
-                         validate_emails, validate_esn, validate_imei,
-                         validate_latitude, validate_longitude,
-                         validate_nice_slug)
+from .validators import (
+    validate_calibration_string,
+    validate_domain_slug,
+    validate_emails,
+    validate_esn,
+    validate_imei,
+    validate_latitude,
+    validate_longitude,
+    validate_nice_slug,
+)
 
 
 @override_settings(ANALYTICS_API_KEY=True)
@@ -89,47 +100,6 @@ class PlausibleTestCase(TestCase):
 
 
 class HelperTestCase(TestCase):
-    """
-    def test_calibration_conversion(self):
-        cal = wgs84_bound_from_3_ref_points(
-            9.5480564597566|46.701263850274|1|1|9.5617738453051|46.701010852567|4961|1|9.5475331306949|46.687915214433|1|7016",
-            4961,
-            7016,
-        )
-        self.assertEqual(
-            cal,
-            [
-                46.70127,
-                9.54805,
-                46.70101,
-                9.56177,
-                46.68766,
-                9.56125,
-                46.68792,
-                9.54753,
-            ],
-        )
-
-    def test_kml_cal(self):
-        cal = wgs84_bound_from_latlon_box(
-            63.35268625254615,
-            63.325978161823549,
-            12.55481008348568,
-            12.470815025221196,
-            -5.6769774354892242,
-        )
-        self.assertEqual(
-            cal,
-            (
-                (65.21144277090194, 15.781876945283638),
-                (61.24478638169717, 66.38761575963139),
-                (10.696053565129883, 60.0149162417611),
-                (14.662709954334655, 9.409177427413347),
-            ),
-        )
-
-    """
-
     def test_check_dns(self):
         self.assertTrue(check_dns_records("latlong.uk"))
         self.assertTrue(check_dns_records("where.rapha.run"))

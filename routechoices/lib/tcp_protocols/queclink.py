@@ -150,5 +150,5 @@ class QueclinkConnection(GenericConnection):
         print(f"Queclink - {self.imei} wrote {len(pts)} locations to DB", flush=True)
 
 
-class QueclinkServer(GenericTCPServer):
+class TCPServer(GenericTCPServer):
     connection_class = QueclinkConnection

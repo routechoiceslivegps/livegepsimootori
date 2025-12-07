@@ -243,12 +243,12 @@ class EssentialApiTestCase1(EssentialApiBase):
         )
 
         arc = device.archive(until=epoch_to_datetime(13))
-        self.assertEqual(arc.location_count, 1)
+        self.assertEqual(arc[0].location_count, 1)
         self.assertEqual(device.location_count, 1)
 
         device.refresh_from_db()
         arc = device.archive(until=epoch_to_datetime(7))
-        self.assertIsNone(arc)
+        self.assertEqual(len(arc), 0)
         self.assertEqual(device.location_count, 3)
 
         event3 = Event.objects.create(
@@ -266,12 +266,12 @@ class EssentialApiTestCase1(EssentialApiBase):
         )
         device.refresh_from_db()
         arc = device.archive(until=epoch_to_datetime(7))
-        self.assertEqual(arc.location_count, 1)
+        self.assertEqual(arc[0].location_count, 1)
         self.assertEqual(device.location_count, 2)
 
         device.refresh_from_db()
         arc = device.archive(until=epoch_to_datetime(13))
-        self.assertEqual(arc.location_count, 2)
+        self.assertEqual(arc[0].location_count + arc[1].location_count, 2)
         self.assertEqual(device.location_count, 1)
 
     def test_clean_device(self):

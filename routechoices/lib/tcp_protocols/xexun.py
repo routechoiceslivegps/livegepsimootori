@@ -63,5 +63,5 @@ class XexunConnection(GenericConnection):
         print(f"Xexun - {self.imei} wrote 1 locations to DB", flush=True)
 
 
-class XexunServer(GenericTCPServer):
+class TCPServer(GenericTCPServer):
     connection_class = XexunConnection

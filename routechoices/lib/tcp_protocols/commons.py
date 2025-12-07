@@ -15,9 +15,14 @@ from routechoices.lib.validators import validate_imei
 
 logger = logging.getLogger("TCP Rotating Log")
 logger.setLevel(logging.INFO)
+logger_filename = "tcp.log"
+logger_suffix = os.environ.get("TCP_SERVER_INSTANCE", "")
+if logger_suffix:
+    logger_filename = f"tcp-{logger_suffix}.log"
+
 handler = logging.handlers.RotatingFileHandler(
-    os.path.join(settings.BASE_DIR, "logs", "tcp.log"),
-    maxBytes=50000000,
+    os.path.join(settings.BASE_DIR, "logs", logger_filename),
+    maxBytes=50_000_000,
     backupCount=10,
 )
 formatter = logging.Formatter(
