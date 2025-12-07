@@ -9,18 +9,15 @@ echo -e "\e[96mComparing requirements\e[0m"
 PREV_MD5SUM="$(md5sum requirements.txt)"
 curl -s -O -L https://raw.github.com/routechoiceslivegps/livegepsimootori/${1:-live}/requirements.txt
 MD5SUM="$(md5sum requirements.txt)"
-VIRTUAL_ENV=venv
 if [ "$MD5SUM" != "$NEW_MD5SUM" ]
 then
   echo "Installing new requirements"
-  source $BASEDIR/venv/bin/activate
   source ~/.cargo/env
   source ~/.local/bin/env
   uv pip install --no-cache --requirement requirements.txt
 else
   echo "No new requirements"
 fi
-source $BASEDIR/venv/bin/activate
 echo -e "\e[96mUpdating env variables\e[0m"
 doppler secrets download --no-file --format=env 1> ".env"
 echo "Done"
