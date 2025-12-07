@@ -9,8 +9,8 @@ echo -e "\e[96mComparing requirements\e[0m"
 PREV_MD5SUM="$(md5sum requirements.txt)"
 curl -s -O -L https://raw.github.com/routechoiceslivegps/livegepsimootori/${1:-live}/requirements.txt
 MD5SUM="$(md5sum requirements.txt)"
+VIRTUAL_ENV=venv
 if [ "$MD5SUM" != "$NEW_MD5SUM" ]
-uv venv venv
 then
   echo "Installing new requirements"
   source $BASEDIR/venv/bin/activate
