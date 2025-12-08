@@ -53,7 +53,7 @@
                 </button>
                 {% if context == 'edit' %}
                     <a href="{% url 'dashboard_club:map:delete_view' map_id=map.aid club_slug=request.club.slug %}"
-                       class="btn btn-danger mb-1"><i class="fa-solid fa-trash-can"></i> Delete</a>
+                       class="btn btn-danger mb-1 float-end"><i class="fa-solid fa-trash-can"></i> Delete</a>
                 {% endif %}
             </form>
             {% if map %}

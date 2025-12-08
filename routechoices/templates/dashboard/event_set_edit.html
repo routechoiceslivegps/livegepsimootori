@@ -36,7 +36,7 @@
                 </button>
                 {% if context == 'edit' %}
                     <a href="{% url 'dashboard_club:event_set:delete_view' event_set_id=event_set.aid club_slug=request.club.slug %}"
-                       class="btn btn-danger mb-1"><i class="fa-solid fa-trash-can"></i> Delete</a>
+                       class="btn btn-danger mb-1 float-end"><i class="fa-solid fa-trash-can"></i> Delete</a>
                 {% endif %}
             </form>
         </div>
