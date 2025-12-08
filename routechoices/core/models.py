@@ -787,17 +787,18 @@ class Map(models.Model, SomewhereOnEarth):
         tl, tr, br, bl = (corner.xy_meters for corner in self.bound)
 
         left_diff = Point(tl.x - bl.x, tl.y - bl.y)
+        left_rot = (math.atan2(*left_diff.xy[::-1]) - math.pi / 2) * 180 / math.pi
+
         right_diff = Point(tr.x - br.x, tr.y - br.y)
-        top_diff = Point(tl.x - tr.x, tl.y - tr.y)
+        right_rot = (math.atan2(*right_diff.xy[::-1]) - math.pi / 2) * 180 / math.pi
+
+        top_diff = Point(tr.x - tl.x, tr.y - tl.y)
+        top_rot = (math.atan2(*top_diff.xy[::-1])) * 180 / math.pi
+
         bottom_diff = Point(br.x - bl.x, br.y - bl.y)
+        bottom_rot = (math.atan2(*bottom_diff.xy[::-1])) * 180 / math.pi
 
-        left_rot = (math.atan2(*left_diff.xy) - math.pi / 2) * 180 / math.pi
-        right_rot = (math.atan2(*right_diff.xy) - math.pi / 2) * 180 / math.pi
-
-        top_rot = (math.atan2(*top_diff.xy)) * 180 / math.pi
-        bottom_rot = (math.atan2(*bottom_diff.xy)) * 180 / math.pi
-
-        vertical_rot = (avg_angles(left_rot, right_rot) - 90) % 360
+        vertical_rot = (avg_angles(left_rot, right_rot)) % 360
         horizontal_rot = (avg_angles(top_rot, bottom_rot)) % 360
         return round(avg_angles(vertical_rot, horizontal_rot), 2)
 

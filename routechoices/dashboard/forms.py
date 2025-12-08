@@ -17,21 +17,39 @@ from django.core.files import File
 from django.core.files.images import get_image_dimensions
 from django.core.validators import FileExtensionValidator
 from django.db.models import Q
-from django.forms import (CharField, ChoiceField, DateTimeInput, FileField,
-                          Form, ModelChoiceField, ModelForm,
-                          inlineformset_factory)
+from django.forms import (
+    CharField,
+    ChoiceField,
+    DateTimeInput,
+    FileField,
+    Form,
+    ModelChoiceField,
+    ModelForm,
+    inlineformset_factory,
+)
 from django.forms.widgets import TextInput
 from django.utils.timezone import is_naive, make_aware
 from PIL import Image
 
-from routechoices.core.models import (WEBP_MAX_SIZE, Club, Competitor, Device,
-                                      Event, EventSet, Map, MapAssignation,
-                                      Notice)
-from routechoices.lib.helpers import (check_dns_records, get_aware_datetime,
-                                      initial_of_name, is_valid_pil_image)
+from routechoices.core.models import (
+    WEBP_MAX_SIZE,
+    Club,
+    Competitor,
+    Device,
+    Event,
+    EventSet,
+    Map,
+    MapAssignation,
+    Notice,
+)
+from routechoices.lib.helpers import (
+    check_dns_records,
+    get_aware_datetime,
+    initial_of_name,
+    is_valid_pil_image,
+)
 from routechoices.lib.kmz import extract_ground_overlay_info
-from routechoices.lib.validators import (validate_domain_name,
-                                         validate_nice_slug)
+from routechoices.lib.validators import validate_domain_name, validate_nice_slug
 
 
 def get_timezone_choices():
@@ -815,7 +833,7 @@ class UploadKmzForm(Form):
         file = self.cleaned_data["file"]
         is_compressed = False
         new_maps = []
-        with tempfile.mkdtemp("_kmz") as tmp_extract_dir:
+        with tempfile.TemporaryDirectory(suffix="_kmz") as tmp_extract_dir:
             if file.name.lower().endswith(".kmz"):
                 is_compressed = True
                 try:

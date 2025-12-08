@@ -783,7 +783,7 @@ function RCEvent(infoURL, clockURL, locale) {
 	function setRasterMap(layer, fit) {
 		layer.addTo(map);
 		if (fit) {
-			map.setBearing(-layer.data.rotation, { animate: false });
+			map.setBearing(layer.data.rotation, { animate: false });
 			fitRasterMapLayerBounds(layer.options.bounds);
 		}
 		layer.setOpacity(mapOpacity);
@@ -1602,7 +1602,7 @@ function RCEvent(infoURL, clockURL, locale) {
 	}
 
 	function onLayerChange(event) {
-		map.setBearing(-event.layer.data.rotation, { animate: false });
+		map.setBearing(event.layer.data.rotation, { animate: false });
 		fitRasterMapLayerBounds(event.layer.options.bounds);
 		rasterMapLayer = event.layer;
 		rasterMapLayer.setOpacity(mapOpacity);

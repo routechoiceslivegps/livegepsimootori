@@ -8,8 +8,11 @@ from defusedxml import minidom
 from django.core.files import File
 
 from routechoices.core.models import Map
-from routechoices.lib.helpers import (Wgs84Coordinate, is_valid_pil_image,
-                                      wgs84_bound_from_latlon_box)
+from routechoices.lib.helpers import (
+    Wgs84Coordinate,
+    is_valid_pil_image,
+    wgs84_bound_from_latlon_box,
+)
 
 
 def get_maps_from_kml(kml, root_dir):
@@ -64,7 +67,7 @@ def extract_wgs84_bound_from_kml_ground_overlay(go):
             .split(" ")
         )
         sw, se, ne, nw = (
-            Wgs84Coordinate(float(x) for x in cc.split(",", 1)[::-1])
+            Wgs84Coordinate(list(float(x) for x in cc.split(",", 1)[::-1]))
             for cc in corners_lonlat
         )
     else:
