@@ -4,7 +4,6 @@ host_patterns = patterns(
     "",
     host("dashboard", "routechoices.dashboard.urls", name="dashboard"),
     host("www", "routechoices.site.urls", name="www"),
-    host("admin", "routechoices.admin.urls", name="admin"),
     host("api", "routechoices.api.urls", name="api"),
     host("map", "routechoices.map.urls", name="map"),
     host("registration", "routechoices.registration.urls", name="registration"),

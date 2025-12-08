@@ -1,7 +1,8 @@
 import csv
 from copy import deepcopy
 from io import StringIO
-
+from datetime import timedelta
+from django.views.decorators.cache import cache_page
 from allauth.account.adapter import get_adapter
 from allauth.account.forms import default_token_generator
 from allauth.account.models import EmailAddress
@@ -27,23 +28,44 @@ from hijack.views import ReleaseUserView
 from invitations.forms import InviteForm
 from kagi.views.backup_codes import BackupCodesView
 from user_sessions.views import SessionDeleteOtherView
-
-from routechoices.core.models import (Club, Competitor, Device,
-                                      DeviceClubOwnership, Event, EventSet,
-                                      ImeiDevice, Map, Notice)
-from routechoices.dashboard.forms import (ClubDomainForm, ClubForm,
-                                          CompetitorFormSet, DeviceForm,
-                                          EventForm, EventSetForm,
-                                          ExtraMapFormSet, MapForm,
-                                          MergeMapsForm, NoticeForm,
-                                          RequestInviteForm, UploadGPXForm,
-                                          UploadKmzForm, UploadMapGPXForm,
-                                          UserForm)
-from routechoices.lib.helpers import (get_current_site,
-                                      set_content_disposition,
-                                      short_random_key)
+from oauth2_provider.models import AccessToken
+from routechoices.core.models import (
+    Club,
+    Competitor,
+    Device,
+    DeviceClubOwnership,
+    Event,
+    EventSet,
+    ImeiDevice,
+    Map,
+    Notice,
+)
+from routechoices.dashboard.forms import (
+    ClubDomainForm,
+    ClubForm,
+    CompetitorFormSet,
+    DeviceForm,
+    EventForm,
+    EventSetForm,
+    ExtraMapFormSet,
+    MapForm,
+    MergeMapsForm,
+    NoticeForm,
+    RequestInviteForm,
+    UploadGPXForm,
+    UploadKmzForm,
+    UploadMapGPXForm,
+    UserForm,
+)
+from routechoices.lib.helpers import (
+    get_current_site,
+    set_content_disposition,
+    short_random_key,
+    long_random_key,
+)
 from routechoices.lib.s3 import serve_from_s3
 from routechoices.lib.streaming_response import StreamingHttpRangeResponse
+from routechoices.lib.duration_constants import DURATION_ONE_DAY
 
 DEFAULT_PAGE_SIZE = 25
 
@@ -1497,3 +1519,37 @@ def participations_view(request):
             "participations": participations,
         },
     )
+
+
+@cache_page(5 if not settings.DEBUG else 0)
+def private_view(request, club_slug, event_id):
+    event = (
+        Event.objects.all()
+        .select_related("club")
+        .filter(
+            club__slug__iexact=club_slug,
+            aid=event_id,
+        )
+        .first()
+    )
+    event.check_user_permission(request.user)
+    expiration_date = now() + timedelta(seconds=DURATION_ONE_DAY)
+    token, created = AccessToken.objects.get_or_create(
+        user=request.user, defaults={"expires": expiration_date}
+    )
+    if created:
+        token.token = long_random_key()
+    else:
+        token.expires = expiration_date
+    token.save()
+
+    response = render(
+        request,
+        "club/event.html",
+        {
+            "event": event,
+            "token": token.token,
+        },
+    )
+    response["Cache-Control"] = "private"
+    return response

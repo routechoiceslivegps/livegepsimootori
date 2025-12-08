@@ -169,7 +169,6 @@ urlpatterns = [
                         ]
                     ),
                 ),
-                path("geojson", views.event_geojson_view, name="event_geojson_view"),
                 re_path(
                     r"^data\.(?P<extension>lst|php)$",
                     views.event_gpsseuranta_data_view,

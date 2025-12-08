@@ -299,6 +299,7 @@
             data-server-clock-url="{% host_url 'time_api' host 'api' %}"
             data-static-root="{% static '' %}"
             data-wms-service-url="{% host_url 'wms_service' host 'wms' %}"
+            data-token="{{ token }}"
             data-is-private="{% if event.privacy == 'private' %}1{% else %}{% endif %}"></script>
     {% compress js %}
         <script src="{% static 'vendor/dayjs-1.11.7/dayjs.min.js' %}?langs=en-es-fi-fr-nl-pl-sv"></script>

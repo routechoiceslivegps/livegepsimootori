@@ -3,11 +3,17 @@ from django.urls import include, path, re_path
 from django.views.generic.base import RedirectView
 from user_sessions import views as user_sessions_views
 
+from django.contrib import admin
 from routechoices.dashboard import views
 from routechoices.site import views as site_views
 
 urlpatterns = [
     path("", views.home_view, name="home_view"),
+    path("admin/hijack/", include("hijack.urls")),
+    path(
+        "admin/",
+        admin.site.urls,
+    ),
     path(
         "participations",
         views.participations_view,
@@ -217,6 +223,11 @@ urlpatterns = [
                                                                 "",
                                                                 views.event_edit_view,
                                                                 name="edit_view",
+                                                            ),
+                                                            path(
+                                                                "view",
+                                                                views.private_view,
+                                                                name="private_view",
                                                             ),
                                                             path(
                                                                 "competitors",

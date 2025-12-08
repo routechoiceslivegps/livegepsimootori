@@ -16,6 +16,7 @@ from routechoices.lib.globalmaptiles import GlobalMercator
 from routechoices.lib.helpers import get_best_image_mime, safe64encodedsha
 from routechoices.lib.streaming_response import StreamingHttpRangeResponse
 
+
 GLOBAL_MERCATOR = GlobalMercator()
 
 
@@ -27,7 +28,6 @@ def common_wms(function):
 
         if get_params.get("service", "").lower() != "wms":
             return HttpResponseBadRequest("Service must be WMS")
-
         if get_params.get("request", "").lower() == "getmap":
             asked_mime = get_params.get("format", "image/png").lower()
             better_mime = get_best_image_mime(request)
@@ -211,11 +211,15 @@ def wms_service(request):
                             "map": layer.map,
                         }
                     )
+        headers = {}
+        if event.privacy == PRIVACY_PRIVATE:
+            headers["Cache-Control"] = "Private"
         return render(
             request,
             "wms/index.xml",
             {"layers": layers, "min_xy": min_xy, "max_xy": max_xy},
             content_type="text/xml",
+            headers=headers,
         )
 
     return HttpResponse(status=status.HTTP_501_NOT_IMPLEMENTED)

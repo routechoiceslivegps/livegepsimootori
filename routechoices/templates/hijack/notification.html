@@ -18,7 +18,7 @@
                 {% csrf_token %}
                 <input type="hidden"
                        name="next"
-                       value="{% host_url 'admin:auth_user_changelist' host 'admin' %}">
+                       value="{% host_url 'admin:auth_user_changelist' host 'dashboard' %}">
                 <button class="djhj-button" id="djhj-hide-btn" type="button">hide</button>
                 <button class="djhj-button" id="djhj-release-btn" type="submit">release</button>
             </form>

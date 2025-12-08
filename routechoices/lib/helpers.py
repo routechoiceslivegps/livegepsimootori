@@ -244,6 +244,11 @@ def short_random_key():
     return generate_random_string(alphabet, 6)
 
 
+def long_random_key():
+    alphabet = "23456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+    return generate_random_string(alphabet, 128)
+
+
 def random_device_id():
     alphabet = "0123456789"
     start = generate_random_string(alphabet[1:], 1)

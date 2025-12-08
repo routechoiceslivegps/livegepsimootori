@@ -919,6 +919,9 @@ function RCEvent(infoURL, clockURL, locale) {
 			method: "GET",
 			credentials: window.local.isPrivate ? "include" : "same-origin",
 			mode: "cors",
+			headers: {
+				authorization: `Bearer ${window.local.token}`,
+			},
 		})
 			.then((r) => r.json())
 			.then((response) => {
@@ -1047,6 +1050,9 @@ function RCEvent(infoURL, clockURL, locale) {
 							method: "GET",
 							credentials: window.local.isPrivate ? "include" : "same-origin",
 							mode: "cors",
+							headers: {
+								authorization: `Bearer ${window.local.token}`,
+							},
 						})
 							.then((r) => r.json())
 							.then((geojson) => {
@@ -1308,6 +1314,9 @@ function RCEvent(infoURL, clockURL, locale) {
 			method: "GET",
 			credentials: window.local.isPrivate ? "include" : "same-origin",
 			mode: "cors",
+			headers: {
+				authorization: `Bearer ${window.local.token}`,
+			},
 		})
 			.then((r) => r.json())
 			.then((response) => {
@@ -1543,8 +1552,9 @@ function RCEvent(infoURL, clockURL, locale) {
 		);
 		let layer;
 		if (mapData.wms) {
+			const tokenArg = window.local.token ? `&token=${window.local.token}` : "";
 			layer = L.tileLayer.wms(
-				`${window.local.wmsServiceUrl}?v=${mapData.hash}`,
+				`${window.local.wmsServiceUrl}?v=${mapData.hash}${tokenArg}`,
 				{
 					layers: `${window.local.eventId}/${indexEventMap + 1}`,
 					bounds: bounds,
@@ -2132,6 +2142,9 @@ function RCEvent(infoURL, clockURL, locale) {
 			method: "GET",
 			credentials: window.local.isPrivate ? "include" : "same-origin",
 			mode: "cors",
+			headers: {
+				authorization: `Bearer ${window.local.token}`,
+			},
 		})
 			.then((r) => r.json())
 			.then((response) => {

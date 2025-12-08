@@ -61,7 +61,6 @@ from routechoices.lib.helpers import (
     general_2d_projection,
     get_current_site,
     gpsseuranta_encode_data,
-    int_base32,
     project,
     random_device_id,
     random_key,
@@ -1907,7 +1906,11 @@ class Event(models.Model, SomewhereOnEarth):
         return f"{self.club.nice_url}{self.slug}/map"
 
     def get_geojson_url(self):
-        return f"{self.club.nice_url}{self.slug}/geojson?v={int_base32(int(self.modification_date.timestamp()))}"
+        return reverse(
+            "event_geojson_download",
+            host="api",
+            kwargs={"event_id": self.aid},
+        )
 
     def get_absolute_export_url(self):
         return f"{self.club.nice_url}{self.slug}/export"

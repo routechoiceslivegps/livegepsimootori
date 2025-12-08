@@ -133,6 +133,7 @@ MIDDLEWARE = [
     "routechoices.core.middleware.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "oauth2_provider.middleware.OAuth2TokenMiddleware",
+    "routechoices.core.middleware.OAuth2GetTokenMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django_hosts.middleware.HostsResponseMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",

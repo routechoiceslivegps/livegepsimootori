@@ -43,13 +43,9 @@
                 <h3 class="frontpage_text mb-3" style="position: relative">
                     <a class="px-4 py-2 text-decoration-none engage-link me-2 text-nowrap"
                         href="{% host_url 'site:public_events_view' host 'www' %}"><i class="fa-solid fa-person-running"></i> Event list</a>
-                    {% if user.is_authenticated %}
-                        <a class="px-4 py-2 text-decoration-none engage-link text-nowrap"
-                            href="{% host_url 'home_view' host 'dashboard' %}"><i class="fa-solid fa-compass"></i> Dashboard</a>
-                    {% else %}
-                        <a class="px-4 py-2 text-decoration-none engage-link text-nowrap"
-                           href="{% host_url 'site:account_signup' host 'www' %}"><i class="fa-solid fa-compass"></i> Join Now</a>
-                    {% endif %}
+                    <a class="px-4 py-2 text-decoration-none engage-link text-nowrap"
+                            href="{% host_url 'home_view' host 'dashboard' %}"><i class="fa-solid fa-compass"></i> Start For Free
+                    </a>
                 </h3>
             </div>
         </div>

@@ -4,7 +4,7 @@
             class="button"
             data-hijack-user="{{ another_user.pk }}"
             data-hijack-next="{{ next }}"
-            data-hijack-url="{% host_url 'hijack:acquire' host 'admin' %}">
+            data-hijack-url="{% host_url 'hijack:acquire' host 'dashboard' %}">
         {% if is_user_admin %}
             HIJACK
         {% else %}

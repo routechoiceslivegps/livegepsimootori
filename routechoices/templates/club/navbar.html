@@ -35,9 +35,8 @@
             <a class="navbarchimey navbar-brand site-name"
                href="{{ club.website }}"
                {% if is_event_page %}target="_blank"{% endif %}
-               rel="noopener noreferrer"><i class="fa-solid fa-house-chimney fa-2x"
-   style="font-size: 1.7rem;
-          vertical-align: -5px"></i></a>
+               rel="noopener noreferrer"><i class="fa-solid fa-house-chimney fa-2x" style="font-size: 1.7rem;vertical-align: -5px"></i>
+            </a>
         {% else %}
             <a class="navbar-brand site-name m-0 pe-2"
                href="{% if club %}{{ club.nice_url }}{% else %}/{% endif %}"
@@ -74,6 +73,7 @@
                 <ul class="nav navbar-nav me-auto mb-2 mb-lg-0">
                 </ul>
                 <ul class="nav navbar-nav d-flex flex-nowrap">
+                    {% if event.privacy != "private" %}
                     <li class="nav-item">
                         <a class="nav-link text-nowrap"
                            href="{{ club.get_absolute_url }}"
@@ -87,6 +87,7 @@
                                target="_blank"
                                rel="noopener noreferrer"><i class="fa-solid fa-arrow-up-right-from-square"></i> <span id="export-text">Export</span></a>
                         </li>
+                    {% endif %}
                     {% endif %}
                     <li class="nav-item">
                         <button class="theme-selector" type="button" data-bs-toggle="tooltip">

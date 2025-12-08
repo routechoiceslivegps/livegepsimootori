@@ -2,6 +2,8 @@ import logging
 import time
 from re import compile
 
+import hashlib
+from oauth2_provider.models import AccessToken
 import arrow
 from corsheaders.middleware import CorsMiddleware as OrigCorsMiddleware
 from django.conf import settings
@@ -19,6 +21,7 @@ from django.utils.http import http_date
 from django_hosts.middleware import HostsBaseMiddleware
 from rest_framework import status
 from user_sessions.middleware import SessionMiddleware as OrigSessionMiddleware
+
 
 from routechoices.core.models import Club
 from routechoices.lib import cache
@@ -344,4 +347,19 @@ class SessionMiddleware(OrigSessionMiddleware):
                         httponly=settings.SESSION_COOKIE_HTTPONLY or None,
                         samesite=settings.SESSION_COOKIE_SAMESITE,
                     )
+        return response
+
+
+class OAuth2GetTokenMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if not hasattr(request, "user") or request.user.is_anonymous:
+            if tokenstring := request.GET.get("token"):
+                token_checksum = hashlib.sha256(tokenstring.encode("utf-8")).hexdigest()
+                token = AccessToken.objects.get(token_checksum=token_checksum)
+                request.user = request._cached_user = token.user
+
+        response = self.get_response(request)
         return response

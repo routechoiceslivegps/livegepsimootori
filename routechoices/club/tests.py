@@ -8,8 +8,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from routechoices.api.tests import EssentialApiBase
-from routechoices.core.models import (Club, Competitor, Device, Event,
-                                      EventSet, Map)
+from routechoices.core.models import Club, Competitor, Device, Event, EventSet, Map
 
 
 class ClubViewsTestCase(EssentialApiBase):
@@ -515,7 +514,7 @@ class ClubViewsTestCase(EssentialApiBase):
         self.assertContains(response, "Upload GPX")
 
     def test_private_event_page_load(self):
-        client = APIClient(HTTP_HOST="kiilat.routechoices.dev")
+        client = APIClient(HTTP_HOST="dashboard.routechoices.dev")
 
         Event.objects.create(
             name="Kiila Cup 4",

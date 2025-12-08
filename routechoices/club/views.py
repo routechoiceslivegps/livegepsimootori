@@ -18,10 +18,13 @@ from routechoices.club import feeds
 from routechoices.core.models import PRIVACY_PRIVATE, Club, Event, EventSet
 from routechoices.lib import cache
 from routechoices.lib.duration_constants import DURATION_ONE_DAY
-from routechoices.lib.helpers import (get_best_image_mime, get_current_site,
-                                      get_image_mime_from_request,
-                                      gpsseuranta_encode_data, int_base32,
-                                      safe64encodedsha)
+from routechoices.lib.helpers import (
+    get_best_image_mime,
+    get_current_site,
+    get_image_mime_from_request,
+    gpsseuranta_encode_data,
+    safe64encodedsha,
+)
 from routechoices.lib.other_gps_services.gpsseuranta import GpsSeurantaNet
 from routechoices.lib.other_gps_services.livelox import Livelox
 from routechoices.lib.other_gps_services.loggator import Loggator
@@ -199,18 +202,17 @@ def event_view(request, slug):
         return render(
             request, "site/event_list.html", event_set.extract_event_lists(request)
         )
+
     # If event is private, page needs to send ajax with cookies to prove identity,
-    # cannot be done from custom domain
+    # cannot be done from custom domain.
     if event.privacy == PRIVACY_PRIVATE:
-        if request.use_cname:
-            return redirect(
-                reverse(
-                    "event_view",
-                    host="clubs",
-                    kwargs={"slug": slug},
-                    host_kwargs={"club_slug": club_slug},
-                )
+        return redirect(
+            reverse(
+                "dashboard_club:event:private_view",
+                host="dashboard",
+                kwargs={"club_slug": club_slug, "event_id": event.aid},
             )
+        )
     elif event.club.domain and not request.use_cname:
         return redirect(f"{event.club.nice_url}{event.slug}")
 
@@ -474,39 +476,6 @@ def event_kmz_view(request, slug, index="1"):
             host="api",
             kwargs={"event_id": event.aid, "index": index},
         )
-    )
-
-
-def event_geojson_view(request, slug):
-    club_slug = request.club_slug
-    event = (
-        Event.objects.all()
-        .select_related("club")
-        .filter(
-            club__slug__iexact=club_slug,
-            slug__iexact=slug,
-        )
-        .first()
-    )
-    if not event:
-        club = get_object_or_404(Club, slug__iexact=club_slug)
-        if club.domain and not request.use_cname:
-            return redirect(f"{club.nice_url}{slug}/geojson")
-        return render(
-            request,
-            "club/404_event.html",
-            {"club": club},
-            status=status.HTTP_404_NOT_FOUND,
-        )
-    if event.club.domain and not request.use_cname:
-        return redirect(f"{event.club.nice_url}{event.slug}/geojson")
-    return redirect(
-        reverse(
-            "event_geojson_download",
-            host="api",
-            kwargs={"event_id": event.aid},
-        )
-        + f"?v={int_base32(int(event.modification_date.timestamp()))}"
     )
 
 
