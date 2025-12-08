@@ -1,10 +1,18 @@
+[project]
+name = "livegepsimootori"
+version = "0.1.0"
+requires-python = ">=3.14"
+
 [tool.isort]
 profile = "black"
+
 [tool.black]
 target-version = ['py311']
 line-length = 88
+
 [tool.djlint]
 ignore="H021"
+
 [tool.coverage.run]
 omit = [
   "invitations/admin.py",
