@@ -2,4 +2,4 @@
 systemctl --user restart routechoices-tornado@a
 sleep 5
 systemctl --user restart routechoices-tornado@b
-echo "All done"
+echo "Tornado servers restarted"
