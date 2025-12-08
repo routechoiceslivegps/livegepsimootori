@@ -2,7 +2,7 @@
 {% if event.club %}
     {% define event.club as club %}
 {% endif %}
-<header class="navbar navbar-expand-md navbar-dark bg-primary"
+<header id="event-navbar" class="navbar navbar-expand-md navbar-dark bg-primary"
         style="z-index: 110001;
                padding: 3px 0;
                color: #fff;
@@ -100,4 +100,9 @@
         {% endif %}
     </div>
 </header>
-<div id="django-messages" style="z-index: 110001;"></div>
+<div id="django-messages">
+    <div id="text-too-many-runners" class="alert alert-warning alert-dismissible fade d-none" role="alert">
+        <i class="fa-solid fa-triangle-exclamation me-2"></i><span class="text-too-many-runners-content"></span>
+        <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
+    </div>
+</div>

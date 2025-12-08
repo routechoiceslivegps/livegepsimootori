@@ -21,18 +21,10 @@ function RCEvent(infoURL, clockURL, locale) {
 	let sendInterval = 5;
 	let tailLength = 60;
 	let previousFetchMapData = null;
-	let previousFetchAnouncement = null;
+	const previousFetchAnouncement = null;
 	let zoomOnRunners = false;
 	let rasterMapLayer;
 	let mapOpacity = 1;
-	const toastAnouncement = new bootstrap.Toast(
-		document.getElementById("text-alert"),
-		{
-			animation: true,
-			autohide: false,
-		},
-	);
-	toastAnouncement.hide();
 
 	let isRealTime = true;
 	let isCustomStart = false;
@@ -1349,24 +1341,14 @@ function RCEvent(infoURL, clockURL, locale) {
 
 	function displayAnouncement(announcement) {
 		if (announcement && announcement !== previousFetchAnouncement) {
-			function showToast() {
-				u(".text-alert-content").text(announcement);
-				toastAnouncement.show();
-			}
-			function onHidden(e) {
-				this.removeEventListener("hidden.bs.toast", onHidden);
-				showToast();
-			}
-			const isHidden = u("#text-alert").hasClass("show");
-			if (isHidden) {
-				document
-					.getElementById("text-alert")
-					.addEventListener("hidden.bs.toast", onHidden);
-				toastAnouncement.hide();
-			} else {
-				showToast();
-			}
-			previousFetchAnouncement = announcement;
+			const alertDiv =
+				u(`<div class="alert alert-info alert-dismissible fade show" role="alert">
+		      <i class="fa-solid fa-message me-2"></i><span class="text-alert-content"></span>
+			  <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
+		    </div>`);
+			alertDiv.find(".text-alert-content").text(announcement);
+			u("#django-messages").append(alertDiv);
+			console.log(alertDiv);
 		}
 	}
 
@@ -1591,7 +1573,7 @@ function RCEvent(infoURL, clockURL, locale) {
 		doc.style.setProperty("--footer-size", "7px");
 		doc.style.setProperty(
 			"--navbar-size",
-			document.fullscreenElement != null ? "0px" : "46px",
+			`${(document.fullscreenElement != null ? 0 : document.getElementById("event-navbar").clientHeight) + document.getElementById("django-messages").clientHeight}px`,
 		);
 		doc.style.setProperty(
 			"--filter-bar-size",
@@ -1827,10 +1809,7 @@ function RCEvent(infoURL, clockURL, locale) {
 			Object.values(competitorList).forEach((competitor, i) => {
 				competitor.isShown = i === 0;
 			});
-			new bootstrap.Toast(document.getElementById("text-too-many-runners"), {
-				animation: true,
-				autohide: false,
-			}).show();
+			u("#text-too-many-runners").removeClass("d-none").addClass("show");
 		}
 		loaded = true;
 		Object.values(competitorList).forEach((competitor, i) => {
