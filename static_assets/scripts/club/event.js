@@ -21,7 +21,7 @@ function RCEvent(infoURL, clockURL, locale) {
 	let sendInterval = 5;
 	let tailLength = 60;
 	let previousFetchMapData = null;
-	const previousFetchAnouncement = null;
+	let prevAnnouncement = null;
 	let zoomOnRunners = false;
 	let rasterMapLayer;
 	let mapOpacity = 1;
@@ -1340,7 +1340,7 @@ function RCEvent(infoURL, clockURL, locale) {
 	}
 
 	function displayAnouncement(announcement) {
-		if (announcement && announcement !== previousFetchAnouncement) {
+		if (announcement && announcement !== prevAnnouncement) {
 			const alertDiv =
 				u(`<div class="alert alert-info alert-dismissible fade show" role="alert">
 		      <i class="fa-solid fa-message me-2"></i><span class="text-alert-content"></span>
@@ -1348,7 +1348,7 @@ function RCEvent(infoURL, clockURL, locale) {
 		    </div>`);
 			alertDiv.find(".text-alert-content").text(announcement);
 			u("#django-messages").append(alertDiv);
-			console.log(alertDiv);
+			prevAnnouncement = announcement;
 		}
 	}
 
