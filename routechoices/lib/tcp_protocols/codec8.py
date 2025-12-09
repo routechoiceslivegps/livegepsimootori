@@ -70,8 +70,8 @@ class TMT250Decoder:
         return pointer
 
 
-class TMT250Connection(GenericConnection):
-    protocol_name = "Teltonika"
+class Codec8Connection(GenericConnection):
+    protocol_name = "Codec8"
 
     def __init__(self, stream, address, logger):
         super().__init__(stream, address, logger)
@@ -170,4 +170,4 @@ class TMT250Connection(GenericConnection):
 
 
 class TCPServer(GenericTCPServer):
-    connection_class = TMT250Connection
+    connection_class = Codec8Connection
