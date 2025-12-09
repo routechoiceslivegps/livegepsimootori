@@ -34,6 +34,8 @@ class Command(BaseCommand):
         servers = set()
         signal.signal(signal.SIGTERM, sigterm_handler)
         for slug, name, port in SUPPORTED_PORT:
+            if not options.get("{name}_port"):
+                continue
             if port := options.get(f"{slug}_port"):
                 protocol_lib = __import__(
                     f"routechoices.lib.tcp_protocols.{slug}", fromlist=[slug]
