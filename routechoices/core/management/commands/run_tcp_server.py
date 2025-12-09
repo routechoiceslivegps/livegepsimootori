@@ -25,7 +25,7 @@ class Command(BaseCommand):
     help = "Run a TCP server for GPS trackers."
 
     def add_arguments(self, parser):
-        for slug, name, port in SUPPORTED_PORT:
+        for slug, name, ports in SUPPORTED_PORT:
             parser.add_argument(
                 f"--{slug}_port", nargs="?", type=int, help=f"{name} Port"
             )
@@ -33,7 +33,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         servers = set()
         signal.signal(signal.SIGTERM, sigterm_handler)
-        for slug, name, port in SUPPORTED_PORT:
+        for slug, name, ports in SUPPORTED_PORT:
             if not options.get("{name}_port"):
                 continue
             if port := options.get(f"{slug}_port"):
@@ -41,7 +41,7 @@ class Command(BaseCommand):
                     f"routechoices.lib.tcp_protocols.{slug}", fromlist=[slug]
                 )
                 server = protocol_lib.TCPServer()
-                server.listen(int(options.get("{name}_port")), reuse_port=True)
+                server.listen(int(port), reuse_port=True)
                 servers.add((slug, server))
                 print(f"Listening protocol {name} on port {port}", flush=True)
         try:
