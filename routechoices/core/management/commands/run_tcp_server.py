@@ -39,7 +39,7 @@ class Command(BaseCommand):
                     f"routechoices.lib.tcp_protocols.{slug}", fromlist=[slug]
                 )
                 server = protocol_lib.TCPServer()
-                server.listen(options.get("{name}_port"), reuse_port=True)
+                server.listen(int(options.get("{name}_port")), reuse_port=True)
                 servers.add((slug, server))
                 print(f"Listening protocol {name} on port {port}", flush=True)
         try:
