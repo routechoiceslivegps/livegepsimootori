@@ -587,7 +587,7 @@ class ClubAdmin(admin.ModelAdmin):
             ", ".join(
                 (
                     format_html(
-                        '<a href="/auth/user/{}/change">{}</a>', a.id, a.username
+                        '<a href="/admin/auth/user/{}/change">{}</a>', a.id, a.username
                     )
                     for a in obj.admins.all()
                 )
