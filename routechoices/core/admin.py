@@ -477,7 +477,7 @@ class EventSetAdmin(admin.ModelAdmin):
         return format_html('<a href="{}">Open</a>', link)
 
     def club_link(self, obj):
-        link = f"/core/club/{obj.club_id}/change/"
+        link = f"/admin/core/club/{obj.club_id}/change/"
         return format_html('<a href="{}">{}</a>', link, obj.club)
 
     club_link.short_description = "Club"
@@ -556,28 +556,28 @@ class ClubAdmin(admin.ModelAdmin):
 
     def event_count(self, obj):
         return format_html(
-            '<a href="/core/event/?club__id__exact={}">{}</a>',
+            '<a href="/admin/core/event/?club__id__exact={}">{}</a>',
             obj.pk,
             obj.event_count,
         )
 
     def map_count(self, obj):
         return format_html(
-            '<a href="/core/map/?club__id__exact={}">{}</a>',
+            '<a href="/admin/core/map/?club__id__exact={}">{}</a>',
             obj.pk,
             obj.map_count,
         )
 
     def device_count(self, obj):
         return format_html(
-            '<a href="/core/deviceclubownership/?club__id__exact={}">{}</a>',
+            '<a href="/admin/core/deviceclubownership/?club__id__exact={}">{}</a>',
             obj.pk,
             obj.device_count or 0,
         )
 
     def geojson_count(self, obj):
         return format_html(
-            '<a href="/core/event/?club__id__exact={}&has_geojson=true">{}</a>',
+            '<a href="/admin/core/event/?club__id__exact={}&has_geojson=true">{}</a>',
             obj.pk,
             obj.geojson_count,
         )
@@ -725,7 +725,7 @@ class EventAdmin(admin.ModelAdmin):
     competitor_count.admin_order_field = "competitor_count"
 
     def club_link(self, obj):
-        link = f"/core/club/{obj.club_id}/change/"
+        link = f"/admin/core/club/{obj.club_id}/change/"
         return format_html('<a href="{}">{}</a>', link, obj.club)
 
     club_link.short_description = "Club"
@@ -733,7 +733,7 @@ class EventAdmin(admin.ModelAdmin):
     def event_set_link(self, obj):
         if not obj.event_set_id:
             return None
-        link = f"/core/eventset/{obj.event_set_id}/change/"
+        link = f"/admin/core/eventset/{obj.event_set_id}/change/"
         return format_html('<a href="{}">{}</a>', link, obj.event_set)
 
     club_link.short_description = "Club"
@@ -889,7 +889,9 @@ class DeviceArchiveReferenceAdmin(admin.ModelAdmin):
 
     def original_link(self, obj):
         return format_html(
-            '<a href="/core/device/{}/change">{}</a>', obj.original_id, obj.original
+            '<a href="/admin/core/device/{}/change">{}</a>',
+            obj.original_id,
+            obj.original,
         )
 
     original_link.short_description = "Original"
@@ -911,14 +913,16 @@ class ImeiDeviceAdmin(admin.ModelAdmin):
 
     def device_link(self, obj):
         return format_html(
-            '<a href="/core/device/{}/change">{}</a>', obj.device_id, obj.device
+            '<a href="/admin/core/device/{}/change">{}</a>', obj.device_id, obj.device
         )
 
     def clubs(self, obj):
         return mark_safe(
             ", ".join(
                 format_html(
-                    '<a href="/core/club/{}/change">{}</a>', c.club.id, c.club.name
+                    '<a href="/admin/core/club/{}/change">{}</a>',
+                    c.club.id,
+                    c.club.name,
                 )
                 for c in obj.device.club_ownerships.all()
             )
@@ -1002,7 +1006,7 @@ class MapAdmin(admin.ModelAdmin):
 
     def club_link(self, obj):
         return format_html(
-            '<a href="/core/club/{}/change">{}</a>', obj.club_id, obj.club
+            '<a href="/admin/core/club/{}/change">{}</a>', obj.club_id, obj.club
         )
 
     club_link.short_description = "Club"
@@ -1026,7 +1030,7 @@ class DeviceClubOwnershipAdmin(admin.ModelAdmin):
     search_fields = ("device__aid", "nickname")
 
     def club_link(self, obj):
-        link = f"/core/club/{obj.club_id}/change/"
+        link = f"/admin/core/club/{obj.club_id}/change/"
         return format_html('<a href="{}">{}</a>', link, obj.club)
 
     club_link.short_description = "Club"
@@ -1102,7 +1106,9 @@ class MyUserAdmin(HijackUserAdminMixin, UserAdmin):
         return mark_safe(
             ", ".join(
                 (
-                    format_html('<a href="/core/club/{}/change">{}</a>', c.id, c.name)
+                    format_html(
+                        '<a href="/admin/core/club/{}/change">{}</a>', c.id, c.name
+                    )
                     for c in obj.club_set.all()
                 )
             )
