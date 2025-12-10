@@ -177,7 +177,7 @@ def wms_service(request):
         events = (
             Event.objects.filter(
                 privacy=PRIVACY_PUBLIC,
-                on_events_page=True,
+                featured=True,
             )
             .filter(start_date__lte=now())
             .select_related("club", "map")

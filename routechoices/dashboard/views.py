@@ -871,7 +871,6 @@ def event_create_view(request):
         form = EventForm(club=club)
         form.fields["map"].queryset = map_list
         form.fields["event_set"].queryset = event_set_list
-        form.fields["on_events_page"].initial = club.upgraded or club.o_club
 
         competitors_formset = CompetitorFormSet()
 

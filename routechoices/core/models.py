@@ -1460,8 +1460,8 @@ class Event(models.Model, SomewhereOnEarth):
             "Private: Only a logged in admin of the club can access the page"
         ),
     )
-    on_events_page = models.BooleanField(
-        "Listed on Routechoices.com events page",
+    featured = models.BooleanField(
+        "Featured",
         default=False,
     )
     backdrop_map = models.CharField(
@@ -1556,7 +1556,7 @@ class Event(models.Model, SomewhereOnEarth):
             ),
             models.Index(
                 "privacy",
-                "on_events_page",
+                "featured",
                 "end_date",
                 "event_set_id",
                 name="core_event_list_frontpage_idx",
@@ -1570,7 +1570,7 @@ class Event(models.Model, SomewhereOnEarth):
             ),
             models.Index(
                 "privacy",
-                "on_events_page",
+                "featured",
                 "end_date",
                 name="core_event_listing_idx",
             ),
@@ -1727,7 +1727,7 @@ class Event(models.Model, SomewhereOnEarth):
             .prefetch_related("competitors")
         )
         if club is None:
-            event_qs = event_qs.filter(on_events_page=True)
+            event_qs = event_qs.filter(featured=True)
         else:
             event_qs = event_qs.filter(club=club)
 
@@ -1807,7 +1807,7 @@ class Event(models.Model, SomewhereOnEarth):
                     .order_by("-start_date", "name")
                 )
                 if not club:
-                    all_events_w_set = all_events_w_set.filter(on_events_page=True)
+                    all_events_w_set = all_events_w_set.filter(featured=True)
                 if type == "live":
                     all_events_w_set = all_events_w_set.filter(
                         start_date__lte=now(), end_date__gte=now()

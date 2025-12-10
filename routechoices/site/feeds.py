@@ -30,7 +30,7 @@ class LiveEventsFeed(Feed):
             Event.objects.select_related("club")
             .filter(
                 privacy=PRIVACY_PUBLIC,
-                on_events_page=True,
+                featured=True,
             )
             .filter(start_date__lte=now())[:50]
         )

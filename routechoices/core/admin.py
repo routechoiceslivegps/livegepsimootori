@@ -698,9 +698,9 @@ class EventAdmin(admin.ModelAdmin):
 
     @admin.display(boolean=True)
     def on_frontpage(self, obj):
-        return obj.on_events_page
+        return obj.featured
 
-    on_frontpage.admin_order_field = "on_events_page"
+    on_frontpage.admin_order_field = "featured"
     on_frontpage.short_description = "On Frontpage"
 
     @admin.display(boolean=True)
