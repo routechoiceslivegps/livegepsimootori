@@ -56,7 +56,7 @@
 			(inputValue) => {
 				if (inputValue === null || inputValue === false) return false;
 				reqwest({
-					url: `${window.local.apiBaseUrl}clubs/${window.local.clubSlug}/devices/${devId}`,
+					url: `/clubs/${window.local.clubSlug}/devices/${devId}`,
 					data: { nickname: inputValue },
 					headers: {
 						"X-CSRFToken": window.local.csrfToken,
@@ -86,7 +86,7 @@
 			},
 			() => {
 				reqwest({
-					url: `${window.local.apiBaseUrl}clubs/${window.local.clubSlug}/devices/${devId}`,
+					url: `/clubs/${window.local.clubSlug}/devices/${devId}`,
 					headers: {
 						"X-CSRFToken": window.local.csrfToken,
 					},
@@ -104,7 +104,7 @@
 	u(".gpsseuranta-set-btn").on("click", function (ev) {
 		const devId = u(this).attr("data-dev-id");
 		reqwest({
-			url: `${window.local.apiBaseUrl}clubs/${window.local.clubSlug}/devices/${devId}`,
+			url: `/clubs/${window.local.clubSlug}/devices/${devId}`,
 			data: { "activate-gpsseuranta-relay": 1 },
 			headers: {
 				"X-CSRFToken": window.local.csrfToken,

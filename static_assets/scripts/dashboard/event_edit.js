@@ -470,13 +470,13 @@ function showLocalTime(el) {
 		},
 		create: (input, callback) => {
 			reqwest({
-				url: `${window.local.apiBaseUrl}event-set`,
+				url: `/clubs/${window.local.clubSlug}/event-sets/new`,
 				method: "post",
 				data: {
-					club_slug: window.local.clubSlug,
 					name: input,
 				},
 				type: "json",
+				accept: "application/json",
 				withCredentials: true,
 				crossOrigin: true,
 				headers: {

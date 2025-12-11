@@ -1,6 +1,7 @@
 import csv
 from copy import deepcopy
 from io import StringIO
+import json
 from datetime import timedelta
 from django.views.decorators.cache import cache_page
 from allauth.account.adapter import get_adapter
@@ -18,7 +19,7 @@ from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db.models import Case, Prefetch, Q, Value, When
 from django.dispatch import receiver
-from django.http import Http404, HttpResponseRedirect
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.decorators import method_decorator
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -727,14 +728,32 @@ def event_set_list_view(request):
 def event_set_create_view(request):
     club = request.club
     if request.method == "POST":
+        is_json = "application/json" in request.META.get("HTTP_ACCEPT").split(", ")
         # create a form instance and populate it with data from the request:
         form = EventSetForm(request.POST, request.FILES, club=club)
         if form.is_valid():
-            form.save()
+            e = form.save()
             messages.success(request, "Event set created successfully")
+            if is_json:
+                r = HttpResponse(
+                    json.dumps(
+                        {
+                            "value": e.id,
+                            "text": e.name,
+                        }
+                    )
+                )
+                r.content_type = "application/json"
+                r.status_code = 201
+                return r
             return redirect(
                 "dashboard_club:event_set:list_view", club_slug=request.club.slug
             )
+        elif is_json:
+            r = HttpResponse("{}")
+            r.content_type = "application/json"
+            r.status_code = 401
+            return r
     else:
         form = EventSetForm(club=club)
     return render(

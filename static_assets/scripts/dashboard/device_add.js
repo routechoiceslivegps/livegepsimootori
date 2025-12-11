@@ -33,7 +33,7 @@ function onCsvParsed(result) {
 				if (imeiOrDeviceId.length === 8) {
 					const deviceId = imeiOrDeviceId;
 					reqwest({
-						url: `${window.local.apiBaseUrl}clubs/${window.local.clubSlug}/devices/${deviceId}/`,
+						url: `/clubs/${window.local.clubSlug}/devices/${deviceId}/`,
 						method: "patch",
 						data: {
 							nickname: nickname,
@@ -67,7 +67,7 @@ function onCsvParsed(result) {
 						.then((resp) => {
 							const deviceId = resp.device_id;
 							reqwest({
-								url: `${window.local.apiBaseUrl}clubs/${window.local.clubSlug}/devices/${deviceId}/`,
+								url: `/clubs/${window.local.clubSlug}/devices/${deviceId}/`,
 								method: "patch",
 								data: {
 									nickname: nickname,

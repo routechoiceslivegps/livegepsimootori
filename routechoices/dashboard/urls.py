@@ -4,6 +4,7 @@ from django.views.generic.base import RedirectView
 from user_sessions import views as user_sessions_views
 
 from django.contrib import admin
+from routechoices.api import views as api_views
 from routechoices.dashboard import views
 from routechoices.site import views as site_views
 
@@ -135,6 +136,11 @@ urlpatterns = [
                                                     "new",
                                                     views.device_add_view,
                                                     name="add_view",
+                                                ),
+                                                re_path(
+                                                    r"^(?P<device_id>[^/]+)/?$",
+                                                    api_views.device_ownership_api_view,
+                                                    name="device_ownership_api_view",
                                                 ),
                                             ],
                                             "dashboard_club_device",
