@@ -178,7 +178,7 @@ function selectizeDeviceInput(field) {
 					"X-CSRFToken": window.local.csrfToken,
 				},
 				success: () => {
-					window.location.href = `${window.location.href}?competitor-added=1`;
+					window.location.href = `${window.location.href}&competitor-added=1`;
 				},
 				error: (err) => {
 					if (err.status === 400) {
@@ -255,7 +255,7 @@ function selectizeDeviceInput(field) {
 					"X-CSRFToken": window.local.csrfToken,
 				},
 				success: () => {
-					window.location.href = `${window.location.href}?route-uploaded=1`;
+					window.location.href = `${window.location.href}&route-uploaded=1`;
 				},
 				error: (err) => {
 					if (err.status === 400) {
