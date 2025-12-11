@@ -39,6 +39,7 @@ from routechoices.core.models import (
     ImeiDevice,
     Map,
     Notice,
+    PRIVACY_SECRET,
 )
 from routechoices.dashboard.forms import (
     ClubDomainForm,
@@ -1377,6 +1378,28 @@ def event_route_upload_view(request, event_id):
 @requires_club_in_session
 def quick_event(request):
     club = request.club
+    if request.method == "POST":
+        start_date = now()
+        duration = int(request.POST.get("duration", "60"))
+        end_date = start_date + timedelta(minutes=duration)
+        backdrop = request.POST.get("backdrop", "osm")
+        slug = short_random_key()
+        name = f"Quick tracking {short_random_key()}"
+        e = Event.objects.create(
+            name=name,
+            slug=slug,
+            club=club,
+            start_date=start_date,
+            end_date=end_date,
+            backdrop_map=backdrop,
+            privacy=PRIVACY_SECRET,
+        )
+        cname = request.POST.get("name", "Anonymous")
+        Competitor.objects.create(
+            name=cname,
+            event=e,
+        )
+        return redirect(f"{club.nice_url}{e.slug}")
     all_devices_id = set(club.devices.values_list("id", flat=True))
     dev_qs = (
         Device.objects.filter(id__in=all_devices_id)

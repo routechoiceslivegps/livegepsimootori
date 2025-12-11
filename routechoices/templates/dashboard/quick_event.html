@@ -11,7 +11,7 @@
         <div class="col-12">
             <h1>Create Quick Tracking</h1>
             <p>Single person GPS tracking without custom maps starting immediately</p>
-            <form action="" id="quick-creation-form">
+            <form action="" id="quick-creation-form" method="POST">
                 {% csrf_token %}
                 <div class="mb-3">
                     <label class="form-label fw-bold" for="name" required>Person's Name</label>
