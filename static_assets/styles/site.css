@@ -161,19 +161,17 @@ a.navbar-brand.logo:focus {
 #myFooter .second-bar {
 	text-align: center;
 	background-color: #33373e;
+	color: #afb0b1;
 	text-align: center;
 }
 
-#myFooter .second-bar a {
-	font-size: 1.7rem;
-	color: #9fa3a9;
-	padding: 10px;
-	transition: 0.2s;
-	line-height: 68px;
-}
-
-#myFooter .second-bar a:hover {
-	text-decoration: none;
+.made-by {
+	line-height: normal;
+	font-size: 25;
+	background-color: #33373e;
+	color: #afb0b1;
+	padding-top: 35px;
+	padding-bottom: 10px;
 }
 
 #myFooter .social-icons {
@@ -211,27 +209,8 @@ a.navbar-brand.logo:focus {
 	-webkit-flex: 0 0 auto;
 }
 
-#myFooter .second-bar .logo a {
-	color: white;
-	font-size: 1.7rem;
-	float: left;
-	font-weight: bold;
-	line-height: 55px;
-	margin: 0;
-	padding: 0;
-}
-
 #myFooter .logosmall {
 	margin-top: 5px;
-}
-
-#myFooter .second-bar .logosmall a {
-	color: white;
-	font-size: 1.15rem;
-	font-weight: bold;
-	line-height: 35px;
-	margin: 0 0 3px 0;
-	padding: 0;
 }
 
 .navbar {
