@@ -228,7 +228,7 @@ class CustomAdminLoginView(CustomLoginView):
 def registration_view(request):
     events = (
         Event.objects.select_related("club")
-        .filter(open_registration=True, end_date__lt=now())
+        .filter(open_registration=True, end_date__gt=now())
         .order_by(
             "start_date",
             "end_date",
