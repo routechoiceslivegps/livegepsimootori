@@ -81,18 +81,13 @@ urlpatterns = [
         include(
             [
                 path("", views.event_view, name="event_view"),
-                re_path(
-                    r"^contribute/?$",
-                    views.event_contribute_view,
-                    name="event_contribute_view",
-                ),
-                re_path(
-                    r"^export/?$",
+                path(
+                    "export",
                     views.event_export_view,
                     name="event_export_view",
                 ),
-                re_path(
-                    r"^startlist/?$",
+                path(
+                    "startlist",
                     views.event_startlist_view,
                     name="event_startlist_view",
                 ),

@@ -206,11 +206,11 @@
                                                 {% endif %}
                                                 <div class="mt-2">
                                                     {% if event.open_registration %}
-                                                        <a href="{{ event.club.nice_url }}{{ event.slug }}/contribute"
+                                                        <a href="{% host_url 'event_contribute_view' host 'dashboard' %}?e={{ event.aid }}"
                                                            class="me-1"><i class="fa-solid fa-solid fa-user-plus"></i> Enter</a>
                                                     {% endif %}
                                                     {% if event.allow_route_upload %}
-                                                        <a href="{{ event.club.nice_url }}{{ event.slug }}/contribute"
+                                                        <a href="{% host_url 'event_contribute_view' host 'dashboard' %}?e={{ event.aid }}"
                                                            class="me-1"><i class="fa-solid fa-file-arrow-up"></i> Upload Route</a>
                                                     {% endif %}
                                                     <a href="{{ event.club.nice_url }}{{ event.slug }}/export"><i class="fa-solid fa-floppy-disk"></i> Export</a>
@@ -306,7 +306,7 @@
                                             <div class="mt-2">
                                                 {% if event.open_registration %}
                                                     <a class="me-1"
-                                                       href="{{ event.club.nice_url }}{{ event.slug }}/contribute"><i class="fa-solid fa-user-plus"></i> Enter</a>
+                                                       href="{% host_url 'event_contribute_view' host 'dashboard' %}?e={{ event.aid }}"><i class="fa-solid fa-user-plus"></i> Enter</a>
                                                 {% endif %}
                                                 <a href="{{ event.club.nice_url }}{{ event.slug }}/startlist"><i class="fa-solid fa-list"></i> Start list</a>
                                             </div>
@@ -461,7 +461,7 @@
                                     {% endif %}
                                     <div class="mt-2">
                                         {% if event.allow_route_upload %}
-                                            <a href="{{ event.club.nice_url }}{{ event.slug }}/contribute"
+                                            <a href="{% host_url 'event_contribute_view' host 'dashboard' %}?e={{ event.aid }}"
                                                class="me-1"><i class="fa-solid fa-file-arrow-up"></i> Upload Route</a>
                                         {% endif %}
                                         <a href="{{ event.club.nice_url }}{{ event.slug }}/export"><i class="fa-solid fa-floppy-disk"></i> Export</a>

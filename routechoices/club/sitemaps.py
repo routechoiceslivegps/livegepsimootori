@@ -44,7 +44,6 @@ class DynamicViewSitemap(Sitemap):
             items += (
                 f"{club_root}{event.slug}",
                 f"{club_root}{event.slug}/export",
-                f"{club_root}{event.slug}/contribute",
             )
         return items
 

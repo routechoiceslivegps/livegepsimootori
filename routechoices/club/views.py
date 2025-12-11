@@ -2,14 +2,12 @@ import time
 
 import magic
 from django.conf import settings
-from django.contrib import messages
 from django.contrib.sitemaps.views import _get_latest_lastmod, x_robots_tag
 from django.core.paginator import EmptyPage, PageNotAnInteger
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.response import TemplateResponse
 from django.utils.http import http_date
-from django.utils.timezone import now
 from django.views.decorators.cache import cache_page
 from django_hosts.resolvers import reverse
 from rest_framework import status
@@ -30,7 +28,6 @@ from routechoices.lib.other_gps_services.livelox import Livelox
 from routechoices.lib.other_gps_services.loggator import Loggator
 from routechoices.lib.s3 import serve_image_from_s3
 from routechoices.lib.streaming_response import StreamingHttpRangeResponse
-from routechoices.site.forms import CompetitorUploadGPXForm, RegisterForm
 
 
 def club_view(request):
@@ -476,69 +473,6 @@ def event_kmz_view(request, slug, index="1"):
             host="api",
             kwargs={"event_id": event.aid, "index": index},
         )
-    )
-
-
-def event_contribute_view(request, slug):
-    club_slug = request.club_slug
-    event = (
-        Event.objects.all()
-        .select_related("club", "event_set")
-        .filter(
-            club__slug__iexact=club_slug,
-            slug__iexact=slug,
-        )
-        .first()
-    )
-
-    if not event:
-        club = get_object_or_404(Club, slug__iexact=club_slug)
-        if club.domain and not request.use_cname:
-            return redirect(f"{club.nice_url}{slug}/contribute")
-        return render(
-            request,
-            "club/404_event.html",
-            {"club": club},
-            status=status.HTTP_404_NOT_FOUND,
-        )
-    if event.club.domain and request.use_cname:
-        return redirect(
-            reverse(
-                "event_contribute_view",
-                host="clubs",
-                kwargs={"slug": slug},
-                host_kwargs={"club_slug": club_slug},
-            )
-        )
-
-    if request.GET.get("competitor-added", None):
-        messages.success(request, "Competitor added!")
-    if request.GET.get("route-uploaded", None):
-        messages.success(request, "Data uploaded!")
-
-    can_upload = event.allow_route_upload and (event.start_date <= now())
-    can_register = event.open_registration and (event.end_date >= now() or can_upload)
-
-    if not (can_upload or can_register):
-        raise Http404
-
-    register_form = None
-    if can_register:
-        register_form = RegisterForm(event=event)
-
-    upload_form = None
-    if can_upload:
-        upload_form = CompetitorUploadGPXForm(event=event)
-
-    return render(
-        request,
-        "club/event_contribute.html",
-        {
-            "event": event,
-            "register_form": register_form,
-            "upload_form": upload_form,
-            "event_ended": event.end_date < now(),
-        },
     )
 
 

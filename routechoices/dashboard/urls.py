@@ -20,6 +20,11 @@ urlpatterns = [
         name="dashboard_participations_view",
     ),
     path(
+        "contribute",
+        views.event_contribute_view,
+        name="event_contribute_view",
+    ),
+    path(
         "request-invite",
         views.club_request_invite_view,
         name="dashboard_request_club_invite_view",

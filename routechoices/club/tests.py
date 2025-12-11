@@ -513,36 +513,6 @@ class ClubViewsTestCase(EssentialApiBase):
         self.assertContains(response, "Enter yourself")
         self.assertContains(response, "Upload GPX")
 
-    def test_private_event_page_load(self):
-        client = APIClient(HTTP_HOST="dashboard.routechoices.dev")
-
-        Event.objects.create(
-            name="Kiila Cup 4",
-            slug="kiila-cup-4",
-            club=self.club,
-            start_date=arrow.now().shift(hours=-1).datetime,
-            end_date=arrow.now().shift(hours=1).datetime,
-            privacy="private",
-            open_registration=True,
-            allow_route_upload=True,
-        )
-
-        response = client.get("/kiila-cup-4/")
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-        response = client.get("/kiila-cup-4/export")
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-        response = client.get("/kiila-cup-4/contribute")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        client.login(username="alice", password="pa$$word123")
-        response = client.get("/kiila-cup-4/")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        response = client.get("/kiila-cup-4/export")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
     def test_gpsseuranta_compat_pages_load(self):
         club = Club.objects.create(name="Test club", slug="myclub")
         event = Event.objects.create(

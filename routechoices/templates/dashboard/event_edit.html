@@ -30,7 +30,7 @@
                                    class="btn btn-sm btn-secondary me-1 mb-1"><i class="fa-solid fa-floppy-disk"></i> Export Page</a>
                             {% endif %}
                             {% if event.started and event.allow_route_upload or event.open_registration and not event.ended %}
-                                <a href="{{ event.club.nice_url }}{{ event.slug }}/contribute"
+                                <a href="{% host_url 'event_contribute_view' host 'dashboard' %}?e={{ event.aid }}"
                                    class="btn btn-sm btn-secondary me-1 mb-1"><i class="fa-solid fa-circle-plus"></i> Competitor
                                     {% if event.open_registration and not event.ended %}registration{% endif %}
                                     {% if event.open_registration and event.allow_route_upload and event.started and not event.ended %}or{% endif %}

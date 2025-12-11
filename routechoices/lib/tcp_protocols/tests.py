@@ -12,7 +12,7 @@ from routechoices.lib.tcp_protocols.gt06 import TCPServer as GT06Server
 from routechoices.lib.tcp_protocols.h02 import TCPServer as H02Server
 from routechoices.lib.tcp_protocols.mictrack import TCPServer as MicTrackServer
 from routechoices.lib.tcp_protocols.queclink import TCPServer as QueclinkServer
-from routechoices.lib.tcp_protocols.tmt250 import TCPServer as TMT250Server
+from routechoices.lib.tcp_protocols.codec8 import TCPServer as TMT250Server
 from routechoices.lib.tcp_protocols.tracktape import TCPServer as TrackTapeServer
 from routechoices.lib.tcp_protocols.xexun import TCPServer as XexunServer
 from routechoices.lib.tcp_protocols.xexun2 import TCPServer as Xexun2Server

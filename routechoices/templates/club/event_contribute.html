@@ -12,7 +12,6 @@
     <meta property="og:site_name" content="Routechoices | Live GPS Tracking" />
     <meta property="og:description"
           content="{{ event.name }} by {{ event.club.name }} contribution page" />
-    <meta property="og:url" content="{{ event.get_absolute_url }}/contribute" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta property="og:image"
           content="{{ event.club.nice_url }}{{ event.slug }}/thumbnail" />
@@ -22,7 +21,6 @@
         <meta property="og:image:secure_url"
               content="{{ event.club.nice_url }}{{ event.slug }}/thumbnail" />
     {% endif %}
-    <link rel="canonical" href="{{ event.get_absolute_url }}/contribute" />
     {% compress css %}
         <link rel="stylesheet"
             href="{% static 'vendor/tom-select-2.0.1/tom-select.bootstrap5.min.css' %}" />
@@ -30,80 +28,59 @@
 {% endblock extra_head %}
 
 {% block contentup %}
-    <div class="container-fluid p-0">
+    <div class="container p-0">
         <div class="row m-0">
-            <div class="w-100"
-                 {% if event.map and event.started %}style="background-image: linear-gradient(0, var(--rc-color-to-trans2), var(--rc-color-to-trans2)), url('{{ event.club.nice_url }}{{ event.slug }}/thumbnail?no-logo=1');background-size: cover;background-position: center;"{% else %}style="background-color: var(--bs-secondary-bg);"{% endif %}>
-                <div class="container content">
-                    <div class="row">
-                        {% if event.event_set %}
-                            <h2 class="padded-multiline">
-                                <span>{{ event.event_set.name }}</span>
-                            </h2>
-                        {% endif %}
-                        <h2>
-                            <a href="{{ event.club.nice_url }}{{ event.slug }}"
-                               class="fw-bold text-decoration-none">{{ event.name }}</a>
-                        </h2>
-                        <h4>Contribute</h4>
-                        <p>
-                            Event
-                            {% if not event.hidden %}
-                                started {{ event.start_date|timesince }} ago,
-                            {% else %}
-                                starts in {{ event.start_date|timeuntil }},
-                            {% endif %}
-                            {% if event.ended %}
-                                ended {{ event.end_date|timesince }} ago.
-                            {% else %}
-                                ends in {{ event.end_date|timeuntil }}.
-                            {% endif %}
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <svg xmlns="http://www.w3.org/2000/svg"
-                 viewBox="0 0 1 1"
-                 width="100%"
-                 height="2em"
-                 preserveAspectRatio="none"
-                 fill="var(--bs-body-bg)"
-                 style="margin-top: -2em"
-                 class="p-0">
-                <path d="M0 0 V1 H1" />
-            </svg>
-        </div>
+            <h1 class="fw-bold">Contribute to</h1>
+            <h2>
+                <a href="{{ event.club.nice_url }}{{ event.slug }}"
+                    class="fw-bold text-decoration-none">{{ event.name }}</a>
+            </h2>
+            <p>
+                Event
+                {% if not event.hidden %}
+                    started {{ event.start_date|timesince }} ago,
+                {% else %}
+                    starts in {{ event.start_date|timeuntil }},
+                {% endif %}
+                {% if event.ended %}
+                    ended {{ event.end_date|timesince }} ago.
+                {% else %}
+                    ends in {{ event.end_date|timeuntil }}.
+                {% endif %}
+            </p>
     </div>
     <div class="container content">
         <div class="col-12">
             <div class="row">
-                <h4 class="padded-multiline">
-                    <span>Tracking App</span>
-                </h4>
-                <p>Install the tracker app on your smartphone to share your live position.</p>
-                <p>
-                    <a href="https://play.google.com/store/apps/details?id=com.routechoices.routechoicestracker"
-                       class="me-1 text-decoration-none">
-                        <img alt="Get it on Google Play"
-                             height="60"
-                             width="202"
-                             src="{% static 'img/google-play-badge.svg' %}" />
-                    </a>
-                    <a href="https://apps.apple.com/us/app/routechoices-tracker/id1570437272?itsct=apps_box_link&itscg=30200">
-                        <img alt="Get it on Apple App Store"
-                             height="60"
-                             width="180"
-                             src="{% static 'img/apple-app-store-badge.svg' %}" />
-                    </a>
-                </p>
-                <p>
-                    Read <a href="{% host_url 'site:trackers_view' host 'www' %}">how to share your location</a>.
-                </p>
-            </div>
-        </div>
-
-        <div class="col-12">
-            <div class="row">
+                {% if register_form %}
+                    <h4 class="padded-multiline">
+                        <span>Enter yourself</span>
+                    </h4>
+                    {% if not request.user.is_authenticated %}
+                    <div class="alert alert-danger" role="alert">
+                        You are not logged in!
+                        <br />
+                        <a href="https://www.routechoices.com/signup">Sign-Up</a> or <a href="https://www.routechoices.com/login">Log-In</a> to be able to manage your participations later on.
+                    </div>
+                    {% endif %}
+                    <div class="mb-3">
+                        <form action="" method="post" id="registration-form">
+                            {% csrf_token %}
+                            {% bootstrap_form register_form %}
+                            <p id="warning-if-device-id" class="d-none">
+                                <i class="fa-solid fa-triangle-exclamation"></i> You can stream your GPS data to only one competitor at a time. If you register now, your GPS data stream from this device will be switched to this event competitor
+                                {% if not event.hidden %}
+                                    immediately.
+                                {% else %}
+                                    at latest on <span class="date-utc" data-date="{{ event.start_date|date:'c' }}">{{ event.start_date }} UTC</span>.
+                                {% endif %}
+                            </p>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa-solid fa-circle-plus"></i> Enter
+                            </button>
+                        </form>
+                    </div>
+                {% endif %}
                 <h4 class="padded-multiline">
                     <span>Competitors</span>
                 </h4>
@@ -126,35 +103,6 @@
                         <h4 class="text-muted">No competitors registered so far</h4>
                     {% endfor %}
                 </div>
-                {% if register_form %}
-                    <h4 class="padded-multiline">
-                        <span>Enter yourself</span>
-                    </h4>
-                    {% if not request.user.is_authenticated %}
-                        <div class="alert alert-danger" role="alert">
-                            You are not logged in!
-                            <br />
-                            <a href="https://www.routechoices.com/signup">Sign-Up</a> or <a href="https://www.routechoices.com/login">Log-In</a> to be able to manage your participations later on.
-                        </div>
-                    {% endif %}
-                    <div class="mb-3">
-                        <form action="" method="post" id="registration-form">
-                            {% csrf_token %}
-                            {% bootstrap_form register_form %}
-                            <p id="warning-if-device-id" class="d-none">
-                                <i class="fa-solid fa-triangle-exclamation"></i> You can stream your GPS data to only one competitor at a time. If you register now, your GPS data stream from this device will be switched to this event competitor
-                                {% if not event.hidden %}
-                                    immediately.
-                                {% else %}
-                                    at latest on <span class="date-utc" data-date="{{ event.start_date|date:'c' }}">{{ event.start_date }} UTC</span>.
-                                {% endif %}
-                            </p>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fa-solid fa-circle-plus"></i> Enter
-                            </button>
-                        </form>
-                    </div>
-                {% endif %}
             </div>
         </div>
         {% if upload_form %}
@@ -185,6 +133,7 @@
             </div>
         {% endif %}
     </div>
+</div>
 {% endblock contentup %}
 
 {% block extra_body %}

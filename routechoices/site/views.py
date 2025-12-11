@@ -13,6 +13,7 @@ from django.shortcuts import redirect, render
 from django.utils.http import url_has_allowed_host_and_scheme, urlencode
 from django.views.decorators.csrf import csrf_exempt
 from django_hosts.resolvers import reverse
+from django.utils.timezone import now
 
 from routechoices.core.models import Club, Event, FrontPageFeedback
 from routechoices.lib.streaming_response import StreamingHttpRangeResponse
@@ -222,3 +223,20 @@ class CustomAdminLoginView(CustomLoginView):
         if request.user.is_active and not request.user.is_staff:
             raise PermissionDenied()
         return super().dispatch(request, *args, **kwargs)
+
+
+def registration_view(request):
+    events = (
+        Event.objects.select_related("club")
+        .filter(open_registration=True, end_date__lt=now())
+        .order_by(
+            "start_date",
+            "end_date",
+            "name",
+        )
+    )
+    return render(
+        request,
+        "site/registration.html",
+        {"events": events},
+    )

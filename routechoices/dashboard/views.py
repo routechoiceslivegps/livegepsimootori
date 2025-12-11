@@ -56,6 +56,8 @@ from routechoices.dashboard.forms import (
     UploadKmzForm,
     UploadMapGPXForm,
     UserForm,
+    RegisterForm,
+    CompetitorUploadGPXForm,
 )
 from routechoices.lib.helpers import (
     get_current_site,
@@ -1552,3 +1554,44 @@ def private_view(request, club_slug, event_id):
     )
     response["Cache-Control"] = "private"
     return response
+
+
+def event_contribute_view(request):
+    event_id = request.GET.get("e")
+    if event_id is None:
+        raise Http404
+
+    event = get_object_or_404(
+        Event.objects.all().select_related("club", "event_set"),
+        aid=event_id,
+    )
+
+    if request.GET.get("competitor-added", None):
+        messages.success(request, "Competitor added!")
+    if request.GET.get("route-uploaded", None):
+        messages.success(request, "Data uploaded!")
+
+    can_upload = event.allow_route_upload and (event.start_date <= now())
+    can_register = event.open_registration and (event.end_date >= now() or can_upload)
+
+    if not (can_upload or can_register):
+        raise Http404
+
+    register_form = None
+    if can_register:
+        register_form = RegisterForm(event=event)
+
+    upload_form = None
+    if can_upload:
+        upload_form = CompetitorUploadGPXForm(event=event)
+
+    return render(
+        request,
+        "club/event_contribute.html",
+        {
+            "event": event,
+            "register_form": register_form,
+            "upload_form": upload_form,
+            "event_ended": event.end_date < now(),
+        },
+    )
