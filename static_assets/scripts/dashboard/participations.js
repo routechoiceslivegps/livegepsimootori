@@ -214,7 +214,7 @@ function parseGpx(xmlstr) {
 		const deviceId = u("#id_device_id").val();
 
 		reqwest({
-			url: `${window.local.apiBaseUrl}competitors/${competitorId}/`,
+			url: `/competitors/${competitorId}/`,
 			method: "PATCH",
 			withCredentials: true,
 			crossOrigin: true,
@@ -258,7 +258,7 @@ function parseGpx(xmlstr) {
 					return false;
 				}
 				reqwest({
-					url: `${window.local.apiBaseUrl}competitors/${competitorId}/`,
+					url: `/competitors/${competitorId}/`,
 					method: "DELETE",
 					withCredentials: true,
 					crossOrigin: true,
@@ -293,7 +293,7 @@ function parseGpx(xmlstr) {
 		u(".upload-btn").addClass("disabled");
 		const competitorId = u("#id_competitor_aid").val();
 		reqwest({
-			url: `${window.local.apiBaseUrl}competitors/${competitorId}/route`,
+			url: `/competitors/${competitorId}/route`,
 			method: "post",
 			type: "json",
 			withCredentials: true,

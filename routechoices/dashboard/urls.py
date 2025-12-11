@@ -322,6 +322,40 @@ urlpatterns = [
         ),
     ),
     path(
+        "competitors/",
+        include(
+            [
+                path(
+                    "",
+                    api_views.create_competitor,
+                    name="competitor_creation_view",
+                ),
+                re_path(
+                    r"^(?P<competitor_id>[0-9a-zA-Z_-]+)/",
+                    include(
+                        [
+                            path(
+                                "",
+                                api_views.competitor_api,
+                                name="competitor_api",
+                            ),
+                            path(
+                                "route",
+                                api_views.competitor_route_upload,
+                                name="competitor_route_upload",
+                            ),
+                            path(
+                                "gpx",
+                                api_views.competitor_gpx_download,
+                                name="competitor_gpx_download",
+                            ),
+                        ]
+                    ),
+                ),
+            ]
+        ),
+    ),
+    path(
         "media/",
         include(
             (

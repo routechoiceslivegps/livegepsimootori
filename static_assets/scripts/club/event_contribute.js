@@ -168,7 +168,7 @@ function selectizeDeviceInput(field) {
 				data.device_id = formData.get("device_id");
 			}
 			reqwest({
-				url: `${window.local.apiBaseUrl}competitors/`,
+				url: "/competitors/",
 				method: "post",
 				type: "json",
 				withCredentials: true,
@@ -245,7 +245,7 @@ function selectizeDeviceInput(field) {
 			const formData = new FormData(e.target);
 			const cmp_aid = formData.get("competitor_aid");
 			reqwest({
-				url: `${window.local.apiBaseUrl}competitors/${cmp_aid}/route`,
+				url: `/competitors/${cmp_aid}/route`,
 				method: "post",
 				type: "json",
 				withCredentials: true,

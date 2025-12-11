@@ -733,7 +733,6 @@ def event_set_create_view(request):
         form = EventSetForm(request.POST, request.FILES, club=club)
         if form.is_valid():
             e = form.save()
-            messages.success(request, "Event set created successfully")
             if is_json:
                 r = HttpResponse(
                     json.dumps(
@@ -746,11 +745,12 @@ def event_set_create_view(request):
                 r.content_type = "application/json"
                 r.status_code = 201
                 return r
+            messages.success(request, "Event set created successfully")
             return redirect(
                 "dashboard_club:event_set:list_view", club_slug=request.club.slug
             )
         elif is_json:
-            r = HttpResponse("{}")
+            r = HttpResponse(json.dumps({"message": "invalid value"}))
             r.content_type = "application/json"
             r.status_code = 401
             return r
