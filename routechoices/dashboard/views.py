@@ -1403,6 +1403,10 @@ def quick_event(request):
         end_date = start_date + timedelta(minutes=duration)
         backdrop = request.POST.get("backdrop", "osm")
         slug = short_random_key()
+        device_id = request.POST.get("device_id")
+        device = None
+        if device_id:
+            device = Device.objects.filter(virtual=False, aid=device_id).first()
         name = f"Quick tracking {short_random_key()}"
         e = Event.objects.create(
             name=name,
@@ -1414,10 +1418,13 @@ def quick_event(request):
             privacy=PRIVACY_SECRET,
         )
         cname = request.POST.get("name", "Anonymous")
-        Competitor.objects.create(
+        c = Competitor.objects.create(
             name=cname,
             event=e,
         )
+        if device:
+            c.device = device
+            c.save()
         return redirect(f"{club.nice_url}{e.slug}")
     all_devices_id = set(club.devices.values_list("id", flat=True))
     dev_qs = (
