@@ -2,15 +2,26 @@ from allauth.account import views as allauth_views
 from django.urls import include, path, re_path
 from django.views.generic.base import RedirectView
 from user_sessions import views as user_sessions_views
-
+from django.conf import settings
 from django.contrib import admin
 from routechoices.api import views as api_views
 from routechoices.dashboard import views
 from routechoices.site import views as site_views
 
+
+admin.site.site_header = "Admin"
+admin.site.site_title = "Admin Site"
+admin.site.index_title = "Welcome to the administration site"
+admin.site.site_url = f"//www.{settings.PARENT_HOST}"
+
+
 urlpatterns = [
     path("", views.home_view, name="home_view"),
     path("admin/hijack/", include("hijack.urls")),
+    path(
+        "admin/login/",
+        site_views.CustomLoginView.as_view(),
+    ),
     path(
         "admin/",
         admin.site.urls,
