@@ -2226,10 +2226,10 @@ class EffortSerializer(serializers.ModelSerializer):
 @permission_classes([IsAuthenticated])
 def md_map_dl(request, aid):
     effort = get_object_or_404(
-        Competitor.objects.filter(
-            event__club__is_personal_page=True
-        ).prefetch_related(
-            "event", "event__map", "device",
+        Competitor.objects.filter(event__club__is_personal_page=True).prefetch_related(
+            "event",
+            "event__map",
+            "device",
         ),
         aid=aid,
     )
@@ -2285,9 +2285,9 @@ def md_create_effort_view(request):
     device = Device(virtual=True)
     device.add_locations(gps_data)
     device.save()
-    
+
     trk_points = device.locations
-    
+
     event = Event(
         name=effort_name,
         slug=short_random_slug(),
@@ -2304,7 +2304,4 @@ def md_create_effort_view(request):
         event=event,
         device=device,
     )
-    return Response(
-        EffortSerializer(effort).data, status_code=status.HTTP_201_CREATED
-    )
-
+    return Response(EffortSerializer(effort).data, status_code=status.HTTP_201_CREATED)
