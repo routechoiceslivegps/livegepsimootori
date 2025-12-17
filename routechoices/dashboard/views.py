@@ -1335,7 +1335,6 @@ def dashboard_geojson_download(request, event_id, *args, **kwargs):
         request,
         file_path,
         filename=f"{event.name}.geojson",
-        mime="application/json",
         dl=False,
     )
 
