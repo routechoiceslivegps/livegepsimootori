@@ -1,5 +1,6 @@
 from allauth.account import views as allauth_views
 from django.urls import include, path, re_path
+from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 from user_sessions import views as user_sessions_views
 from django.conf import settings
@@ -402,4 +403,5 @@ urlpatterns = [
     path("login", site_views.CustomLoginView.as_view(), name="account_login"),
     path("logout", allauth_views.logout, name="account_logout"),
     path("signup", allauth_views.signup, name="account_signup"),
+    path("map", TemplateView.as_view(template_name="site/map.html"), name="map"),
 ]

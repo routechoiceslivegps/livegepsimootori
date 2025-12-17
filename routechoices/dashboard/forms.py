@@ -1,4 +1,3 @@
-import json
 import math
 import os.path
 import tempfile
@@ -9,11 +8,13 @@ from zoneinfo import ZoneInfo
 import arrow
 import geojson_validator
 import gpxpy
+import orjson as json
 from curl_cffi import requests
 from defusedxml import minidom
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.files import File
+from django.core.files.base import ContentFile
 from django.core.files.images import get_image_dimensions
 from django.core.validators import FileExtensionValidator
 from django.db.models import Q
@@ -544,16 +545,17 @@ class EventForm(ModelForm):
             return f_orig
         data = f_orig.file.read()
         try:
-            datajson = json.loads(data)
+            json_data = json.loads(data)
         except Exception:
             raise ValidationError("Invalid JSON File")
         try:
-            errors = geojson_validator.validate_structure(datajson, check_crs=False)
+            errors = geojson_validator.validate_structure(json_data, check_crs=False)
         except Exception:
             raise ValidationError("Could not validate the GeoJSON File")
         if errors:
             raise ValidationError("Invalid GeoJSON File")
-        return f_orig
+        json_cleaned = json.dumps(json_data)
+        return ContentFile(json_cleaned, "file.geojson")
 
 
 class NoticeForm(ModelForm):

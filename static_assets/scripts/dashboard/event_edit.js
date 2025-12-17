@@ -674,7 +674,7 @@ function showLocalTime(el) {
 			.find("div div.col-auto a")
 			.text("Download")
 			.after(
-				`<a class="ms-2" href="https://map.routechoices.com/?geojson=${currentGeoJson}" target="_blank">Preview<a/>`,
+				`<a class="ms-2" href="/map?geojson=${currentGeoJson}" target="_blank">Preview<a/>`,
 			);
 	}
 
