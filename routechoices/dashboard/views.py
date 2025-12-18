@@ -728,7 +728,7 @@ def event_set_list_view(request):
 def event_set_create_view(request):
     club = request.club
     if request.method == "POST":
-        is_json = "application/json" in request.META.get("HTTP_ACCEPT").split(", ")
+        is_json = "application/json" in request.META.get("HTTP_ACCEPT", "").split(", ")
         # create a form instance and populate it with data from the request:
         form = EventSetForm(request.POST, request.FILES, club=club)
         if form.is_valid():
