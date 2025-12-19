@@ -1573,12 +1573,13 @@ def participations_view(request):
 @cache_page(5 if not settings.DEBUG else 0)
 @login_required
 @requires_club_in_session
-def private_view(request, club_slug, event_id):
+def private_view(request, event_id):
+    club = request.club
     event = (
         Event.objects.all()
         .select_related("club")
         .filter(
-            club__slug__iexact=club_slug,
+            club__slug__iexact=club.slug,
             aid=event_id,
         )
         .first()
