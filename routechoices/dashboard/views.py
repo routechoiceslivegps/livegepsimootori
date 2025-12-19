@@ -1571,6 +1571,8 @@ def participations_view(request):
 
 
 @cache_page(5 if not settings.DEBUG else 0)
+@login_required
+@requires_club_in_session
 def private_view(request, club_slug, event_id):
     event = (
         Event.objects.all()
