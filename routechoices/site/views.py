@@ -17,6 +17,7 @@ from django.utils.timezone import now
 
 from routechoices.core.models import Club, Event, FrontPageFeedback
 from routechoices.lib.streaming_response import StreamingHttpRangeResponse
+from routechoices.lib.s3 import serve_image_from_s3
 from routechoices.site.forms import ContactForm
 
 
@@ -25,8 +26,20 @@ def home_page(request):
 
 
 def handle_alt_club_url(request, club_slug, path):
-    if not Club.objects.filter(slug__iexact=club_slug).exists():
+    club = Club.objects.filter(slug__iexact=club_slug).first()
+    if not club:
         raise Http404()
+
+    if path == "logo":
+        if not club.logo:
+            raise Http404()
+        return serve_image_from_s3(
+            request,
+            club.logo,
+            f"{club.name} Logo",
+            default_mime="image/webp",
+        )
+
     return redirect(
         f"//{club_slug}.{settings.PARENT_HOST}/{path}?{request.GET.urlencode()}"
     )

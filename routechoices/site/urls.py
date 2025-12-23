@@ -105,5 +105,6 @@ urlpatterns = [
     re_path(
         r"^(?P<club_slug>[0-9a-zA-Z][0-9a-zA-Z-]+)/(?P<path>.*)$",
         views.handle_alt_club_url,
+        name="alt_club_url",
     ),
 ]

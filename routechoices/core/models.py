@@ -425,6 +425,10 @@ Follow our events live or replay them later.
         return f"{self.nice_url}logo?v={self.logo_hash}"
 
     @property
+    def logo_url_www(self):
+        return f"https://{reverse("site:landing_page", host="www")}/{self.slug}/logo?v{self.logo_hash}"
+
+    @property
     def banner_url(self):
         return f"{self.nice_url}banner?v={safe64encodedsha(self.banner.name)}"
 
