@@ -1,5 +1,4 @@
 /* gps-encoding.js 2025-02-28 */
-// Depends on BN.js, https://github.com/indutny/bn.js
 const intValCodec = (function () {
   const decodeUnsignedValueFromString = function (encoded, offset) {
       const enc_len = encoded.length;
@@ -10,47 +9,38 @@ const intValCodec = (function () {
       while (b >= 0x20 && i + offset < enc_len) {
         b = encoded.charCodeAt(i + offset) - 63;
         i += 1;
-        if (s === 30) {
-          return decodeLargeUnsignedValueFromString(encoded, offset);
-        }
         result |= (b & 0x1f) << s;
         s += 5;
+        if (s >= 30) {
+          throw Error("Can not handle such large numbers")
+          // return decodeLargeUnsignedValueFromString(encoded, offset);
+        }
       }
       return [result, i];
     },
+    /*
+    decodeLargeUnsignedValueFromString = function (encoded, offset) {
+      const enc_len = encoded.length;
+      let i = 0;
+      let s = 0;
+      let result = BigInt("0");
+      let b = 0x20;
+      while (b >= 0x20 && i + offset < enc_len) {
+        b = encoded.charCodeAt(i + offset) - 63;
+        i += 1;
+        result |= (BigInt(b & 0x1f) << BigInt(s));
+        s += 5;
+      }
+      return [result, i];
+    },*/
     decodeSignedValueFromString = function (encoded, offset) {
       const r = decodeUnsignedValueFromString(encoded, offset);
-      if (r[2]) {
-        const result = new BN(r[0], 10);
-        if (result.and(new BN(1, 10)).toString() === "1") {
-          return [
-            parseInt(result.shrn(1).add(new BN(1)).neg().toString(), 10),
-            r[1],
-          ];
-        } else {
-          return [parseInt(result.shrn(1).toString(), 10), r[1], true];
-        }
-      }
       const result = r[0];
       if (result & 1) {
         return [~(result >>> 1), r[1]];
       } else {
         return [result >>> 1, r[1]];
       }
-    },
-    decodeLargeUnsignedValueFromString = function (encoded, offset) {
-      const enc_len = encoded.length;
-      let i = 0;
-      let s = 0;
-      let result = new BN(0, 10);
-      let b = 0x20;
-      while (b >= 0x20 && i + offset < enc_len) {
-        b = encoded.charCodeAt(i + offset) - 63;
-        i += 1;
-        result = result.or(new BN(b & 0x1f, 10).shln(s));
-        s += 5;
-      }
-      return [parseInt(result.toString(), 10), i, true];
     };
   return {
     decodeUnsignedValueFromString,

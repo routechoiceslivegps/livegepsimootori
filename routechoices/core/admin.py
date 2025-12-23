@@ -764,7 +764,6 @@ class DeviceOwnershipInline(admin.TabularInline):
 class DeviceAdmin(admin.ModelAdmin):
     class Media:
         js = [
-            "/static/vendor/bn-5.2.1/bn.min.js",
             "/static/vendor/gps-encoding-2025.02.28/gps-encoding.js",
             "/static/scripts/admin/device.js?v=1.1",
         ]
