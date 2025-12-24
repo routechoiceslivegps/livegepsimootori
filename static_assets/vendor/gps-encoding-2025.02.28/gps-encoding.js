@@ -14,21 +14,6 @@ const intValCodec = (function () {
       }
       return [result, i];
     },
-    /*
-    decodeLargeUnsignedValueFromString = function (encoded, offset) {
-      const enc_len = encoded.length;
-      let i = 0;
-      let s = 0;
-      let result = BigInt("0");
-      let b = 0x20;
-      while (b >= 0x20 && i + offset < enc_len) {
-        b = encoded.charCodeAt(i + offset) - 63;
-        i += 1;
-        result |= (BigInt(b & 0x1f) << BigInt(s));
-        s += 5;
-      }
-      return [result, i];
-    },*/
     decodeSignedValueFromString = function (encoded, offset) {
       const [result, newOffset] = decodeUnsignedValueFromString(encoded, offset);
       if (result & 1) {
