@@ -340,7 +340,10 @@ const PositionArchive = function () {
     let dataOffset = 0;
     while (dataOffset < encodedLength) {
       const i = positionCount % 3;
-      const decoder = (i === 0 && dataOffset) ? intValCodec.decodeUnsignedValueFromString : intValCodec.decodeSignedValueFromString
+      let decoder = intValCodec.decodeSignedValueFromString
+      if (i === 0 && dataOffset) {
+        decoder = intValCodec.decodeUnsignedValueFromString
+      }
       const [decodedValue, newDataOffset] = decoder(encoded, dataOffset);
       vals[i] += decodedValue;
       dataOffset = newDataOffset;
