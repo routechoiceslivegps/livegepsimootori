@@ -2,12 +2,12 @@
 const intValCodec = (function () {
   const decodeUnsignedValueFromString = function (encoded, offset) {
       const enc_len = encoded.length;
-      let i = 0;
       let s = 0;
       let result = 0;
       let b = 0x20;
-      while (b >= 0x20 && i + offset < enc_len) {
-        b = encoded.charCodeAt(i + offset) - 63;
+      let i = offset;
+      while (b >= 0x20 && i < enc_len) {
+        b = encoded.charCodeAt(i) - 63;
         i += 1;
         result |= (b & 0x1f) << s;
         s += 5;
@@ -30,12 +30,11 @@ const intValCodec = (function () {
       return [result, i];
     },*/
     decodeSignedValueFromString = function (encoded, offset) {
-      const r = decodeUnsignedValueFromString(encoded, offset);
-      const result = r[0];
+      const [result, newOffset] = decodeUnsignedValueFromString(encoded, offset);
       if (result & 1) {
-        return [~(result >>> 1), r[1]];
+        return [~(result >>> 1), newOffset];
       } else {
-        return [result >>> 1, r[1]];
+        return [result >>> 1, newOffset];
       }
     };
   return {
@@ -333,20 +332,20 @@ const PositionArchive = function () {
     return distance;
   };
   this.decode = function(encoded) {
+    positions = [];
     const YEAR2010 = 1262304000; // = Date.parse("2010-01-01T00:00:00Z")/1e3,
     const vals = [YEAR2010, 0, 0];
-    const enc_len = encoded.length;
-    let offset = 0;
-    positions = [];
-
-    while (offset < enc_len) {
-      for (let i = 0; i < 3; i++) {
-        const decoder = (i === 0 && offset) ? intValCodec.decodeUnsignedValueFromString : intValCodec.decodeSignedValueFromString
-        const [decodedVal, len] = decoder(encoded, offset);
-        offset += len;
-        vals[i] +=  decodedVal;
-      }
+    const encodedLength = encoded.length;
+    let positionCount = 0;
+    let dataOffset = 0;
+    while (dataOffset < encodedLength) {
+      const i = positionCount % 3;
+      const decoder = (i === 0 && dataOffset) ? intValCodec.decodeUnsignedValueFromString : intValCodec.decodeSignedValueFromString
+      const [decodedValue, newDataOffset] = decoder(encoded, dataOffset);
+      vals[i] += decodedValue;
+      dataOffset = newDataOffset;
       positions.push([vals[0] * 1e3, vals[1] / 1e5, vals[2] / 1e5]);
+      positionCount += 1;
     }
     return this;
   }
