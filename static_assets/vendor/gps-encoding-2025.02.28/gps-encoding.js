@@ -11,7 +11,6 @@ const intValCodec = (function () {
         i += 1;
         result |= (b & 0x1f) << s;
         s += 5;
-        if (!Number
       }
       return [result, i];
     },
