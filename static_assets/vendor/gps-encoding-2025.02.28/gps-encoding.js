@@ -7,10 +7,11 @@ const intValCodec = (function () {
       let result = 0;
       let b = 0x20;
       while (b >= 0x20 && i + offset < enc_len) {
-        i += 1;
         b = encoded.charCodeAt(i + offset) - 63;
+        i += 1;
         result |= (b & 0x1f) << s;
         s += 5;
+        if (!Number
       }
       return [result, i];
     },
