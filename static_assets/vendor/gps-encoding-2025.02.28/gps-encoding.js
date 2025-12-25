@@ -321,19 +321,21 @@ const PositionArchive = function () {
     const YEAR2010 = 1262304000; // = Date.parse("2010-01-01T00:00:00Z")/1e3,
     const vals = [YEAR2010, 0, 0];
     const encodedLength = encoded.length;
-    let positionCount = 0;
+    let valueCount = 0;
     let dataOffset = 0;
     while (dataOffset < encodedLength) {
-      const i = positionCount % 3;
+      const i = valueCount % 3;
       let decoder = intValCodec.decodeSignedValueFromString
       if (i === 0 && dataOffset) {
         decoder = intValCodec.decodeUnsignedValueFromString
       }
       const [decodedValue, newDataOffset] = decoder(encoded, dataOffset);
+      valueCount += 1;
       vals[i] += decodedValue;
       dataOffset = newDataOffset;
-      positions.push([vals[0] * 1e3, vals[1] / 1e5, vals[2] / 1e5]);
-      positionCount += 1;
+      if (i === 2) {
+        positions.push([vals[0] * 1e3, vals[1] / 1e5, vals[2] / 1e5]);
+      }
     }
     return this;
   }
