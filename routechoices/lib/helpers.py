@@ -127,7 +127,7 @@ def get_current_site():
 def get_image_mime_from_request(requested_extension=None, default_mime=None):
     mime = default_mime
     if requested_extension:
-        if requested_extension not in ("png", "webp", "avif", "jxl", "jpeg"):
+        if requested_extension not in ("png", "webp", "avif", "jpeg"):
             raise Http404()
         mime = f"image/{requested_extension}"
     return mime
@@ -139,7 +139,6 @@ def get_best_image_mime(request, default=None):
     for mime in (
         "image/webp",
         "image/avif",
-        "image/jxl",
     ):
         if mime in accepted_mimes:
             return mime

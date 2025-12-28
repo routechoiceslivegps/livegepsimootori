@@ -76,7 +76,6 @@ from routechoices.lib.helpers import (
     wgs84_to_meters,
     meters_to_wgs84,
 )
-from routechoices.lib.jxl import register_jxl_opener
 from routechoices.lib.storages import OverwriteImageStorage
 from routechoices.lib.validators import (
     color_hex_validator,
@@ -90,7 +89,6 @@ from routechoices.lib.validators import (
     validate_nice_slug,
 )
 
-register_jxl_opener()
 
 logger = logging.getLogger(__name__)
 
@@ -410,7 +408,7 @@ Follow our events live or replay them later.
             buffer,
             ext,
             optimize=True,
-            quality=(40 if ext in ("AVIF", "JXL") else 80),
+            quality=(40 if ext == "AVIF" else 80),
         )
         return buffer.getvalue()
 
@@ -949,7 +947,7 @@ class Map(models.Model, SomewhereOnEarth):
                 tile_img, (output_width, output_height), interpolation=cv2.INTER_AREA
             )
         extra_args = []
-        if img_mime in ("image/avif", "image/jxl"):
+        if img_mime == "image/avif":
             color_converted = cv2.cvtColor(tile_img, cv2.COLOR_BGRA2RGBA)
             pil_image = Image.fromarray(color_converted)
             buffer = BytesIO()
@@ -2053,7 +2051,7 @@ class Event(models.Model, SomewhereOnEarth):
             buffer,
             mime[6:].upper(),
             optimize=True,
-            quality=(40 if mime in ("image/webp", "image/avif", "image/jxl") else 80),
+            quality=(40 if mime in ("image/webp", "image/avif") else 80),
         )
         data_out = buffer.getvalue()
         cache.set(cache_key, data_out, DURATION_ONE_MONTH)

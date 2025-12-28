@@ -25,7 +25,7 @@ urlpatterns = [
                     name="club_thumbnail",
                 ),
                 re_path(
-                    r"\.(?P<extension>png|webp|avif|jxl|jpeg)$",
+                    r"\.(?P<extension>png|webp|avif|jpeg)$",
                     views.club_thumbnail,
                     name="club_thumbnail_with_format",
                 ),
@@ -42,7 +42,7 @@ urlpatterns = [
                     name="club_logo",
                 ),
                 re_path(
-                    r"\.(?P<extension>png|webp|avif|jxl|jpeg)$",
+                    r"\.(?P<extension>png|webp|avif|jpeg)$",
                     views.club_logo,
                     name="club_logo_with_format",
                 ),
@@ -59,7 +59,7 @@ urlpatterns = [
                     name="club_banner",
                 ),
                 re_path(
-                    r"\.(?P<extension>png|webp|avif|jxl|jpeg)$",
+                    r"\.(?P<extension>png|webp|avif|jpeg)$",
                     views.club_banner,
                     name="club_banner_with_format",
                 ),
@@ -101,7 +101,7 @@ urlpatterns = [
                                 name="event_map_thumbnail",
                             ),
                             re_path(
-                                r"\.(?P<extension>png|webp|avif|jxl|jpeg)$",
+                                r"\.(?P<extension>png|webp|avif|jpeg)$",
                                 views.event_map_thumbnail,
                                 name="event_map_thumbnail_with_format",
                             ),
@@ -123,7 +123,7 @@ urlpatterns = [
                                 name="event_main_map_view",
                             ),
                             re_path(
-                                r"^\.(?P<extension>png|webp|avif|jxl|jpeg)$",
+                                r"^\.(?P<extension>png|webp|avif|jpeg)$",
                                 views.event_map_view,
                                 name="event_main_map_view_with_format",
                             ),
@@ -137,7 +137,7 @@ urlpatterns = [
                                             name="event_map_view",
                                         ),
                                         re_path(
-                                            r"^\.(?P<extension>png|webp|avif|jxl|jpeg)$",
+                                            r"^\.(?P<extension>png|webp|avif|jpeg)$",
                                             views.event_map_view,
                                             name="event_map_view_with_format",
                                         ),

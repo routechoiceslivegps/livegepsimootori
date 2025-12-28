@@ -130,16 +130,6 @@ class MapApiTestCase(EssentialApiBase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res["content-type"], "image/webp")
 
-        # serve jxl if asked
-        res = client.get(
-            (
-                f"{url}?service=WMS&request=GetMap&layers={event.aid}&"
-                f"format=image%2Fjxl&{def_query}"
-            )
-        )
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res["content-type"], "image/jxl")
-
         # serve avif if asked
         res = client.get(
             (

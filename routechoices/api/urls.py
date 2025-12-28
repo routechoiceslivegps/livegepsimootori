@@ -123,7 +123,7 @@ urlpatterns = [
                                             name="event_main_map_download",
                                         ),
                                         re_path(
-                                            r"^\.(?P<extension>png|webp|avif|jxl|jpeg)$",
+                                            r"^\.(?P<extension>png|webp|avif|jpeg)$",
                                             views.event_map_download,
                                             name="event_main_map_download_with_format",
                                         ),
@@ -137,7 +137,7 @@ urlpatterns = [
                                                         name="event_map_download",
                                                     ),
                                                     re_path(
-                                                        r"^\.(?P<extension>png|webp|avif|jxl|jpeg)$",
+                                                        r"^\.(?P<extension>png|webp|avif|jpeg)$",
                                                         views.event_map_download,
                                                         name="event_map_download_with_format",
                                                     ),

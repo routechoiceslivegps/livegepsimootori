@@ -29,12 +29,6 @@ function hasImgCookie() {
 			document.cookie = `accept-image=${accepted.join(",")};path=/;domain=.${domain};`;
 		}
 	};
-	const JXL = new Image();
-	JXL.onload = JXL.onerror = () => {
-		setFormat(JXL.height, "jxl");
-	};
-	JXL.src =
-		"data:image/jxl;base64,/woIAAAMABKIAgC4AF3lEgAAFSqjjBu8nOv58kOHxbSN6wxttW1hSaLIODZJJ3BIEkkaoCUzGM6qJAE=";
 	const AVIF = new Image();
 	AVIF.onload = AVIF.onerror = () => {
 		setFormat(AVIF.height, "avif");
