@@ -56,7 +56,7 @@ services:
         - "linux/amd64"
   django:
     container_name: rc_django
-    image: rphlo/routechoices-dev-server
+    image: rphlo/routechoices-dev-server:latest
     stop_signal: SIGINT
     volumes:
       - ../:/app/:rw
