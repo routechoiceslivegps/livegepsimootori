@@ -1,8 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from routechoices.core.models import Event
-from routechoices.lib.helpers import (Wgs84Coordinate,
-                                      distance_between_locations)
+from routechoices.lib.helpers import Wgs84Coordinate, distance_between_locations
 
 
 class Command(BaseCommand):

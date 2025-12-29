@@ -6,11 +6,16 @@ import arrow
 from curl_cffi import requests
 
 from routechoices.core.models import Competitor, Event, Map
-from routechoices.lib.helpers import (Point, Wgs84Coordinate,
-                                      get_remote_image_sizes,
-                                      wgs84_bound_from_3_ref_points)
+from routechoices.lib.helpers import (
+    Point,
+    Wgs84Coordinate,
+    get_remote_image_sizes,
+    wgs84_bound_from_3_ref_points,
+)
 from routechoices.lib.other_gps_services.commons import (
-    EventImportError, ThirdPartyTrackingSolutionWithProxy)
+    EventImportError,
+    ThirdPartyTrackingSolutionWithProxy,
+)
 
 
 class GpsSeurantaNet(ThirdPartyTrackingSolutionWithProxy):

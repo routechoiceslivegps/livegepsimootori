@@ -2,8 +2,12 @@ import re
 from decimal import Decimal
 
 from django.conf import settings
-from django.core.validators import (DomainNameValidator, RegexValidator,
-                                    ValidationError, validate_email)
+from django.core.validators import (
+    DomainNameValidator,
+    RegexValidator,
+    ValidationError,
+    validate_email,
+)
 from django.utils.translation import gettext_lazy as _
 
 import routechoices.lib.luhn as luhn
