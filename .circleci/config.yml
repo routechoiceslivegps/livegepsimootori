@@ -113,7 +113,7 @@ jobs:
 
 workflows:
   version: 2
-  test-and-deploy:
+  run_tests:
     jobs:
       - python-tests
       - e2e-tests
