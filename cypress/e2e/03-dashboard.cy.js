@@ -21,7 +21,7 @@ context("Dashboard actions", () => {
 
 	it("Contribution page", () => {
 		cy.visit(
-			"https://halden-sk.routechoices.dev/open-registration-upload-allowed/contribute",
+			"https://dashboard.routechoices.dev/contribute/halden-sk/open-registration-upload-allowed/",
 		);
 		cy.contains("Enter yourself");
 		cy.get("#id_name").type("Thierry Gueorgiou");

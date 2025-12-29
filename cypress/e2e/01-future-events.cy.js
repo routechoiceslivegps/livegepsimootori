@@ -15,9 +15,12 @@ context("Events in future", () => {
 	});
 
 	it("Can not register or upload to Event as registration not open", () => {
-		cy.visit("https://halden-sk.routechoices.dev/future-default/contribute", {
-			failOnStatusCode: false,
-		});
+		cy.visit(
+			"https://dashboard.routechoices.dev/contribute/halden-sk/future-default/",
+			{
+				failOnStatusCode: false,
+			},
+		);
 		cy.get("#registration-form").should("not.exist");
 		cy.get("#upload-form").should("not.exist");
 	});
@@ -29,7 +32,7 @@ context("Events in future", () => {
 
 	it("Can register to an Event if open registration", () => {
 		cy.visit(
-			"https://halden-sk.routechoices.dev/future-open-registration/contribute",
+			"https://dashboard.routechoices.dev/contribute/halden-sk/future-open-registration/",
 		);
 		cy.contains("Enter yourself");
 		cy.get("#id_name").type("Thierry Gueorgiou");
@@ -41,7 +44,7 @@ context("Events in future", () => {
 
 	it("Can not upload to an Event even if upload allowed since it is not yet started", () => {
 		cy.visit(
-			"https://halden-sk.routechoices.dev/future-upload-allowed/contribute",
+			"https://dashboard.routechoices.dev/contribute/halden-sk/future-upload-allowed/",
 			{ failOnStatusCode: false },
 		);
 		cy.get("#registration-form").should("not.exist");
@@ -50,7 +53,7 @@ context("Events in future", () => {
 
 	it("Can only add competitor and not upload route to an Event even if everything allowed since it is not yet started", () => {
 		cy.visit(
-			"https://halden-sk.routechoices.dev/future-open-registration-upload-allowed/contribute",
+			"https://dashboard.routechoices.dev/contribute/halden-sk/future-open-registration-upload-allowed/",
 		);
 		cy.get("#registration-form").should("exist");
 		cy.get("#upload-form").should("not.exist");

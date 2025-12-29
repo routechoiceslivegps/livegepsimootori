@@ -61,7 +61,7 @@
                 {% if event.open_registration and not event.ended or event.allow_route_upload and event.started %}
                     <div class="mb-1 mx-0" role="group">
                         <a class="btn btn-lg"
-                           href="{% host_url 'event_contribute_view' host 'dashboard' %}?e={{ event.aid }}"
+                           href="{% host_url 'event_contribute_view' slug=event.slug club_slug=event.club.slug host 'dashboard' %}"
                            aria-label="Registration/Route Upload"
                            type="button"
                            target="_blank">

@@ -542,13 +542,13 @@ def distance_between_locations(a, b):
 def simplify_line(points, tolerance=11):
     if not points:
         return points
-    new_coords = [points[0]]
+    new_coords = [points[0].xy]
     for p in points[1:-1]:
         last = new_coords[-1]
-        dist = sqrt(pow(last[0] - p[0], 2) + pow(last[1] - p[1], 2))
+        dist = sqrt(pow(last[0] - p.x, 2) + pow(last[1] - p.y, 2))
         if dist > tolerance:
-            new_coords.append(p)
-    new_coords.append(points[-1])
+            new_coords.append(p.xy)
+    new_coords.append(points[-1].xy)
     return new_coords
 
 

@@ -32,8 +32,8 @@ urlpatterns = [
         views.participations_view,
         name="dashboard_participations_view",
     ),
-    path(
-        "contribute",
+    re_path(
+        r"^contribute/(?P<club_slug>[a-zA-Z0-9][a-zA-Z0-9-]+)/(?P<slug>[a-zA-Z0-9][a-zA-Z0-9-]+)/?$",
         views.event_contribute_view,
         name="event_contribute_view",
     ),

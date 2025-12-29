@@ -347,8 +347,7 @@ class ClubViewsTestCase(EssentialApiBase):
             "event_contribute_view",
             "/contribute",
             host="dashboard",
-            extra_kwargs={"slug": "kiila-cup-1"},
-            host_kwargs={"club_slug": "kiilat"},
+            extra_kwargs={"club_slug": "kiilat", "slug": "kiila-cup-1"},
             prefix="kiilat",
         )
         response = client.get(url)

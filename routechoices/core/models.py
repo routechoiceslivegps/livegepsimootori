@@ -990,7 +990,6 @@ class Map(models.Model, SomewhereOnEarth):
 
     @classmethod
     def from_points(cls, seg, waypoints):
-        new_map = cls()
 
         min_lat = 90
         max_lat = -90
@@ -1022,24 +1021,23 @@ class Map(models.Model, SomewhereOnEarth):
         res_scale = 4
         MAX_SIZE = 4000
         offset = 100
-        width = tr_xy["x"] - tl_xy["x"]
-        height = tr_xy["y"] - br_xy["y"]
+        width = tr_xy.x - tl_xy.x
+        height = tr_xy.y - br_xy.y
 
         scale = 1
         if width > MAX_SIZE or height > MAX_SIZE:
             scale = max(width, height) / MAX_SIZE
 
-        width = (tr_xy["x"] - tl_xy["x"]) / scale + 2 * offset
-        height = (tr_xy["y"] - br_xy["y"]) / scale + 2 * offset
+        width = (tr_xy.x - tl_xy.x) / scale + 2 * offset
+        height = (tr_xy.y - br_xy.y) / scale + 2 * offset
 
-        bound = [
-            meters_to_wgs84([tl_xy["x"] - offset * scale, tl_xy["y"] + offset * scale]),
-            meters_to_wgs84([tr_xy["x"] + offset * scale, tr_xy["y"] + offset * scale]),
-            meters_to_wgs84([br_xy["x"] + offset * scale, br_xy["y"] - offset * scale]),
-            meters_to_wgs84([bl_xy["x"] - offset * scale, bl_xy["y"] - offset * scale]),
+        new_map = cls()
+        new_map.bound = [
+            meters_to_wgs84([tl_xy.x - offset * scale, tl_xy.y + offset * scale]),
+            meters_to_wgs84([tr_xy.x + offset * scale, tr_xy.y + offset * scale]),
+            meters_to_wgs84([br_xy.x + offset * scale, br_xy.y - offset * scale]),
+            meters_to_wgs84([bl_xy.x - offset * scale, bl_xy.y - offset * scale]),
         ]
-
-        new_map.bound = bound
 
         im = Image.new(
             "RGBA",
@@ -1051,12 +1049,12 @@ class Map(models.Model, SomewhereOnEarth):
         draw = ImageDraw.Draw(im)
         for pts in seg:
             map_pts = simplify_line(
-                [new_map.wsg84_to_map_xy(pt[0], pt[1], round_values=True) for pt in pts]
+                [new_map.wsg84_to_map_xy(pt, round_values=True) for pt in pts]
             )
             draw.line(map_pts, (255, 255, 255, 200), 22 * res_scale, joint="curve")
             draw.line(map_pts, line_color, 16 * res_scale, joint="curve")
         for pt in waypoints:
-            map_pt = new_map.wsg84_to_map_xy(pt[0], pt[1], round_values=True)
+            map_pt = new_map.wsg84_to_map_xy(pt, round_values=True)
             widths = [66, 63, 11, 8]
             thicknesses = [22, 16, 22, 16]
             fills = [
@@ -1076,10 +1074,10 @@ class Map(models.Model, SomewhereOnEarth):
                 wr = w * res_scale
                 draw.ellipse(
                     (
-                        map_pt[0] - wr,
-                        map_pt[1] - wr,
-                        map_pt[0] + wr,
-                        map_pt[1] + wr,
+                        map_pt.x - wr,
+                        map_pt.y - wr,
+                        map_pt.x + wr,
+                        map_pt.y + wr,
                     ),
                     outline=color,
                     fill=fill,

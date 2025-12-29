@@ -1607,14 +1607,11 @@ def private_view(request, event_id):
     return response
 
 
-def event_contribute_view(request):
-    event_id = request.GET.get("e")
-    if event_id is None:
-        raise Http404
-
+def event_contribute_view(request, club_slug, slug):
     event = get_object_or_404(
         Event.objects.all().select_related("club", "event_set"),
-        aid=event_id,
+        club__slug=club_slug,
+        slug=slug,
     )
 
     if request.GET.get("competitor-added", None):

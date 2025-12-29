@@ -13,7 +13,7 @@
 <h1 class="fw-bold">Select an event to register to:</h1>
 <ul>
     {% for event in events %}
-    <li style="font-size: 2em; padding-bottom: 1em" class="fw-bold"><a href="{% host_url 'event_contribute_view' host 'dashboard' %}?e={{ event.aid }}">{{ event.name }} – {{ event.club.name }}</a></li>
+    <li style="font-size: 2em; padding-bottom: 1em" class="fw-bold"><a href="{% host_url 'event_contribute_view' slug=event.slug club_slug=event.club.slug host 'dashboard' %}">{{ event.name }} – {{ event.club.name }}</a></li>
     {% endfor %}
 </ul>
 {% else %}
