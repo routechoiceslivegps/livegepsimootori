@@ -1,10 +1,7 @@
 import atexit
 import sys
 import coverage
-
-
-cov = coverage.coverage()
-cov.start()
+from .wsgi import application  # noqa
 
 
 def save_coverage():
@@ -13,4 +10,6 @@ def save_coverage():
     cov.save()
 
 
+cov = coverage.coverage()
+cov.start()
 atexit.register(save_coverage)
