@@ -79,7 +79,7 @@ jobs:
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-            nvm install v20 && nvm use v20 && nvm alias default v20
+            nvm install v25 && nvm use v25 && nvm alias default v25
             node -v
             npm install --global pnpm
             pnpm install
@@ -94,17 +94,6 @@ jobs:
           path: cypress/videos
       - store_artifacts:
           path: cypress/screenshots
-
-  deploy:
-    machine:
-        image: ubuntu-2204:current
-        docker_layer_caching: false
-    steps:
-      - run:
-          name: Deploy
-          command: |
-            export DEPLOY_CMD="/apps/routechoices-server/bin/deploy $CIRCLE_SHA1"
-            ssh apps@routechoices.com $DEPLOY_CMD
 
   build-docker:
     machine:
@@ -126,16 +115,8 @@ workflows:
   version: 2
   test-and-deploy:
     jobs:
-      - build-and-python-tests
-      - build-and-e2e-tests
-      - deploy:
-          requires:
-            - build-and-python-tests
-            - build-and-e2e-tests
-          filters:
-            branches:
-              only:
-                - master
+      - python-tests
+      - e2e-tests
   build_image:
     jobs:
       - build-docker:
