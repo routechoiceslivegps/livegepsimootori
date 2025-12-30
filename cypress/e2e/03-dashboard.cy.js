@@ -64,12 +64,13 @@ context("Dashboard actions", () => {
 
 	it("Registration website", () => {
 		cy.visit("https://registration.routechoices.dev");
-		cy.get("#name").type("Veijo");
-		cy.get("#sname").type("V");
-		cy.get("#devid").type("10000000{enter}");
-		cy.get("#events").select(1);
-		cy.get("#register-btn").click();
-		cy.get("#p4").contains("You have been registered.");
+		cy.contains(
+			"My event with open registration and upload allowed – Halden SK",
+		);
+		cy.contains("My future event with open registration – Halden SK");
+		cy.contains(
+			"My future event with open registration and upload allowed – Halden SK",
+		);
 	});
 
 	it("Manage devices", () => {
