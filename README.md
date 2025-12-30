@@ -1,4 +1,4 @@
-[![circleci](https://circleci.com/gh/routechoiceslivegps/routechoices-server.svg?style=shield)](https://circleci.com/gh/routechoiceslivegps/routechoices-server) [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/routechoiceslivegps/routechoices-server/master.svg)](https://results.pre-commit.ci/latest/github/routechoiceslivegps/routechoices-server/master) [![codecov](https://codecov.io/gh/routechoiceslivegps/routechoices-server/branch/master/graph/badge.svg?token=OZLCAY280V)](https://codecov.io/gh/routechoiceslivegps/routechoices-server)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/routechoiceslivegps/livegepsimootori/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/routechoiceslivegps/livegepsimootori/tree/main) [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/routechoiceslivegps/livegepsimootori/main.svg)](https://results.pre-commit.ci/latest/github/routechoiceslivegps/livegepsimootori/main) [![codecov](https://codecov.io/gh/routechoiceslivegps/livegepsimootori/graph/badge.svg?token=OZLCAY280V)](https://codecov.io/gh/routechoiceslivegps/livegepsimootori)
 
 
 Routechoices server
