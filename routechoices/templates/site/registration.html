@@ -30,7 +30,7 @@
         {% endif %}
         </small>
         <br/>
-        By {% if event.club.logo %}<img src="{{ event.club.logo_url_www }}" class="rounded" width="25" height="25" alt="{{ event.club.name }}'s logo" style="vertical-align: bottom">{% endif %}<b>{{ event.club.name }}</b>
+        By {% if event.club.logo %}<img src="{{ event.club.logo_url_www }}" class="rounded me-2" width="25" height="25" alt="{{ event.club.name }}'s logo" style="vertical-align: bottom">{% endif %}<b>{{ event.club.name }}</b>
         </p>
         <a href="{% host_url 'event_contribute_view' slug=event.slug club_slug=event.club.slug host 'dashboard' %}" class="link-primary-alt stretched-link btn btn-primary"><i class="fa-solid fa-file-signature"></i> Register</a>
     </div>
