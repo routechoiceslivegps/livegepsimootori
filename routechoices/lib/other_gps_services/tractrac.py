@@ -5,14 +5,20 @@ from curl_cffi import requests
 from django.core.files.base import ContentFile
 from PIL import Image
 
-from routechoices.core.models import (PRIVACY_SECRET, Competitor, Device,
-                                      Event, Map)
-from routechoices.lib.helpers import (Point, Wgs84Coordinate, safe64encodedsha,
-                                      wgs84_bound_from_3_ref_points)
+from routechoices.core.models import PRIVACY_SECRET, Competitor, Device, Event, Map
+from routechoices.lib.helpers import (
+    Point,
+    Wgs84Coordinate,
+    safe64encodedsha,
+    wgs84_bound_from_3_ref_points,
+)
 from routechoices.lib.mtb_decoder import MtbDecoder
 from routechoices.lib.other_gps_services.commons import (
-    CompetitorsImportError, EventImportError, MapsImportError,
-    ThirdPartyTrackingSolution)
+    CompetitorsImportError,
+    EventImportError,
+    MapsImportError,
+    ThirdPartyTrackingSolution,
+)
 from routechoices.lib.tractrac_ws_decoder import TracTracWSReader
 
 

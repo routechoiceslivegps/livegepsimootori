@@ -12,8 +12,15 @@ from PIL import Image
 from rest_framework import status
 from rest_framework.test import APIClient, APITestCase
 
-from routechoices.core.models import (Club, Competitor, Device, Event,
-                                      EventSet, ImeiDevice, Map)
+from routechoices.core.models import (
+    Club,
+    Competitor,
+    Device,
+    Event,
+    EventSet,
+    ImeiDevice,
+    Map,
+)
 
 
 class EssentialDashboardBase(APITestCase):

@@ -2,8 +2,15 @@ from curl_cffi import requests
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
 
-from routechoices.core.models import (PRIVACY_SECRET, Club, Competitor, Device,
-                                      Event, Map, MapAssignation)
+from routechoices.core.models import (
+    PRIVACY_SECRET,
+    Club,
+    Competitor,
+    Device,
+    Event,
+    Map,
+    MapAssignation,
+)
 from routechoices.lib.helpers import epoch_to_datetime, safe64encodedsha
 
 
