@@ -10,12 +10,33 @@
 
 {% block content %}
 {% if events %}
-<h1 class="fw-bold">Select an event to register to:</h1>
-<ul>
+<h1 class="fw-bold">Select an event to register with:</h1>
+<div>
     {% for event in events %}
-    <li style="font-size: 2em; padding-bottom: 1em" class="fw-bold"><a href="{% host_url 'event_contribute_view' slug=event.slug club_slug=event.club.slug host 'dashboard' %}">{{ event.name }} – {{ event.club.name }}</a></li>
+    <div class="card mb-3">
+        <div class="card-body">
+        <h5 class="card-title fw-bold">{{ event.name }}</h5>
+        <p class="card-text">
+        <small>
+        {% if not event.hidden %}
+            Started {{ event.start_date|timesince }} ago,
+        {% else %}
+            Starts in {{ event.start_date|timeuntil }},
+        {% endif %}
+        {% if event.ended %}
+            Ended {{ event.end_date|timesince }} ago.
+        {% else %}
+            Ends in {{ event.end_date|timeuntil }}.
+        {% endif %}
+        </small>
+        <br/>
+        By {% if event.club.logo %}<img src="{{ event_set.events.0.club.logo_url_www }}" class="rounded" width="25" height="25" alt="{{ event.club.name }}'s logo" style="vertical-align: bottom">{% endif %}<b>{{ event.club.name }}</b>
+        </p>
+        <a href="{% host_url 'event_contribute_view' slug=event.slug club_slug=event.club.slug host 'dashboard' %}" class="link-primary-alt stretched-link btn btn-primary"><i class="fa-solid fa-file-signature"></i> Register</a>
+    </div>
+  </div>
     {% endfor %}
-</ul>
+</div>
 {% else %}
 <h1>No events are open for registration…</h1>
 {% endif %}
