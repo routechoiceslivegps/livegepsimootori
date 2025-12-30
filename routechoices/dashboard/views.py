@@ -67,6 +67,7 @@ from routechoices.lib.helpers import (
     short_random_key,
     long_random_key,
 )
+from routechoices.lib.lemonsqueezy import get_subscriptions
 from routechoices.lib.s3 import serve_from_s3
 from routechoices.lib.streaming_response import StreamingHttpRangeResponse
 from routechoices.lib.duration_constants import DURATION_ONE_DAY
@@ -469,13 +470,17 @@ def club_view(request):
     else:
         form = ClubForm(instance=club)
     form.fields["admins"].queryset = User.objects.filter(id__in=club.admins.all())
+    subscription_link = None
+    if order_id := club.order_id:
+        subscription = get_subscriptions(order_id=order_id)
+        if subscription:
+            subscription_link = subscription["data"][0]["attributes"]["urls"][
+                "customer_portal"
+            ]
     return render(
         request,
         "dashboard/club_view.html",
-        {
-            "club": club,
-            "form": form,
-        },
+        {"club": club, "form": form, "subscription_link": subscription_link},
     )
 
 

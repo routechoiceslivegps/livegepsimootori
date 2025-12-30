@@ -51,14 +51,14 @@
            style="color: #000;
                   background: linear-gradient(120deg, #98d6a6 0%, #98cdd6 100%)">
             Your subscription is currently paused.
-            <a href="https://app.lemonsqueezy.com/my-orders" style="color:var(--bs-info)" target="_blank" rel="nofollow noopener" class="fw-bold">Resume your subscription</a> to re-enable all features.
+            <a href="{{ subscription_link }}" style="color:var(--bs-info)" target="_blank" rel="nofollow noopener" class="fw-bold">Resume your subscription</a> to re-enable all features.
         </p>
     {% elif club.upgraded %}
         <p class="p-1 text-center"
         style="color: #000;
             background: linear-gradient(120deg, #98d6a6 0%, #98cdd6 100%)">
             Thank you for using our paid plan!
-            <a href="https://app.lemonsqueezy.com/my-orders" style="color:var(--bs-info)"  target="_blank" rel="nofollow noopener" class="fw-bold">Manage your subscription</a>.
+            <a href="{{ subscription_link }}" style="color:var(--bs-info)" target="_blank" rel="nofollow noopener" class="fw-bold">Manage your subscription</a>.
         </p>
     {% endif %}
     {% block pre_menu_content %}
