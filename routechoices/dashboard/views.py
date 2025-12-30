@@ -470,7 +470,8 @@ def club_view(request):
     else:
         form = ClubForm(instance=club)
     form.fields["admins"].queryset = User.objects.filter(id__in=club.admins.all())
-    subscription_link = None
+
+    subscription_link = "https://app.lemonsqueezy.com/my-orders"
     if order_id := club.order_id:
         subscription = get_subscriptions(order_id=order_id)
         if subscription:
