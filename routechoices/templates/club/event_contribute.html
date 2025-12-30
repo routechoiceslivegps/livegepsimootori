@@ -29,8 +29,7 @@
 
 {% block contentup %}
     <div class="container p-0">
-        <div class="row m-0">
-            <h1 class="fw-bold">Contribute to</h1>
+        <div class="row mt-4">
             <h2>
                 <a href="{{ event.club.nice_url }}{{ event.slug }}"
                     class="fw-bold text-decoration-none">{{ event.name }}</a>
@@ -54,7 +53,7 @@
             <div class="row">
                 {% if register_form %}
                     <h4 class="padded-multiline">
-                        <span>Enter yourself</span>
+                        <span>Register</span>
                     </h4>
                     {% if not request.user.is_authenticated %}
                     <div class="alert alert-danger" role="alert">
@@ -76,13 +75,13 @@
                                 {% endif %}
                             </p>
                             <button type="submit" class="btn btn-primary">
-                                <i class="fa-solid fa-circle-plus"></i> Enter
+                                <i class="fa-solid fa-file-signature"></i> Register
                             </button>
                         </form>
                     </div>
                 {% endif %}
                 <h4 class="padded-multiline">
-                    <span>Competitors</span>
+                    <span>Registered competitors</span>
                 </h4>
                 <div class="mb-3">
                     {% for c in event.competitors.all %}

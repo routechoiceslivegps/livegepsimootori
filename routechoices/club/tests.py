@@ -356,21 +356,21 @@ class ClubViewsTestCase(EssentialApiBase):
         e.save()
         response = client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertContains(response, "Enter yourself")
+        self.assertContains(response, "Register")
         self.assertNotContains(response, "Upload GPX")
 
         e.allow_route_upload = True
         e.save()
         response = client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertContains(response, "Enter yourself")
+        self.assertContains(response, "Register")
         self.assertContains(response, "Upload GPX")
 
         e.open_registration = False
         e.save()
         response = client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertNotContains(response, "Enter yourself")
+        self.assertNotContains(response, ">Register<")
         self.assertContains(response, "Upload GPX")
 
         client = APIClient(HTTP_HOST="kiilat.routechoices.dev")
@@ -485,7 +485,7 @@ class ClubViewsTestCase(EssentialApiBase):
         client = APIClient(HTTP_HOST="dashboard.routechoices.dev")
         response = client.get("/contribute/kiilat/kiila-cup-2")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertContains(response, "Enter yourself")
+        self.assertContains(response, "Register")
         self.assertNotContains(response, "Upload GPX")
 
     def test_past_event_pages_load(self):
@@ -511,7 +511,7 @@ class ClubViewsTestCase(EssentialApiBase):
         client = APIClient(HTTP_HOST="dashboard.routechoices.dev")
         response = client.get("/contribute/kiilat/kiila-cup-3")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertContains(response, "Enter yourself")
+        self.assertContains(response, "Register")
         self.assertContains(response, "Upload GPX")
 
     def test_gpsseuranta_compat_pages_load(self):

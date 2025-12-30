@@ -23,7 +23,7 @@ context("Dashboard actions", () => {
 		cy.visit(
 			"https://dashboard.routechoices.dev/contribute/halden-sk/open-registration-upload-allowed/",
 		);
-		cy.contains("Enter yourself");
+		cy.contains("Register");
 		cy.get("#id_name").type("Thierry Gueorgiou");
 		cy.get("#id_short_name").type("🇫🇷 T.Gueorgiou");
 		cy.get("#id_device_id-ts-control").type("123456").wait(1000).blur();
