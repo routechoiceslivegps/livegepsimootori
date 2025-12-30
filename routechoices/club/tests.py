@@ -385,7 +385,7 @@ class ClubViewsTestCase(EssentialApiBase):
         )
         response = client.get(f"{url}/does-not-exist")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertIn("This page does not exist", response.content.decode())
+        self.assertIn("No page was found at this url…", response.content.decode())
 
         url = self.reverse_and_check(
             "event_startlist_view",
@@ -423,7 +423,7 @@ class ClubViewsTestCase(EssentialApiBase):
         """
         response = client.get(f"{url}does-not-exist")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertIn("This page does not exist", response.content.decode())
+        self.assertIn("No page was found at this url…", response.content.decode())
 
     def test_custom_domain_load(self):
         client = APIClient(HTTP_HOST="gpstracking.kiilat.com")
@@ -431,7 +431,7 @@ class ClubViewsTestCase(EssentialApiBase):
         response = client.get("/")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertIn(
-            "This domain has not been associated with a club...",
+            "No club has claimed that url…",
             response.content.decode(),
         )
 
@@ -452,7 +452,7 @@ class ClubViewsTestCase(EssentialApiBase):
 
         response = client.get("/")
         self.assertIn(
-            "This domain has not been associated with a club...",
+            "No club has claimed that url…",
             response.content.decode(),
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -462,7 +462,7 @@ class ClubViewsTestCase(EssentialApiBase):
 
         response = client.get("/kiila-cup-69/does-not-exist")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertIn("This page does not exist", response.content.decode())
+        self.assertIn("No page was found at this url…", response.content.decode())
 
         response = client.get("/")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
