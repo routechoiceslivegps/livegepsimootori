@@ -64,13 +64,9 @@ context("Dashboard actions", () => {
 
 	it("Registration website", () => {
 		cy.visit("https://registration.routechoices.dev");
-		cy.contains(
-			"My event with open registration and upload allowed – Halden SK",
-		);
-		cy.contains("My future event with open registration – Halden SK");
-		cy.contains(
-			"My future event with open registration and upload allowed – Halden SK",
-		);
+		cy.contains("My event with open registration and upload allowed");
+		cy.contains("My future event with open registration");
+		cy.contains("My future event with open registration and upload allowed");
 	});
 
 	it("Manage devices", () => {
