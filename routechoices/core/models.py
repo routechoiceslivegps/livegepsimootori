@@ -1158,18 +1158,15 @@ class Map(models.Model, SomewhereOnEarth):
         all_corners = []
         for i, other_map in enumerate(other_maps):
             bound = other_map.bound
-            corners = [
-                self.wsg84_to_map_xy(bound[i].latitude, bound[i].longitude)
-                for i in range(4)
-            ]
+            corners = [self.wsg84_to_map_xy(bound[i]) for i in range(4)]
             all_corners.append(corners)
 
         all_x = []
         all_y = []
         for corners in all_corners:
             for corner in corners:
-                all_x.append(corner[0])
-                all_y.append(corner[1])
+                all_x.append(corner.x)
+                all_y.append(corner.y)
 
         min_x = min(min_x, *all_x)
         min_y = min(min_y, *all_y)
