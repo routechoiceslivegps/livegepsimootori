@@ -73,7 +73,7 @@ class WebHookTestCase(EssentialApiBase):
                 "data": {
                     "id": "123456",
                     "attributes": {
-                        "first_order_item": {"variant_id": 154372, "order_id": 123456}
+                        "first_order_item": {"variant_id": 1102505, "order_id": 123456}
                     },
                 },
                 "meta": {"custom_data": {"club": "kiilat"}},
@@ -96,7 +96,7 @@ class WebHookTestCase(EssentialApiBase):
         self.club.save()
         res = self.ls_client.post(
             url,
-            {"data": {"attributes": {"order_id": 123456, "variant_id": 154372}}},
+            {"data": {"attributes": {"order_id": 123456, "variant_id": 1102505}}},
             HTTP_X_EVENT_NAME="subscription_expired",
             content_type="json",
         )
@@ -121,7 +121,7 @@ class WebHookTestCase(EssentialApiBase):
                 "data": {
                     "attributes": {
                         "order_id": 123456,
-                        "variant_id": 154372,
+                        "variant_id": 1102505,
                         "pause": {"mode": "void"},
                     }
                 }
@@ -150,7 +150,7 @@ class WebHookTestCase(EssentialApiBase):
                 "data": {
                     "attributes": {
                         "order_id": 123456,
-                        "variant_id": 154372,
+                        "variant_id": 1102505,
                     }
                 }
             },
