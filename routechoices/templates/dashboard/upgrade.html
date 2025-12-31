@@ -3,10 +3,6 @@
 {% block pre_menu_content %}
     <content>
         <h4><b>Hey!</b></h4>
-        {% if not club.upgraded and club.o_club %}
-            <h4>You are registered as an orienteering club. You can enjoy the Routechoices.com platform for free until January 1st 2026!</h4>
-            <p class="fw-bold">You must upgrade to our paid plan to be able access all features after that date.</p>
-        {% endif %}
         {% if not club.upgraded %}
             <p>
                 <b>Routechoices.com</b> will never sell your data or display ads, so to keep the servers running, we need you to contribute to cover our running costs.

@@ -506,23 +506,15 @@ class ClubAdmin(admin.ModelAdmin):
         HasMapsFilter,
         HasDeviceFilter,
         "upgraded",
-        "o_club",
     )
     show_facets = False
     search_fields = ("name",)
-
-    actions = ["mark_as_o_club"]
 
     @admin.display(boolean=True)
     def can_modify_events_bool(self, obj):
         return obj.can_modify_events
 
     can_modify_events_bool.short_description = "Can Modify Events"
-
-    def mark_as_o_club(self, request, queryset):
-        for q in queryset:
-            q.o_club = True
-            q.save()
 
     def get_ordering(self, request):
         if request.resolver_match.url_name == "core_club_changelist":

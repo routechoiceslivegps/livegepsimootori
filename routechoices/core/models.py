@@ -21,7 +21,6 @@ import magic
 import numpy as np
 import orjson as json
 from allauth.account.models import EmailAddress
-from dateutil.parser import parse as parse_date
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.gis.geos import LinearRing, Polygon
@@ -105,8 +104,6 @@ TOP_LEFT = 0
 TOP_RIGHT = 1
 BOTTOM_RIGHT = 2
 BOTTOM_LEFT = 3
-
-END_FREE_OCLUB = parse_date("2026-01-01T00:00:00Z")
 
 
 class StringToArray(models.Func):
@@ -280,7 +277,6 @@ Follow our events live or replay them later.
     forbid_invite_request = models.BooleanField(
         "Prevent external users to request admin rights", default=False
     )
-    o_club = models.BooleanField("Is an orienteering club", default=False)
 
     frontpage_featured = models.BooleanField("Featured on frontpage", default=False)
 
@@ -352,18 +348,14 @@ Follow our events live or replay them later.
 
     @property
     def is_on_free_trial(self):
-        return (
-            self.free_trial_active
-            and not (self.o_club and now() < END_FREE_OCLUB)
-            and not (self.upgraded and not self.subscription_paused)
+        return self.free_trial_active and not (
+            self.upgraded and not self.subscription_paused
         )
 
     @property
     def can_modify_events(self):
-        return (
-            self.free_trial_active
-            or (self.o_club and now() < END_FREE_OCLUB)
-            or (self.upgraded and not self.subscription_paused)
+        return self.free_trial_active or (
+            self.upgraded and not self.subscription_paused
         )
 
     def get_absolute_url(self):
