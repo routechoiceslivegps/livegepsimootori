@@ -1977,7 +1977,7 @@ class Event(models.Model, SomewhereOnEarth):
         return hasattr(self, "notice")
 
     def thumbnail(self, display_logo, mime="image/jpeg"):
-        if self.start_date > now():
+        if self.start_date > now() or not self.earth_coords:
             cache_key = (
                 f"map:{self.aid}:blank:thumbnail:{display_logo}"
                 f":{self.club.modification_date}:{mime}"
@@ -1987,8 +1987,6 @@ class Event(models.Model, SomewhereOnEarth):
             img = Image.new("RGB", (1200, 630), "WHITE")
         elif not self.map:
             center = self.earth_coords
-            if not center:
-                center = (0, 0)
             cache_key = (
                 f"map:{self.aid}:{center[0]}-{center[1]}:thumbnail:{display_logo}"
                 f":{self.club.modification_date}:{mime}"
