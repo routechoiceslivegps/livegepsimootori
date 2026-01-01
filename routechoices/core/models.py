@@ -1990,7 +1990,7 @@ class Event(models.Model, SomewhereOnEarth):
             if not center:
                 center = (0, 0)
             cache_key = (
-                f"map:{self.aid}:{center[0]}-{self.center[1]}:thumbnail:{display_logo}"
+                f"map:{self.aid}:{center[0]}-{center[1]}:thumbnail:{display_logo}"
                 f":{self.club.modification_date}:{mime}"
             )
             if cached := cache.get(cache_key):
