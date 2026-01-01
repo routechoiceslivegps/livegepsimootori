@@ -44,6 +44,7 @@ python-magic
 sentry-sdk[django]
 setuptools
 sewer @ git+https://github.com/rphlo/sewer@0.8.4b
+staticmap
 tornado
 pyproj
 reverse-geocode

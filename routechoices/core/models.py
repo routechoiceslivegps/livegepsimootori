@@ -20,6 +20,7 @@ import gpxpy.gpx
 import magic
 import numpy as np
 import orjson as json
+from staticmap import StaticMap, CircleMarker
 from allauth.account.models import EmailAddress
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -1976,7 +1977,7 @@ class Event(models.Model, SomewhereOnEarth):
         return hasattr(self, "notice")
 
     def thumbnail(self, display_logo, mime="image/jpeg"):
-        if self.start_date > now() or not self.map:
+        if self.start_date > now():
             cache_key = (
                 f"map:{self.aid}:blank:thumbnail:{display_logo}"
                 f":{self.club.modification_date}:{mime}"
@@ -1984,6 +1985,20 @@ class Event(models.Model, SomewhereOnEarth):
             if cached := cache.get(cache_key):
                 return cached
             img = Image.new("RGB", (1200, 630), "WHITE")
+        elif not self.map:
+            center = self.earth_coords
+            if not center:
+                center = (0, 0)
+            cache_key = (
+                f"map:{self.aid}:{center[0]}-{self.center[1]}:thumbnail:{display_logo}"
+                f":{self.club.modification_date}:{mime}"
+            )
+            if cached := cache.get(cache_key):
+                return cached
+            raster_map = StaticMap(1200, 630, 10)
+            marker = CircleMarker(center, "#00000000")
+            raster_map.add_marker(marker)
+            img = raster_map.render(zoom=17)
         else:
             raster_map = self.map
             cache_key = (
