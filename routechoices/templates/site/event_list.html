@@ -173,7 +173,7 @@
                         {% endif %}
                         {% for event in event_set.events %}
                             <div class="card border-0 shadow mb-3 event-card"
-                                 data-bg-img="{% if event.map_id %}{{ event.club.nice_url }}{{ event.slug }}/thumbnail?no-logo=1{% endif %}"
+                                 data-bg-img="{{ event.club.nice_url }}{{ event.slug }}/thumbnail?no-logo=1"
                                  style="background: linear-gradient(to right, var(--rc-color-from-trans), var(--rc-color-to-trans));
                                         background-size: cover;
                                         background-position: center">
@@ -431,7 +431,7 @@
             {% endif %}
             {% for event in event_set.events %}
                 <div class="card border-0 shadow mb-3 event-card"
-                     data-bg-img="{% if event.map_id %}{{ event.club.nice_url }}{{ event.slug }}/thumbnail?no-logo=1{% endif %}"
+                     data-bg-img="{{ event.club.nice_url }}{{ event.slug }}/thumbnail?no-logo=1"
                      style="background:linear-gradient(to right, var(--rc-color-from-trans), var(--rc-color-to-trans));
                             background-size: cover;
                             background-position: center">
