@@ -21,7 +21,7 @@ urlpatterns = [
     path("admin/hijack/", include("hijack.urls")),
     path(
         "admin/login/",
-        site_views.CustomLoginView.as_view(),
+        site_views.CustomAdminLoginView.as_view(),
     ),
     path(
         "admin/",
