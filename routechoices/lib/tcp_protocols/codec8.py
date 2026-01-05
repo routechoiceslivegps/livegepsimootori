@@ -16,6 +16,7 @@ class TMT250Decoder:
         self.packet = {}
         self.battery_level = None
         self.alarm_triggered = False
+        self.extended = False
 
     def generate_response(self, success=True):
         s = self.packet["num_data"] if success else 0
@@ -27,8 +28,10 @@ class TMT250Decoder:
             raise Exception("zeroes should be 0")
         self.packet["length"] = unpack(">i", data[4:8])[0]
         self.packet["codec"] = data[8]
-        if self.packet["codec"] != 8:
-            raise Exception("codec should be 8")
+        if self.packet["codec"] not in (8, 0x8E):
+            raise Exception("codec should be 08 or 8e")
+        if self.packet["codec"] == 0x8E:
+            self.extended = True
         self.packet["num_data"] = data[9]
         self.extract_records(data)
         return self.packet
@@ -42,8 +45,13 @@ class TMT250Decoder:
             timestamp = unpack(">Q", buffer[pointer : pointer + 8])[0] / 1e3
             lon = unpack(">i", buffer[pointer + 9 : pointer + 13])[0] / 1e7
             lat = unpack(">i", buffer[pointer + 13 : pointer + 17])[0] / 1e7
-            n1 = buffer[pointer + 26]
-            pointer += 27
+            pointer += 26
+            n1 = buffer[pointer]
+            if self.extended:
+                pointer += 1
+                n1 = n1 << 8 + buffer[pointer]
+            pointer += 1
+
             for i in range(n1):
                 avl_id = buffer[pointer + i * 2]
                 if avl_id == 113:
@@ -53,12 +61,21 @@ class TMT250Decoder:
             pointer += n1 * 2
 
             n2 = buffer[pointer]
+            if self.extended:
+                pointer += 1
+                n2 = n2 << 8 + buffer[pointer]
             pointer += 1 + 3 * n2
 
             n4 = buffer[pointer]
+            if self.extended:
+                pointer += 1
+                n4 = n4 << 8 + buffer[pointer]
             pointer += 1 + 5 * n4
 
             n8 = buffer[pointer]
+            if self.extended:
+                pointer += 1
+                n8 = n8 << 8 + buffer[pointer]
             pointer += 1 + 9 * n8
             self.packet["records"].append(
                 {
@@ -141,7 +158,7 @@ class Codec8Connection(GenericConnection):
         try:
             decoded = self.decoder.decode_alv(self.buffer)
         except Exception:
-            print("Teltonika - error decoding packet")
+            print("Codec8 - error decoding packet")
             await self.stream.write(self.decoder.generate_response(False))
         else:
             loc_array = []
@@ -153,7 +170,7 @@ class Codec8Connection(GenericConnection):
                 self.db_device.battery_level = self.decoder.battery_level
             await add_locations(self.db_device, loc_array)
             print(
-                f"Teltonika - {self.imei} wrote {len(loc_array)} locations to DB",
+                f"Codec8 - {self.imei} wrote {len(loc_array)} locations to DB",
                 flush=True,
             )
             self.waiting_for_content = True
