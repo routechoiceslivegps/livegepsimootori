@@ -181,7 +181,7 @@ class TCPConnectionsTest(AsyncTestCase, TransactionTestCase):
             client.close()
 
     @gen_test
-    async def test_teltonika(self):
+    async def test_codec8(self):
         init_data = bytes.fromhex("000f333536333037303432343431303133")
         ack_data = b"\x01"
         gps_data = bytes.fromhex(
@@ -202,6 +202,33 @@ class TCPConnectionsTest(AsyncTestCase, TransactionTestCase):
         await asyncio.sleep(0.05)
         device = await refresh_device(device)
         self.assertEqual(device.location_count, 4)
+        if server is not None:
+            server.stop()
+        if client is not None:
+            client.close()
+
+    @gen_test
+    async def test_codec8_extended(self):
+        init_data = bytes.fromhex("000f333536333037303432343431303133")
+        ack_data = b"\x01"
+        gps_data = bytes.fromhex(
+            "00000000000000618e010000019b8e7a89d0010379c44a1af14d3800ef00000000000000000f000800150300450200716400c80000ef0000f00033d20033d30a000500430ff9004401020046017600b503e800b603e8000200100000002b0320000014000000000001000037ba"
+        )
+
+        server = client = None
+        device = await create_imei_device("356307042441013")
+        sock, port = bind_unused_port()
+        server = TMT250Server()
+        server.add_socket(sock)
+        client = IOStream(socket.socket())
+        await client.connect(("localhost", port))
+        await client.write(init_data)
+        data = await client.read_bytes(255, partial=True)
+        self.assertEqual(data, ack_data)
+        await client.write(gps_data)
+        await asyncio.sleep(0.05)
+        device = await refresh_device(device)
+        self.assertEqual(device.location_count, 1)
         if server is not None:
             server.stop()
         if client is not None:
