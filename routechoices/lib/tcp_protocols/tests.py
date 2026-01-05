@@ -205,7 +205,7 @@ class TCPConnectionsTest(AsyncTestCase, TransactionTestCase):
         if server is not None:
             server.stop()
         if client is not None:
-            client.close() @ gen_test
+            client.close()
 
     @gen_test
     async def test_codec8_extended(self):
