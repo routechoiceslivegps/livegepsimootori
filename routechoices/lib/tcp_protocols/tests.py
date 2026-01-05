@@ -207,6 +207,7 @@ class TCPConnectionsTest(AsyncTestCase, TransactionTestCase):
         if client is not None:
             client.close() @ gen_test
 
+    @gen_test
     async def test_codec8_extended(self):
         init_data = bytes.fromhex("000f333536333037303432343431303133")
         ack_data = b"\x01"
