@@ -378,6 +378,11 @@ urlpatterns = [
                         name="map_download",
                     ),
                     re_path(
+                        r"^maps/(?P<map_id>[-0-9a-zA-Z_]{11}).kmz$",
+                        views.dashboard_map_download_as_kmz,
+                        name="map_download",
+                    ),
+                    re_path(
                         r"^logos/(?P<club_id>[-0-9a-zA-Z_]{11})$",
                         views.dashboard_logo_download,
                         name="logo_download",

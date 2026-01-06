@@ -1283,6 +1283,31 @@ def dashboard_map_download(request, map_id, *args, **kwargs):
 
 
 @login_required
+def dashboard_map_download_as_kmz(request, map_id, *args, **kwargs):
+    if request.user.is_superuser:
+        raster_map = get_object_or_404(
+            Map,
+            image__startswith="maps/",
+            image__contains=map_id,
+        )
+    else:
+        club_list = Club.objects.filter(admins=request.user)
+        raster_map = get_object_or_404(
+            Map, image__startswith="maps/", image__contains=map_id, club__in=club_list
+        )
+    kmz_data = raster_map.kmz
+    response = StreamingHttpRangeResponse(
+        request,
+        kmz_data,
+        content_type="application/vnd.google-earth.kmz",
+        headers={"Cache-Control": "Private"},
+    )
+    filename = f"{raster_map.name}.kmz"
+    response["Content-Disposition"] = set_content_disposition(filename)
+    return response
+
+
+@login_required
 def dashboard_logo_download(request, club_id, *args, **kwargs):
     if request.user.is_superuser:
         club = get_object_or_404(Club, aid=club_id, logo__isnull=False)

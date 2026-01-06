@@ -46,6 +46,7 @@ from PIL import Image, ImageDraw, ImageFile
 from routechoices.lib import cache, plausible
 from routechoices.lib.duration_constants import DURATION_ONE_MONTH
 from routechoices.lib.geojson import get_geojson_coordinates
+from routechoices.lib.globalmaptiles import GlobalMercator
 from routechoices.lib.helpers import (
     COUNTRIES,
     Point,
@@ -77,6 +78,10 @@ from routechoices.lib.helpers import (
     meters_to_wgs84,
 )
 from routechoices.lib.storages import OverwriteImageStorage
+from routechoices.lib.slippy_tiles import (
+    latlon_to_tile_xy,
+    tile_xy_to_north_west_latlon,
+)
 from routechoices.lib.validators import (
     color_hex_validator,
     validate_calibration_string,
@@ -105,6 +110,9 @@ TOP_LEFT = 0
 TOP_RIGHT = 1
 BOTTOM_RIGHT = 2
 BOTTOM_LEFT = 3
+
+
+GLOBAL_MERCATOR = GlobalMercator()
 
 
 class StringToArray(models.Func):
@@ -802,6 +810,70 @@ class Map(models.Model, SomewhereOnEarth):
         if rot > 45:
             rot = (rot - 45) % 90 - 45
         return round(rot, 2)
+
+    @property
+    def tiled_kmz(self):
+        min_lat = self.min_lat
+        max_lat = self.max_lat
+
+        min_lon = self.min_lon
+        max_lon = self.max_lon
+
+        zoom = self.max_zoom - 3
+
+        min_x, min_y = latlon_to_tile_xy(max_lat, min_lon, zoom)
+        max_x, max_y = latlon_to_tile_xy(min_lat, max_lon, zoom)
+
+        kmz = BytesIO()
+        with ZipFile(kmz, "w") as fp:
+            tiles = []
+            x = min_x
+            while x <= max_x:
+                y = min_y
+                while y <= max_y:
+                    max_lat, min_lon = tile_xy_to_north_west_latlon(x, y, zoom)
+                    min_lat, max_lon = tile_xy_to_north_west_latlon(x + 1, y + 1, zoom)
+                    min_xy = GLOBAL_MERCATOR.latlon_to_meters(
+                        {"lat": min_lat, "lon": min_lon}
+                    )
+                    max_xy = GLOBAL_MERCATOR.latlon_to_meters(
+                        {"lat": max_lat, "lon": max_lon}
+                    )
+                    bound_xy = {
+                        "min_x": min_xy["x"],
+                        "max_x": max_xy["x"],
+                        "min_y": min_xy["y"],
+                        "max_y": max_xy["y"],
+                    }
+                    bound_latlon = {
+                        "min_lat": min_lat,
+                        "max_lat": max_lat,
+                        "min_lon": min_lon,
+                        "max_lon": max_lon,
+                    }
+                    img_data, _ = self.get_tile(
+                        256,
+                        256,
+                        "image/jpeg",
+                        bound_xy["min_x"],
+                        bound_xy["max_x"],
+                        bound_xy["min_y"],
+                        bound_xy["max_y"],
+                    )
+                    filename = f"files/img_{x}_{y}_{zoom}.jpeg"
+
+                    tiles.append({"filename": filename, "bound": bound_latlon})
+                    with fp.open(filename, "w") as tile_fp:
+                        tile_fp.write(img_data)
+                    y += 1
+                x += 1
+            doc_kml = render_to_string(
+                "tiled_kml.xml",
+                {"name": self.name, "tiles": tiles},
+            )
+            with fp.open("doc.kml", "w") as doc_fp:
+                doc_fp.write(doc_kml.encode("utf-8"))
+        return kmz.getvalue()
 
     @property
     def kmz(self):
