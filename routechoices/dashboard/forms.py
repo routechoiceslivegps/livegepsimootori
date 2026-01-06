@@ -894,7 +894,11 @@ class UploadKmzForm(Form):
                 new_map = Map(
                     name=name,
                 )
-                new_map.bound = bound
+                # WE DO NOT USE THE BOUND PROPERTY SETTER AS IT IS LOSSY
+                # IT WOULD CREATE WHITE STRIPES ON OUTPUT MAP
+                new_map.calibration_string_raw = ",".join(
+                    (f"{corner.latitude},{corner.longitude}" for corner in bound)
+                )
                 new_map.image.save("file", image_file, save=False)
                 new_maps.append(new_map)
         self.cleaned_data["extracted_maps"] = new_maps

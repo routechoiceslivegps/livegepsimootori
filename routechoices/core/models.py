@@ -1238,16 +1238,16 @@ class Map(models.Model, SomewhereOnEarth):
         max_x = max(max_x, *all_x)
         max_y = max(max_y, *all_y)
 
-        new_width = int(max_x - min_x)
-        new_height = int(max_y - min_y)
+        new_width = max_x - min_x
+        new_height = max_y - min_y
 
         img = Image.open(BytesIO(self.data)).convert("RGBA")
         if new_width * new_height > Image.MAX_IMAGE_PIXELS:
             max_width = math.floor(Image.MAX_IMAGE_PIXELS / new_height)
             scale = max_width / new_width
 
-            w = int(width * scale)
-            h = int(height * scale)
+            w = width * scale
+            h = height * scale
             img.thumbnail((w, h), Image.Resampling.LANCZOS)
             out_buffer = BytesIO()
             img.save(out_buffer, "WEBP")
@@ -1261,9 +1261,9 @@ class Map(models.Model, SomewhereOnEarth):
             return map_obj.merge(*other_maps)
 
         new_image = Image.new(
-            mode="RGBA", size=(new_width, new_height), color=(0, 0, 0, 0)
+            mode="RGBA", size=(int(new_width), int(new_height)), color=(0, 0, 0, 0)
         )
-        new_image.alpha_composite(img, (int(-min_x), int(-min_y)))
+        new_image.alpha_composite(img, (round(-min_x), round(-min_y)))
 
         params = {
             "dpi": (72, 72),
