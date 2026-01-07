@@ -67,7 +67,7 @@ def extract_wgs84_bound_from_kml_ground_overlay(go):
             .split(" ")
         )
         sw, se, ne, nw = (
-            Wgs84Coordinate(list(float(x) for x in cc.split(",", 1)[::-1]))
+            Wgs84Coordinate(list(float(x) for x in cc.split(",")[:2][::-1]))
             for cc in corners_lonlat
         )
     else:
