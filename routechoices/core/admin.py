@@ -40,6 +40,7 @@ from routechoices.core.models import (
     MapAssignation,
     Notice,
     TcpDeviceCommand,
+    PRIVACY_PUBLIC,
 )
 from routechoices.lib.helpers import epoch_to_datetime, get_device_name
 
@@ -641,17 +642,30 @@ class EventAdmin(admin.ModelAdmin):
         "link",
     )
     list_filter = (
-        EventDateRangeFilter,
-        HasCompetitorFilter,
-        HasMapsFilter,
-        HasGeoJSONFilter,
-        "privacy",
         "club",
+        EventDateRangeFilter,
+        "privacy",
+        "featured",
+        HasMapsFilter,
+        HasCompetitorFilter,
+        HasGeoJSONFilter,
     )
     search_fields = ("name", "event_set__name", "club__name")
     inlines = [ExtraMapInline, NoticeInline, CompetitorInline]
     show_facets = False
     autocomplete_fields = ("map", "club", "event_set")
+    actions = [
+        "feature_events",
+        "unfeature_events",
+    ]
+
+    def feature_events(self, request, queryset):
+        qs = queryset.filter(featured=False, privacy=PRIVACY_PUBLIC)
+        qs.update(featured=True)
+
+    def unfeature_events(self, request, queryset):
+        qs = queryset.filter(featured=True)
+        qs.update(featured=False)
 
     @admin.display(boolean=True)
     def has_geojson(self, obj):
