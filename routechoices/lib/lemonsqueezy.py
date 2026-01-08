@@ -1,10 +1,9 @@
-import requests
+from curl_cffi import requests
 
 from django.conf import settings
 
 
 def get_subscriptions(order_id=None, user_email=None):
-    print("Getting subscription status")
     url = "https://api.lemonsqueezy.com/v1/subscriptions"
 
     if order_id:
