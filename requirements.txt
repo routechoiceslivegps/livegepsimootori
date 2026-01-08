@@ -7,7 +7,7 @@ asgiref==3.11.0
 asn1crypto==1.5.1
 attrs==25.4.0
 beautifulsoup4==4.14.3
-bleach==6.3.0
+bleach[css]==6.3.0
 boto3==1.42.4
 botocore==1.42.4
 cairocffi==1.7.1
@@ -23,11 +23,11 @@ curl-cffi==0.13.0
 defusedxml==0.7.1
 diskcache==5.6.3
 django==5.2.9
-django-admincommand @ git+https://github.com/rphlo/django-admincommand.git@09f8b0ad150754be88d20c0e7c6a1473b8006872
+django-admincommand @ git+https://github.com/rphlo/django-admincommand.git
 django-allauth==65.13.1
 django-appconf==1.2.0
 django-background-tasks @ git+https://github.com/rphlo/django-background-tasks@6b247d0b3a7565613656d0ec07b55f6c66aa03cc
-django-bootstrap5 @ git+https://github.com/rphlo/django-bootstrap5.git@8c80f8000f62028aa27624205a64e385d497ac42
+django-bootstrap5 @ git+https://github.com/rphlo/django-bootstrap5.git
 django-compressor==4.6.0
 django-cors-headers==4.9.0
 django-csp==4.0
@@ -50,7 +50,7 @@ flatbuffers==25.9.23
 frozenlist==1.8.0
 geoip2==5.2.0
 geojson-validator==0.6.0
-gps-data-codec @ git+https://github.com/routechoiceslivegps/gps-data-codec@d28c189beb02e4a01fab165ab37ec7246e5fe237
+gps-data-codec @ git+https://github.com/routechoiceslivegps/gps-data-codec
 gpxpy==1.6.2
 gunicorn==23.0.0
 h3==4.3.1
@@ -72,7 +72,7 @@ orjson==3.11.5
 packaging==25.0
 pillow==12.0.0
 propcache==0.4.1
-psycopg==3.3.2
+psycopg[binary,pool]==3.3.2
 psycopg-binary==3.3.2
 psycopg-pool==3.3.0
 pycparser==2.23
@@ -93,9 +93,8 @@ rjsmin==1.2.5
 s3transfer==0.16.0
 scipy==1.16.3
 segno==1.6.6
-sentry-sdk==2.47.0
-setuptools==80.9.0
-sewer @ git+https://github.com/rphlo/sewer@10ad8f2885cb038a52fb3686a7e80590a8799349
+sentry-sdk[django]==2.47.0
+sewer @ git+https://github.com/rphlo/sewer@0.8.4b
 shapely==2.1.2
 six==1.17.0
 soupsieve==2.8
@@ -108,7 +107,7 @@ typing-extensions==4.15.0
 typing-inspection==0.4.2
 tzdata==2025.2
 uritemplate==4.2.0
-urllib3==2.6.0
+urllib3==2.6.3
 webauthn==1.11.1
 webencodings==0.5.1
 yarl==1.22.0
