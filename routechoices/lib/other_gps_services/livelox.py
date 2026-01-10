@@ -161,6 +161,8 @@ class Livelox(ThirdPartyTrackingSolutionWithProxy):
         map_obj.bound = bound
 
         length, size = get_remote_image_sizes(map_url)
+        if not size:
+            return None
         width, height = size
         map_obj.width = width
         map_obj.height = height
