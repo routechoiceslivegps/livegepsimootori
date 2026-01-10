@@ -381,9 +381,12 @@ def event_map_view(request, slug, index="1", extension=None):
             proxy.parse_init_data(slug)
         except Exception:
             raise Http404()
-        rmap = proxy.get_map_file()
-        with rmap.open("rb") as fp:
-            data = fp.read()
+        try:
+            rmap = proxy.get_map_file()
+            with rmap.open("rb") as fp:
+                data = fp.read()
+        except Exception:
+            raise Http404()
 
         cache.set(cache_key, data, DURATION_ONE_DAY)
 
