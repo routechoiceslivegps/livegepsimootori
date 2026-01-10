@@ -8,7 +8,6 @@ import secrets
 import struct
 import time
 import urllib
-import urllib.request
 import zoneinfo
 from datetime import datetime
 from math import cos, pi, sin, sqrt
@@ -95,19 +94,22 @@ def get_remote_image_sizes(uri):
     # Get file size *and* image size (None if not known)
     if not re.match("^https?://", uri.lower()):
         raise ValueError("Invalid Protocol")
-    with urllib.request.urlopen(uri) as file:
-        size = file.headers.get("content-length")
-        if size:
-            size = int(size)
-        p = ImageFile.Parser()
-        while 1:
-            data = file.read(1024)
-            if not data:
-                break
-            p.feed(data)
-            if p.image:
-                return size, p.image.size
-        return size, None
+    resp = requests.get(uri, stream=True)
+    try:
+        resp.raise_for_status()
+    except Exception:
+        return None, None
+    size = resp.headers.get("content-length")
+    if size:
+        size = int(size)
+    p = ImageFile.Parser()
+    for data in resp.iter_content(1024):
+        if not data:
+            break
+        p.feed(data)
+        if p.image:
+            return size, p.image.size
+    return size, None
 
 
 class MySite:
