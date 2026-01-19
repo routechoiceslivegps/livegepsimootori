@@ -1,7 +1,6 @@
 from django.urls import re_path, path
 from routechoices.mapdump import views
 
-
 urlpatterns = [
     path("", views.home_view, name="home_view"),
     re_path(r"^map/(?P<aid>[0-9a-zA-Z_-]+)/?", views.effort_view, name="effort_view"),

@@ -94,7 +94,6 @@ from routechoices.lib.validators import (
     validate_nice_slug,
 )
 
-
 logger = logging.getLogger(__name__)
 
 EVENT_CACHE_INTERVAL_LIVE = 5
