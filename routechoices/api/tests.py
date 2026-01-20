@@ -176,6 +176,15 @@ class EssentialApiTestCase1(EssentialApiBase):
         res_json = json.loads(res.content)
         self.assertEqual(len(res_json), 1)
 
+    @override_settings(BANNED_COUNTRIES="FR")
+    def test_add_locations_banned_country(self):
+        device = Device()
+        self.assertEqual(device._location_count, 0)
+        device.add_locations([(0, 45, 0)], save=False)
+        self.assertEqual(device._location_count, 0)
+        device.add_locations([(1, 62, 20)], save=False)
+        self.assertEqual(device._location_count, 1)
+
     def test_add_locations(self):
         device = Device()
         self.assertEqual(device._location_count, 0)
