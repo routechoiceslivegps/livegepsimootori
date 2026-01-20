@@ -2433,6 +2433,7 @@ class Device(models.Model, SomewhereOnEarth):
         fresh_new_locs = []
         old_new_locs = []
         prev_ts = None
+        country = None
         for loc in sorted_new_locations:
             try:
                 ts = int(loc[LOCATION_TIMESTAMP_INDEX])
@@ -2447,6 +2448,10 @@ class Device(models.Model, SomewhereOnEarth):
                 validate_longitude(lon)
             except Exception:
                 continue
+            if not country:
+                country = country_code_at_coords(Wgs84Coordinate(lat, lon))
+                if country in getattr(settings, "BANNED_COUNTRIES", []):
+                    return
             prev_ts = ts
 
             validated_loc = (ts, lat, lon)

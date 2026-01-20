@@ -110,9 +110,8 @@ class ThirdPartyTrackingSolutionWithProxy(ThirdPartyTrackingSolution):
 
     def get_map_file(self):
         r = requests.get(self.get_map_url())
-        if r.status_code == 200:
-            return ContentFile(r.content)
-        return None
+        r.raise_for_status()
+        return ContentFile(r.content)
 
     def get_competitor_devices_data(self, event):
         raise NotImplementedError()

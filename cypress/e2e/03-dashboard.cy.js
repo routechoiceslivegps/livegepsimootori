@@ -99,9 +99,9 @@ context("Dashboard actions", () => {
 		cy.contains("Upgrade to our paid plan!").click();
 		cy.location("pathname").should("eq", "/clubs/halden-sk/upgrade");
 		cy.contains("Upgrade my subscription").click();
-		cy.contains("Proceed to payment").click();
+		cy.contains("Proceed to payment").click({ timeout: 30_000 });
 		cy.origin("https://routechoices.lemonsqueezy.com", () => {
-			cy.contains("Test mode is currently enabled.", { timeout: 20_000 });
+			cy.contains("Test mode is currently enabled.", { timeout: 30_000 });
 		});
 	});
 

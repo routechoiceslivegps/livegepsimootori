@@ -75,10 +75,7 @@ class GpsSeurantaNet(ThirdPartyTrackingSolutionWithProxy):
 
     def get_map(self):
         map_url = self.get_map_url()
-        try:
-            length, size = get_remote_image_sizes(map_url)
-        except Exception:
-            return None
+        length, size = get_remote_image_sizes(map_url)
 
         calibration_string = self.init_data.get("CALIBRATION")
         if not size or not calibration_string:

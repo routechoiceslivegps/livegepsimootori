@@ -358,8 +358,11 @@ class OAuth2GetTokenMiddleware:
         if not hasattr(request, "user") or request.user.is_anonymous:
             if tokenstring := request.GET.get("token"):
                 token_checksum = hashlib.sha256(tokenstring.encode("utf-8")).hexdigest()
-                token = AccessToken.objects.get(token_checksum=token_checksum)
-                request.user = request._cached_user = token.user
+                token = AccessToken.objects.filter(
+                    token_checksum=token_checksum
+                ).first()
+                if token:
+                    request.user = request._cached_user = token.user
 
         response = self.get_response(request)
         return response
