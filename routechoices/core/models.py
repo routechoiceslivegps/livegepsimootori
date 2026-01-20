@@ -113,7 +113,6 @@ BOTTOM_LEFT = 3
 
 
 GLOBAL_MERCATOR = GlobalMercator()
-BANNED_COUNTRIES = getattr(settings, "BANNED_COUNTRIES", [])
 
 
 class StringToArray(models.Func):
@@ -2452,7 +2451,7 @@ class Device(models.Model, SomewhereOnEarth):
                 continue
             if not country:
                 country = country_code_at_coords(Wgs84Coordinate(lat, lon))
-                if country in BANNED_COUNTRIES:
+                if country in getattr(settings, "BANNED_COUNTRIES", []):
                     return
             prev_ts = ts
 
