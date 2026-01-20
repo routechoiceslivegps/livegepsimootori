@@ -16,7 +16,6 @@ from routechoices.lib.globalmaptiles import GlobalMercator
 from routechoices.lib.helpers import get_best_image_mime, safe64encodedsha
 from routechoices.lib.streaming_response import StreamingHttpRangeResponse
 
-
 GLOBAL_MERCATOR = GlobalMercator()
 
 

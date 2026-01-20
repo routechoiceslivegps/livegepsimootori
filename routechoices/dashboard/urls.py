@@ -9,7 +9,6 @@ from routechoices.api import views as api_views
 from routechoices.dashboard import views
 from routechoices.site import views as site_views
 
-
 admin.site.site_header = "Admin"
 admin.site.site_title = "Admin Site"
 admin.site.index_title = "Welcome to the administration site"
