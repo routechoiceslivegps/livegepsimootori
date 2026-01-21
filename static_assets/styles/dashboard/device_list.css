@@ -58,7 +58,7 @@ Label the data
 		font-weight: bold;
 	}
 	td:nth-of-type(3):before {
-		content: "Last Seen";
+		content: "Last Seen*";
 		font-weight: bold;
 	}
 	td:nth-of-type(4):before {
@@ -66,7 +66,7 @@ Label the data
 		font-weight: bold;
 	}
 	td:nth-of-type(5):before {
-		content: "Last Used By";
+		content: "Last Used By*";
 		font-weight: bold;
 	}
 	td:nth-of-type(6):before {
