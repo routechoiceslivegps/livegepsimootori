@@ -351,10 +351,10 @@ def device_list_view(request):
     paginator = Paginator(device_owned_list, DEFAULT_PAGE_SIZE)
     page = request.GET.get("page")
     devices = paginator.get_page(page)
-    devices_listed = devices.object_list.values_list("device__id")
+    devices_ids = devices.object_list.values_list("device__id")
     competitors = (
         Competitor.objects.select_related("event")
-        .filter(device_id__in=devices_listed, start_time__lt=now())
+        .filter(device_id__in=devices_ids, start_time__lt=now())
         .order_by("device_id", "-start_time")
     )
     competitors = competitors.distinct("device_id")
@@ -909,25 +909,31 @@ def event_create_view(request):
 
         notice_form = NoticeForm()
 
-    dev_qs = (
+    devices_qs = (
         Device.objects.filter(id__in=all_devices_id)
         .defer("locations_encoded")
         .prefetch_related("club_ownerships")
     )
-    cd = [
-        {
-            "full": (d.id, d.get_display_str(club)),
-            "key": (d.get_nickname(club), d.get_display_str(club)),
-        }
-        for d in dev_qs
-    ]
-    cd.sort(key=lambda x: (x["key"][0] == "", x["key"]))
-    c = [
+
+    devices_list = sorted(
+        [
+            {
+                "full": (device.id, device.get_display_str(club)),
+                "key": (device.get_nickname(club), device.get_display_str(club)),
+            }
+            for device in devices_qs
+        ],
+        key=lambda x: (x["key"][0] == "", x["key"]),
+    )
+
+    devices_choices = [
         ["", "---------"],
-    ] + [d["full"] for d in cd]
-    for cform in competitors_formset.forms:
-        cform.fields["device"].queryset = dev_qs
-        cform.fields["device"].choices = c
+    ] + [device["full"] for device in devices_list]
+
+    for competitor_form in competitors_formset.forms:
+        competitor_form.fields["device"].queryset = devices_qs
+        competitor_form.fields["device"].choices = devices_choices
+
     return render(
         request,
         "dashboard/event_edit.html",
@@ -1053,25 +1059,39 @@ def event_edit_view(request, event_id):
             notice_form_args["instance"] = event.notice
         notice_form = NoticeForm(**notice_form_args)
 
-    dev_qs = (
+    devices_qs = (
         Device.objects.filter(id__in=all_devices_id)
         .defer("locations_encoded")
         .prefetch_related("club_ownerships")
     )
-    cd = [
-        {
-            "full": (d.id, d.get_display_str(club)),
-            "key": (d.get_nickname(club), d.get_display_str(club)),
-        }
-        for d in dev_qs
-    ]
-    cd.sort(key=lambda x: (x["key"][0] == "", x["key"]))
-    c = [
+
+    devices_list = sorted(
+        [
+            {
+                "full": (device.id, device.get_display_str(club)),
+                "key": (device.get_nickname(club), device.get_display_str(club)),
+            }
+            for device in devices_qs
+            if not device.virtual
+        ],
+        key=lambda x: (x["key"][0] == "", x["key"]),
+    )
+
+    devices_choices = [
         ["", "---------"],
-    ] + [d["full"] for d in cd]
-    for cform in competitors_formset.forms:
-        cform.fields["device"].queryset = dev_qs
-        cform.fields["device"].choices = c
+    ] + [device["full"] for device in devices_list]
+
+    for competitor_form in competitors_formset.forms:
+        competitor_devices_choices = devices_choices
+
+        if competitor_form.instance.device and competitor_form.instance.device.virtual:
+            virtual_device = competitor_form.instance.device
+            competitor_devices_choices.append(
+                (virtual_device.id, virtual_device.get_display_str(club))
+            )
+
+        competitor_form.fields["device"].queryset = devices_qs
+        competitor_form.fields["device"].choices = competitor_devices_choices
 
     return render(
         request,
@@ -1123,16 +1143,21 @@ def event_competitors_view(request, event_id):
     comp_devices_id = [c.device_id for c in competitors.object_list]
     own_devices_id = club.devices.values_list("id", flat=True)
     all_devices_id = set(list(comp_devices_id) + list(own_devices_id))
+    competitors_formset = CompetitorFormSet(
+        instance=event,
+        queryset=comps,
+    )
+    competitors_formset.extra = 0
     if request.method == "POST":
         # create a form instance and populate it with data from the request:
         event_copy = deepcopy(event)
-        formset = CompetitorFormSet(
+        competitors_formset = CompetitorFormSet(
             request.POST,
             instance=event_copy,
         )
         # check whether it's valid:
-        if formset.is_valid():
-            formset.save()
+        if competitors_formset.is_valid():
+            competitors_formset.save()
             messages.success(request, "Changes saved successfully")
             return redirect(
                 "dashboard_club:event:edit_view",
@@ -1140,29 +1165,45 @@ def event_competitors_view(request, event_id):
                 club_slug=request.club.slug,
             )
 
-        for cform in formset.forms:
+        for cform in competitors_formset.forms:
             if "device" in cform.changed_data and (
                 new_device := cform.cleaned_data.get("device")
             ):
                 all_devices_id.add(new_device.id)
-    else:
-        formset = CompetitorFormSet(
-            instance=event,
-            queryset=comps,
-        )
-        formset.extra = 0
 
-    dev_qs = (
+    devices_qs = (
         Device.objects.filter(id__in=all_devices_id)
         .defer("locations_encoded")
         .prefetch_related("club_ownerships")
     )
-    c = [
+
+    devices_list = sorted(
+        [
+            {
+                "full": (device.id, device.get_display_str(club)),
+                "key": (device.get_nickname(club), device.get_display_str(club)),
+            }
+            for device in devices_qs
+            if not device.virtual
+        ],
+        key=lambda x: (x["key"][0] == "", x["key"]),
+    )
+
+    devices_choices = [
         ["", "---------"],
-    ] + [[d.id, d.get_display_str(club)] for d in dev_qs]
-    for cform in formset.forms:
-        cform.fields["device"].queryset = dev_qs
-        cform.fields["device"].choices = c
+    ] + [device["full"] for device in devices_list]
+
+    for competitor_form in competitors_formset.forms:
+        competitor_devices_choices = devices_choices
+
+        if competitor_form.instance.device and competitor_form.instance.device.virtual:
+            virtual_device = competitor_form.instance.device
+            competitor_devices_choices.append(
+                (virtual_device.id, virtual_device.get_display_str(club))
+            )
+
+        competitor_form.fields["device"].queryset = devices_qs
+        competitor_form.fields["device"].choices = competitor_devices_choices
 
     return render(
         request,
@@ -1170,7 +1211,7 @@ def event_competitors_view(request, event_id):
         {
             "club": club,
             "event": event,
-            "formset": formset,
+            "formset": competitors_formset,
             "competitors": competitors,
             "search_query": search_query,
         },
@@ -1457,7 +1498,7 @@ def quick_event(request):
             c.save()
         return redirect(f"{club.nice_url}{e.slug}")
     all_devices_id = set(club.devices.values_list("id", flat=True))
-    dev_qs = (
+    devices_qs = (
         Device.objects.filter(id__in=all_devices_id)
         .defer("locations_encoded")
         .prefetch_related("club_ownerships")
@@ -1465,11 +1506,11 @@ def quick_event(request):
     devices = sorted(
         [
             {
-                "aid": d.aid,
-                "name": d.get_display_str(club),
-                "key": (d.get_nickname(club), d.get_display_str(club)),
+                "aid": device.aid,
+                "name": device.get_display_str(club),
+                "key": (device.get_nickname(club), device.get_display_str(club)),
             }
-            for d in dev_qs
+            for device in devices_qs
         ],
         key=lambda x: (x["key"][0] == "", x["key"]),
     )
