@@ -39,7 +39,7 @@ context("Events in future", () => {
 		cy.get("#id_short_name").type("🇫🇷 T.Gueorgiou");
 		cy.get("#id_device_id-ts-control").type("123456").wait(1000).blur();
 		cy.get("button:not([type]),button[type=submit]").eq(0).click();
-		cy.contains("Competitor added!");
+		cy.contains("Registration successful!");
 	});
 
 	it("Can not upload to an Event even if upload allowed since it is not yet started", () => {
