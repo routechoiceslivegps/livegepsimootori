@@ -46,37 +46,47 @@ class TMT250Decoder:
             lon = unpack(">i", buffer[pointer + 9 : pointer + 13])[0] / 1e7
             lat = unpack(">i", buffer[pointer + 13 : pointer + 17])[0] / 1e7
             pointer += 26
+            if self.extended:
+                pointer += 2
             n1 = buffer[pointer]
             if self.extended:
                 pointer += 1
-                n1 = n1 << 8 + buffer[pointer]
+                n1 = (n1 << 8) + buffer[pointer]
             pointer += 1
 
-            for i in range(n1):
-                avl_id = buffer[pointer + i * 2]
+            for _ in range(n1):
+                avl_id = buffer[pointer]
+                if self.extended:
+                    pointer += 1
+                    avl_id = (avl_id << 8) + buffer[pointer]
+                pointer += 1
                 if avl_id == 113:
-                    self.battery_level = buffer[pointer + 1 + i * 2]
+                    self.battery_level = buffer[pointer]
                 if avl_id == 236:
-                    self.alarm_triggered = buffer[pointer + 1 + i * 2]
-            pointer += n1 * 2
-
+                    self.alarm_triggered = buffer[pointer]
+                pointer += 1
             n2 = buffer[pointer]
             if self.extended:
                 pointer += 1
-                n2 = n2 << 8 + buffer[pointer]
+                n2 = (n2 << 8) + buffer[pointer]
             pointer += 1 + 3 * n2
+            if self.extended:
+                pointer += n2
 
             n4 = buffer[pointer]
             if self.extended:
                 pointer += 1
-                n4 = n4 << 8 + buffer[pointer]
+                n4 = (n4 << 8) + buffer[pointer]
             pointer += 1 + 5 * n4
-
+            if self.extended:
+                pointer += n4
             n8 = buffer[pointer]
             if self.extended:
                 pointer += 1
-                n8 = n8 << 8 + buffer[pointer]
+                n8 = (n8 << 8) + buffer[pointer]
             pointer += 1 + 9 * n8
+            if self.extended:
+                pointer += n8
             self.packet["records"].append(
                 {
                     "timestamp": timestamp,
