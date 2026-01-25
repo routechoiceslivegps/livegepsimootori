@@ -87,6 +87,15 @@ class TMT250Decoder:
             pointer += 1 + 9 * n8
             if self.extended:
                 pointer += n8
+
+            if self.extended:
+                nx = (buffer[pointer] << 8) + buffer[pointer + 1]
+                pointer += 2
+                for i in range(nx):
+                    pointer += 2
+                    len_nxi = (buffer[pointer] << 8) + buffer[pointer + 1]
+                    pointer += len_nxi
+
             self.packet["records"].append(
                 {
                     "timestamp": timestamp,
