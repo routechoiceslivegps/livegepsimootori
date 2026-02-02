@@ -4,7 +4,7 @@
 		btn.addClass("disabled");
 		btn.prepend('<i class="fa-solid fa-spinner fa-spin me-1"></i>');
 	});
-	u("#id_token")
+	u("#id_totp")
 		.addClass("font-monospace", "totp-token")
 		.attr({
 			placeholder: "••••••",
