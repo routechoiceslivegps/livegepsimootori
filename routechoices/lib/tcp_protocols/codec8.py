@@ -127,17 +127,17 @@ class Codec8Connection(GenericConnection):
             await self.stream.write(b"\x00")
             self.stream.close()
             print(
-                f"Teltonika - invalid identification {self.address}, {imei}, {imei_len}",
+                f"Codec8 - invalid identification {self.address}, {imei}, {imei_len}",
                 flush=True,
             )
         else:
             await self.stream.write(b"\x01")
             self.logger.info(
-                f"TMT250 CONN, {self.aid}, {self.address}, {self.imei}: {safe64encode(bytes(data))}"
+                f"CODEC8 CONN, {self.aid}, {self.address}, {self.imei}: {safe64encode(bytes(data))}"
             )
 
     async def start_listening(self):
-        print("Teltonika - Listening from", self.address)
+        print("Codec8 - Listening from", self.address)
 
         while True:
             try:
@@ -145,12 +145,12 @@ class Codec8Connection(GenericConnection):
                 data_len = await self.stream.read_into(data, partial=True)
                 if self.imei:
                     self.logger.info(
-                        f"TMT250 DATA, {self.aid}, {self.address}, {self.imei}: "
+                        f"CODEC8 DATA, {self.aid}, {self.address}, {self.imei}: "
                         f"{safe64encode(bytes(data[:data_len]))}"
                     )
 
                 if data_len == 1 and data[0] == b"\xff":
-                    print("Teltonika - heartbeat", flush=True)
+                    print("Codec8 - heartbeat", flush=True)
                 elif data_len > 2:
                     imei_len = (data[0] << 8) + data[1]
                     if imei_len > 0:
@@ -198,7 +198,7 @@ class Codec8Connection(GenericConnection):
                     self.db_device
                 )
                 print(
-                    f"Teltonika - SOS triggered by device {sos_device_aid}, {sos_lat}, {sos_lon}"
+                    f"Codec8 - SOS triggered by device {sos_device_aid}, {sos_lat}, {sos_lon}"
                     f" email sent to {sos_sent_to}",
                     flush=True,
                 )
