@@ -1569,6 +1569,7 @@ def get_version(request):
     },
 )
 @api_POST_view
+@throttle_classes([PostDataThrottle])
 def create_device_id(request):
     imei = request.data.get("imei")
     if imei:
