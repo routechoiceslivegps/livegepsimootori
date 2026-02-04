@@ -209,15 +209,13 @@ def wms_service(request):
                             "map": layer.map,
                         }
                     )
-        headers = {}
-        if event.privacy == PRIVACY_PRIVATE:
-            headers["Cache-Control"] = "Private"
-        return render(
-            request,
-            "wms/index.xml",
-            {"layers": layers, "min_xy": min_xy, "max_xy": max_xy},
+        return HttpResponse(
+            render(
+                request,
+                "wms/index.xml",
+                {"layers": layers, "min_xy": min_xy, "max_xy": max_xy},
+            ),
             content_type="text/xml",
-            headers=headers,
         )
 
     return HttpResponse(status=status.HTTP_501_NOT_IMPLEMENTED)

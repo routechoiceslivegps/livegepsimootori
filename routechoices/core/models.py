@@ -690,11 +690,11 @@ class Map(models.Model, SomewhereOnEarth):
 
     @property
     def max_xy(self):
-        return wgs84_to_meters(self.max_lat, self.max_lon)
+        return wgs84_to_meters(Wgs84Coordinate(self.max_lat, self.max_lon))
 
     @property
     def min_xy(self):
-        return wgs84_to_meters(self.min_lat, self.min_lon)
+        return wgs84_to_meters(Wgs84Coordinate(self.min_lat, self.min_lon))
 
     @property
     def alignment_points(self):
