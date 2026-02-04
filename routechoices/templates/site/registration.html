@@ -32,7 +32,7 @@
         <br/>
         By {% if event.club.logo %}<img src="{{ event.club.logo_url_www }}" class="rounded me-2" width="25" height="25" alt="{{ event.club.name }}'s logo" style="vertical-align: bottom">{% endif %}<b>{{ event.club.name }}</b>
         </p>
-        <a href="{% host_url 'event_contribute_view' slug=event.slug club_slug=event.club.slug host 'dashboard' %}" class="link-primary-alt stretched-link btn btn-primary"><i class="fa-solid fa-file-signature"></i> Register</a>
+        <a href="{% host_url 'event_contribute_view' slug=event.slug club_slug=event.club.slug host 'dashboard' %}" class="registration-link link-primary-alt stretched-link btn btn-primary"><i class="fa-solid fa-file-signature"></i> Register</a>
     </div>
   </div>
     {% endfor %}
@@ -41,3 +41,10 @@
 <h1>No events are open for registration…</h1>
 {% endif %}
 {% endblock content %}
+
+{% block extra_body %}
+    {% compress js %}
+        <script src="{% static 'vendor/umbrella-3.3.1/umbrella.min.js' %}"></script>
+        <script src="{% static 'scripts/site/registration.js' %}"></script>
+    {% endcompress %}
+{% endblock extra_body %}

@@ -2845,6 +2845,7 @@ class Competitor(models.Model, SomewhereOnEarth):
     def archive_device(self, save=True):
         if not self.device:
             return None
+        original = self.device
         archive = Device(
             aid=f"{short_random_key()}_ARC",
             virtual=True,
@@ -2853,7 +2854,7 @@ class Competitor(models.Model, SomewhereOnEarth):
         self.device = archive
         if save:
             archive.save()
-            DeviceArchiveReference.objects.create(original=self.device, archive=archive)
+            DeviceArchiveReference.objects.create(original=original, archive=archive)
             self.save()
         return archive
 

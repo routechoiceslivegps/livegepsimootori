@@ -46,37 +46,56 @@ class TMT250Decoder:
             lon = unpack(">i", buffer[pointer + 9 : pointer + 13])[0] / 1e7
             lat = unpack(">i", buffer[pointer + 13 : pointer + 17])[0] / 1e7
             pointer += 26
+            if self.extended:
+                pointer += 2
             n1 = buffer[pointer]
             if self.extended:
                 pointer += 1
-                n1 = n1 << 8 + buffer[pointer]
+                n1 = (n1 << 8) + buffer[pointer]
             pointer += 1
 
-            for i in range(n1):
-                avl_id = buffer[pointer + i * 2]
+            for _ in range(n1):
+                avl_id = buffer[pointer]
+                if self.extended:
+                    pointer += 1
+                    avl_id = (avl_id << 8) + buffer[pointer]
+                pointer += 1
                 if avl_id == 113:
-                    self.battery_level = buffer[pointer + 1 + i * 2]
+                    self.battery_level = buffer[pointer]
                 if avl_id == 236:
-                    self.alarm_triggered = buffer[pointer + 1 + i * 2]
-            pointer += n1 * 2
-
+                    self.alarm_triggered = buffer[pointer]
+                pointer += 1
             n2 = buffer[pointer]
             if self.extended:
                 pointer += 1
-                n2 = n2 << 8 + buffer[pointer]
+                n2 = (n2 << 8) + buffer[pointer]
             pointer += 1 + 3 * n2
+            if self.extended:
+                pointer += n2
 
             n4 = buffer[pointer]
             if self.extended:
                 pointer += 1
-                n4 = n4 << 8 + buffer[pointer]
+                n4 = (n4 << 8) + buffer[pointer]
             pointer += 1 + 5 * n4
-
+            if self.extended:
+                pointer += n4
             n8 = buffer[pointer]
             if self.extended:
                 pointer += 1
-                n8 = n8 << 8 + buffer[pointer]
+                n8 = (n8 << 8) + buffer[pointer]
             pointer += 1 + 9 * n8
+            if self.extended:
+                pointer += n8
+
+            if self.extended:
+                nx = (buffer[pointer] << 8) + buffer[pointer + 1]
+                pointer += 2
+                for i in range(nx):
+                    pointer += 2
+                    len_nxi = (buffer[pointer] << 8) + buffer[pointer + 1]
+                    pointer += len_nxi
+
             self.packet["records"].append(
                 {
                     "timestamp": timestamp,
@@ -108,17 +127,17 @@ class Codec8Connection(GenericConnection):
             await self.stream.write(b"\x00")
             self.stream.close()
             print(
-                f"Teltonika - invalid identification {self.address}, {imei}, {imei_len}",
+                f"Codec8 - invalid identification {self.address}, {imei}, {imei_len}",
                 flush=True,
             )
         else:
             await self.stream.write(b"\x01")
             self.logger.info(
-                f"TMT250 CONN, {self.aid}, {self.address}, {self.imei}: {safe64encode(bytes(data))}"
+                f"CODEC8 CONN, {self.aid}, {self.address}, {self.imei}: {safe64encode(bytes(data))}"
             )
 
     async def start_listening(self):
-        print("Teltonika - Listening from", self.address)
+        print("Codec8 - Listening from", self.address)
 
         while True:
             try:
@@ -126,12 +145,12 @@ class Codec8Connection(GenericConnection):
                 data_len = await self.stream.read_into(data, partial=True)
                 if self.imei:
                     self.logger.info(
-                        f"TMT250 DATA, {self.aid}, {self.address}, {self.imei}: "
+                        f"CODEC8 DATA, {self.aid}, {self.address}, {self.imei}: "
                         f"{safe64encode(bytes(data[:data_len]))}"
                     )
 
                 if data_len == 1 and data[0] == b"\xff":
-                    print("Teltonika - heartbeat", flush=True)
+                    print("Codec8 - heartbeat", flush=True)
                 elif data_len > 2:
                     imei_len = (data[0] << 8) + data[1]
                     if imei_len > 0:
@@ -179,7 +198,7 @@ class Codec8Connection(GenericConnection):
                     self.db_device
                 )
                 print(
-                    f"Teltonika - SOS triggered by device {sos_device_aid}, {sos_lat}, {sos_lon}"
+                    f"Codec8 - SOS triggered by device {sos_device_aid}, {sos_lat}, {sos_lon}"
                     f" email sent to {sos_sent_to}",
                     flush=True,
                 )

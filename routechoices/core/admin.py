@@ -766,6 +766,14 @@ class DeviceOwnershipInline(admin.TabularInline):
         return super().get_queryset(request).select_related("device", "club")
 
 
+class DeviceArchiveReferenceInline(admin.TabularInline):
+    model = DeviceArchiveReference
+    fields = ("archive",)
+    ordering = ("archive___last_location_datetime",)
+    autocomplete_fields = ["archive"]
+    fk_name = "original"
+
+
 @admin.register(Device)
 class DeviceAdmin(admin.ModelAdmin):
     class Media:
@@ -790,6 +798,7 @@ class DeviceAdmin(admin.ModelAdmin):
     inlines = [
         DeviceCompetitorInline,
         DeviceOwnershipInline,
+        DeviceArchiveReferenceInline,
     ]
     list_filter = (
         VirtualDeviceFilter,

@@ -118,7 +118,7 @@ function parseGpx(xmlstr) {
 }
 
 function selectizeDeviceInput(field) {
-	new TomSelect(field, {
+	return new TomSelect(field, {
 		valueField: "device_id",
 		labelField: "device_id",
 		searchField: "device_id",
@@ -200,12 +200,23 @@ function selectizeDeviceInput(field) {
 		if (window.local.eventEnded) {
 			u("#id_device_id").parent().remove();
 		} else {
-			selectizeDeviceInput("select[name='device_id']");
+			const tsDevId = selectizeDeviceInput("select[name='device_id']");
 			u("select[name='device_id']").on("change", (e) => {
 				if (e.target.value) {
 					u("#warning-if-device-id").removeClass("d-none");
 				}
 			});
+			if (window.location.hash) {
+				const hash = window.location.hash;
+				const searchParams = new URLSearchParams(hash.slice(1));
+				const deviceId = searchParams.get("device_id");
+				if (deviceId) {
+					tsDevId.clear();
+					tsDevId.clearOptions();
+					tsDevId.addOption({ device_id: deviceId });
+					tsDevId.setValue(deviceId);
+				}
+			}
 		}
 		if (u("#upload-form").nodes.length) {
 			u("#id_device_id-ts-label").text(

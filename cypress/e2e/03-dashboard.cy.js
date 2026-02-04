@@ -28,7 +28,7 @@ context("Dashboard actions", () => {
 		cy.get("#id_short_name").type("🇫🇷 T.Gueorgiou");
 		cy.get("#id_device_id-ts-control").type("123456").wait(1000).blur();
 		cy.get("button:not([type]),button[type=submit]").eq(0).click();
-		cy.contains("Competitor added!");
+		cy.contains("Registration successful!");
 		cy.get(".upload-route-btn").first().click();
 
 		cy.get("#id_gpx_file").selectFile({
