@@ -1288,9 +1288,9 @@ def event_new_data(request, event_id, key):
             if "categories" in diff:
                 diff["categories"] = diff["categories"].split(" ")
             if "encoded_data" in diff:
-                if old_location_encoded := old_match.get("encoded_data"):
+                if old_encoded_locations := old_match.get("encoded_data"):
                     diff["encoded_data"] = gps_data_codec.encoded_diff(
-                        old_location_encoded, competitor.get("encoded_data")
+                        old_encoded_locations, competitor.get("encoded_data")
                     )
                 else:
                     diff["encoded_data"] = competitor.get("encoded_data")

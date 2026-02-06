@@ -2146,10 +2146,10 @@ class Event(models.Model, SomewhereOnEarth):
             self.competitors.select_related("device")
             .filter(
                 device__isnull=False,
-                device__location_encoded__isnull=False,
+                device__locations_encoded__isnull=False,
             )
             .exclude(
-                device__location_encoded="",
+                device__locations_encoded="",
             )
         )
         for competitor in sample_competitors:
