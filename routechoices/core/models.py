@@ -2142,13 +2142,19 @@ class Event(models.Model, SomewhereOnEarth):
             coords = [pt[1], pt[0]]
             cache.set(cache_key, coords, DURATION_ONE_MONTH)
             return coords
-        sample_competitors = self.competitors.select_related("device").exclude(
-            device__isnull=True
+        sample_competitors = (
+            self.competitors.select_related("device")
+            .filter(
+                device__isnull=False,
+                device__location_encoded__isnull=False,
+            )
+            .exclude(
+                device__location_encoded="",
+            )
         )
-        for c in sample_competitors:
-            if locs := c.locations:
-                loc = locs[0]
-                return loc[1:]
+        for competitor in sample_competitors:
+            if locs := competitor.locations:
+                return locs[0][1:]
         return None
 
 
