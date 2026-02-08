@@ -24,7 +24,10 @@ class Loggator(ThirdPartyTrackingSolutionWithProxy):
         r = requests.get(event_url)
         if r.status_code != 200:
             raise EventImportError("API returned error code")
-        self.init_data = r.json()
+        init_data = r.json()
+        if not isinstance(init_data, dict):
+            raise EventImportError("Unexpected init data")
+        self.init_data = init_data
         self.uid = uid
 
     def get_event(self):
