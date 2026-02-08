@@ -229,6 +229,7 @@ class TCPConnectionsTest(AsyncTestCase, TransactionTestCase):
         await client.write(gps_data)
         await asyncio.sleep(0.05)
         device = await refresh_device(device)
+        self.assertEqual(device.battery_level, 75)
         self.assertEqual(device.location_count, 9)
         if server is not None:
             server.stop()
