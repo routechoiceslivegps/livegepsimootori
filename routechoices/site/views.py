@@ -123,7 +123,6 @@ def pay_view(request):
     if r.status_code // 100 == 2:
         data = r.json()
         return redirect(data["data"]["attributes"]["url"])
-    1 / 0
     messages.error(request, "Something went wrong!")
     return redirect("/")
 
