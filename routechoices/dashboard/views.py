@@ -474,7 +474,7 @@ def club_view(request):
     subscription_link = "https://app.lemonsqueezy.com/my-orders"
     if order_id := club.order_id:
         subscription = get_subscriptions(order_id=order_id)
-        if subscription["data"]:
+        if subscription and subscription.get("data"):
             subscription_link = subscription["data"][0]["attributes"]["urls"][
                 "customer_portal"
             ]

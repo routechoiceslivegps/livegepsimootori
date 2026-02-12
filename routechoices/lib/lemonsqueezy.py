@@ -22,5 +22,4 @@ def get_subscriptions(order_id=None, user_email=None):
 
     if response.status_code == 200:
         return response.json()
-    else:
-        return response.text
+    return None
