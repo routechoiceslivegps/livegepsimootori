@@ -344,6 +344,8 @@ PERMISSIONS_POLICY = {
     "usb": [],
 }
 
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 100_000
+
 try:
     from .settings_overrides import *  # noqa: F403, F401
 except ImportError:
