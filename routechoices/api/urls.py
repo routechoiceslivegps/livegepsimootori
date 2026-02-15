@@ -34,7 +34,6 @@ urlpatterns = [
         HealthCheckView.as_view(
             checks=[  # optional, default is all but 3rd party checks
                 "health_check.Cache",
-                "health_check.DNS",
                 "health_check.Database",
                 "health_check.Mail",
                 "health_check.Storage",
