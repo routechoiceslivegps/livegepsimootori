@@ -106,11 +106,11 @@ INSTALLED_APPS = [
     "compressor",
     "hijack",
     "health_check",  # required
-    "health_check.db",  # stock Django health checkers
-    "health_check.cache",
-    "health_check.storage",
-    "health_check.contrib.migrations",
-    "health_check.contrib.s3boto3_storage",  # requires boto3 and S3BotoStorage backend
+    # "health_check.db",  # stock Django health checkers
+    # "health_check.cache",
+    # "health_check.storage",
+    # "health_check.contrib.migrations",
+    # "health_check.contrib.s3boto3_storage",  # requires boto3 and S3BotoStorage backend
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

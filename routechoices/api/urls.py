@@ -5,6 +5,7 @@ from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 from oauth2_provider.urls import app_name, base_urlpatterns
 from routechoices.api import views
+from health_check.views import HealthCheckView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -28,7 +29,21 @@ urlpatterns = [
     re_path(r"^$", schema_view.with_ui("swagger", cache_timeout=60), name="api_doc"),
     re_path(r"^check-latlon/?$", views.ip_latlon, name="ip_latlon"),
     re_path(r"^event-set/?$", views.event_set_creation, name="event_set"),
-    path(r"healthcheck/", include("health_check.urls")),
+    path(
+        r"healthcheck/",
+        HealthCheckView.as_view(
+            checks=[  # optional, default is all but 3rd party checks
+                "health_check.Cache",
+                "health_check.DNS",
+                "health_check.Database",
+                "health_check.Mail",
+                "health_check.Storage",
+                # 3rd party checks
+                "health_check.contrib.psutil.Disk",
+                "health_check.contrib.psutil.Memory",
+            ],
+        ),
+    ),
     re_path(r"^locations/?$", views.locations_api_gw, name="locations_api_gw"),
     re_path(
         r"^maps/(?P<map_id>[-0-9a-zA-Z_]+)/kmz$",
