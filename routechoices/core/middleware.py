@@ -167,10 +167,8 @@ class HostsRequestMiddleware(HostsBaseMiddleware):
         if raw_host.endswith(default_subdomain_suffix):
             slug = raw_host[: -(len(default_subdomain_suffix))].lower()
             if slug not in (
-                "admin",
                 "api",
                 "dashboard",
-                "events",
                 "map",
                 "registration",
                 "tiles",
