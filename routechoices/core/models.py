@@ -283,7 +283,7 @@ Follow our events live or replay them later.
     subscription_paused_at = models.DateTimeField(blank=True, null=True)
 
     forbid_invite_request = models.BooleanField(
-        "Prevent external users to request admin rights", default=False
+        "Prevent external users from requesting admin rights", default=False
     )
 
     frontpage_featured = models.BooleanField("Featured on frontpage", default=False)
@@ -1572,8 +1572,8 @@ class Event(models.Model, SomewhereOnEarth):
         "Tail length (seconds)",
         default=60,
         help_text=(
-            "Default tail length when a user open the event. "
-            "Can be overriden by the viewers in the event page settings tab."
+            "Default tail length when a user opens the event. "
+            "Can be overridden by the viewers in the event page settings tab."
         ),
     )
     event_set = models.ForeignKey(
@@ -1602,7 +1602,7 @@ class Event(models.Model, SomewhereOnEarth):
         upload_to=geojson_upload_path,
         null=True,
         blank=True,
-        help_text='A <a href="//www.routechoices.com/guide/geojson" taget="_blank" rel="nofollow noopener">GeoJSON CSS</a> file.',
+        help_text='A <a href="//www.routechoices.com/guide/geojson" target="_blank" rel="nofollow noopener">GeoJSON CSS</a> file.',
         storage=OverwriteImageStorage(aws_s3_bucket_name=settings.AWS_S3_BUCKET),
     )
 

@@ -1689,7 +1689,7 @@ def event_contribute_view(request, club_slug, slug):
     if request.GET.get("competitor-added", None):
         messages.success(
             request,
-            "Registration successful! Remember to start your GPS at the begining of the event!",
+            "Registration successful! Remember to start your GPS at the beginning of the event!",
         )
     if request.GET.get("route-uploaded", None):
         messages.success(request, "Data uploaded!")

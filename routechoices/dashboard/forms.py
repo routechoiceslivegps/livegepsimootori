@@ -454,11 +454,11 @@ class EventForm(ModelForm):
                     "Your 10 days free trial has now expired, you cannot create or edit events anymore.",
                 )
 
-        # Check that start date is before ends date
+        # Check that start date is before end date
         start_date = self.cleaned_data.get("start_date")
         end_date = self.cleaned_data.get("end_date")
         if start_date and end_date and end_date < start_date:
-            self.add_error("end_date", "End Date must be after than the Start Date.")
+            self.add_error("end_date", "End Date must be after the Start Date.")
 
         # Check events by trial users is within trial period
         if club.is_on_free_trial and end_date > club.free_trial_end:
@@ -580,7 +580,7 @@ class ExtraMapForm(ModelForm):
         if int(self.data.get("map")) == self.cleaned_data.get("map").id:
             raise ValidationError("Map assigned more than once in this event")
 
-        map_occurence = 0
+        map_occurrence = 0
         num_maps = int(self.data.get("map_assignations-TOTAL_FORMS", 1))
         start_count_maps = int(self.data.get("map_assignations-MIN_NUM_FORMS", 0))
         for i in range(start_count_maps, start_count_maps + num_maps):
@@ -589,8 +589,8 @@ class ExtraMapForm(ModelForm):
                 and self.data.get(f"map_assignations-{i}-DELETE") != "on"
                 and int(self.data.get(f"map_assignations-{i}-map")) == raster_map.id
             ):
-                map_occurence += 1
-                if map_occurence > 1:
+                map_occurrence += 1
+                if map_occurrence > 1:
                     raise ValidationError("Map assigned more than once in this event")
         return raster_map
 
@@ -600,7 +600,7 @@ class ExtraMapForm(ModelForm):
         if main_map_title and main_map_title == map_title:
             raise ValidationError("Map title given more than once in this event")
 
-        title_occurence = 0
+        title_occurrence = 0
         num_maps = int(self.data.get("map_assignations-TOTAL_FORMS", 1))
         start_count_maps = int(self.data.get("map_assignations-MIN_NUM_FORMS", 0))
         for i in range(start_count_maps, start_count_maps + num_maps):
@@ -609,8 +609,8 @@ class ExtraMapForm(ModelForm):
                 and self.data.get(f"map_assignations-{i}-DELETE") != "on"
                 and self.data.get(f"map_assignations-{i}-title") == map_title
             ):
-                title_occurence += 1
-                if title_occurence > 1:
+                title_occurrence += 1
+                if title_occurrence > 1:
                     raise ValidationError(
                         "Map title given more than once in this event"
                     )

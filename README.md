@@ -17,6 +17,6 @@ It includes:
   - A Tile server for serving background layers tiles.
   - An admin interface for the staff.
 
-This project heavily rely on the Django and the Tornado Web python frameworks.
+This project heavily relies on the Django and Tornado Web Python frameworks.
 
 Hosted at https://www.routechoices.com

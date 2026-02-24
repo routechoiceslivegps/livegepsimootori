@@ -150,7 +150,7 @@ def contact(request):
                 reply_to=[from_email],
             )
             msg.send()
-            messages.success(request, "Message sent succesfully")
+            messages.success(request, "Message sent successfully")
             return redirect(reverse("site:contact_view", host="www"))
     else:
         form = ContactForm()

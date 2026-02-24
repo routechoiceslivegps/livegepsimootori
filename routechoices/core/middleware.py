@@ -55,7 +55,7 @@ class XForwardedForMiddleware:
     XFF_EXEMPT_URLS can be an iterable (eg. list) that defines URLs as
     regexps that will not be checked. XFF_EXEMPT_STEALTH = True will
     return a 404 when all proxies are present. This is nice for a
-    healtcheck URL that is not for the public eye.
+    healthcheck URL that is not for the public eye.
     XFF_HEADER_REQUIRED = True will return a bad request when the header
     is not set. By default it takes the same value as XFF_ALWAYS_PROXY.
     """

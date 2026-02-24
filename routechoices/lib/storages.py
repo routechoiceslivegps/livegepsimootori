@@ -11,7 +11,7 @@ STORED_MEDIA_RE = re.compile(
 
 
 class OverwriteImageStorage(S3Storage):
-    """Storage that delete a previous file with the same name
+    """Storage that deletes a previous file with the same name
     and its copy at different resolution
     """
 

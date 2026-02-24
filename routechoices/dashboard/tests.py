@@ -674,7 +674,7 @@ class TestDashboard(EssentialDashboardBase):
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertContains(res, "invalid-feedback")
-        self.assertContains(res, "End Date must be after than the Start Date.")
+        self.assertContains(res, "End Date must be after the Start Date.")
 
         # name used other event in same event set
         es = EventSet.objects.create(

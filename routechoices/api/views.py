@@ -567,7 +567,7 @@ def event_detail(request, event_id):
     )
 
     if not event:
-        res = {"error": "No event match this id"}
+        res = {"error": "No event matches this ID"}
         return Response(res)
 
     event.check_user_permission(request.user)
@@ -718,7 +718,7 @@ def create_competitor(request):
         raise ValidationError("Event ID is missing")
     event = Event.objects.select_related("club").filter(aid=event_id).first()
     if not event:
-        raise ValidationError("No event match this id")
+        raise ValidationError("No event matches this ID")
 
     is_event_admin = False
     if request.user.is_authenticated:
@@ -888,7 +888,7 @@ def competitor_api(request, competitor_id):
         .first()
     )
     if not competitor:
-        res = {"error": "No competitor match this id"}
+        res = {"error": "No competitor matches this ID"}
         return Response(res)
 
     event = competitor.event
@@ -1023,7 +1023,7 @@ def competitor_route_upload(request, competitor_id):
         .first()
     )
     if not competitor:
-        res = {"error": "No competitor match this id"}
+        res = {"error": "No competitor matches this ID"}
         return Response(res)
     event = competitor.event
 
@@ -1154,7 +1154,7 @@ def event_data(request, event_id):
         .first()
     )
     if not event:
-        response = {"error": "No event match this id"}
+        response = {"error": "No event matches this ID"}
         return Response(response)
 
     if not event.is_live:
@@ -1333,7 +1333,7 @@ def event_zip(request, event_id):
         .first()
     )
     if not event:
-        response = {"error": "No event match this id"}
+        response = {"error": "No event matches this ID"}
         return Response(response)
     event.check_user_permission(request.user)
 
@@ -1696,7 +1696,7 @@ def device_search(request):
 def device_info(request, device_id):
     device = Device.objects.filter(aid=device_id, virtual=False).first()
     if not device:
-        res = {"error": "No device match this id"}
+        res = {"error": "No device matches this ID"}
         return Response(res)
 
     return Response(

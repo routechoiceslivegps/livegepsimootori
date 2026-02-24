@@ -12,9 +12,9 @@ def checksum(string):
 def validate(string):
     """
     Check if the provided string of digits satisfies the Luhn checksum.
-    >>> verify('356938035643809')
+    >>> validate('356938035643809')
     True
-    >>> verify('534618613411236')
+    >>> validate('534618613411236')
     False
     """
     return checksum(string) == 0

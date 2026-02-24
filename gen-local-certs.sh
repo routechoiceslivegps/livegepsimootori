@@ -42,7 +42,7 @@ openssl x509 -req -in ${DOMAIN}.csr -CA ${NAME}CA.pem -CAkey ${NAME}CA.key -CAcr
 
 rm -f ${NAME}CA.key ${NAME}CA.srl ${DOMAIN}.csr ${DOMAIN}.ext
 
-echo "Local certificates created succesfully! Adding ${NAME}CA certificate to keychain to enable local HTTPS..."
+echo "Local certificates created successfully! Adding ${NAME}CA certificate to keychain to enable local HTTPS..."
 unameOut="$(uname -s)"
 case "${unameOut}" in
     Linux*)     machine=Linux;;
