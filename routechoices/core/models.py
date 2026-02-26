@@ -1652,6 +1652,8 @@ class Event(models.Model, SomewhereOnEarth):
         return self.name
 
     def save(self, *args, **kwargs):
+        if self.privacy != PRIVACY_PUBLIC:
+            self.featured = False
         self.invalidate_cache()
         super().save(*args, **kwargs)
 
