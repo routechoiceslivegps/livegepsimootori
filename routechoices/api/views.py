@@ -491,6 +491,9 @@ def club_list_view(request):
     return Response(output)
 
 
+# kayak
+
+
 @swagger_auto_schema(
     method="get",
     operation_id="event_detail",
@@ -552,7 +555,22 @@ def club_list_view(request):
         ),
     },
 )
-@api_GET_view  # TODO: Add Patch and Delete method
+@swagger_auto_schema(
+    method="delete",
+    operation_id="event_delete",
+    operation_description="Delete an event. You need to be identified as an event organiser admin to get a valid answer.",
+    tags=["Events"],
+    responses={
+        "204": openapi.Response(
+            description="Success response", examples={"application/json": ""}
+        ),
+        "400": openapi.Response(
+            description="Validation Error",
+            examples={"application/json": ["<error message>"]},
+        ),
+    },
+)
+@api_view(["DELETE", "GET"])  # TODO: Implement patch method
 def event_detail(request, event_id):
     event = (
         Event.objects.select_related("club", "notice", "map")
@@ -569,6 +587,15 @@ def event_detail(request, event_id):
     if not event:
         res = {"error": "No event matches this ID"}
         return Response(res)
+
+    if request.method == "DELETE":
+        is_event_admin = False
+        if request.user.is_authenticated:
+            is_event_admin = event.club.admins.filter(id=request.user.id).exists()
+        if not is_event_admin:
+            raise PermissionDenied()
+        event.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     event.check_user_permission(request.user)
 
