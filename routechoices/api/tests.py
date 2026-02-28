@@ -810,6 +810,7 @@ class EventApiTestCase(EssentialApiBase):
 
     def test_events_endpoints(self):
         club = Club.objects.create(name="Test club", slug="club")
+        club.admins.set([self.user])
         event = Event.objects.create(
             club=club,
             name="Test event A",
@@ -869,6 +870,22 @@ class EventApiTestCase(EssentialApiBase):
         )
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        self.client.logout()
+        url = self.reverse_and_check(
+            "event_detail", f"/events/{event.aid}/", "api", {"event_id": event.aid}
+        )
+        res = self.client.delete(url)
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+
+        self.client.force_login(self.user)
+
+        res = self.client.delete(url)
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+
+        res = self.client.delete(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data.get("error"), "No event matches this ID")
 
     def test_live_event_data(self):
         cache.clear()
