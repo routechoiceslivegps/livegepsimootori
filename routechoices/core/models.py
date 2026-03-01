@@ -1975,7 +1975,7 @@ class Event(models.Model, SomewhereOnEarth):
                 host="api",
                 kwargs={"event_id": self.aid},
             )
-            + f"v={safe64encodedsha(self.geojson_layer.name)}"
+            + f"?v={safe64encodedsha(self.geojson_layer.name)}"
         )
 
     def get_absolute_export_url(self):
