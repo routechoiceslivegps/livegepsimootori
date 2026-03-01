@@ -1969,11 +1969,13 @@ class Event(models.Model, SomewhereOnEarth):
         return f"{self.club.nice_url}{self.slug}/map"
 
     def get_geojson_url(self):
-        return reverse(
-            "event_geojson_download",
-            host="api",
-            kwargs={"event_id": self.aid},
-            query={"v": safe64encodedsha(self.geojson_layer.name)},
+        return (
+            reverse(
+                "event_geojson_download",
+                host="api",
+                kwargs={"event_id": self.aid},
+            )
+            + f"v={safe64encodedsha(self.geojson_layer.name)}"
         )
 
     def get_absolute_export_url(self):
