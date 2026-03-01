@@ -428,7 +428,7 @@ Follow our events live or replay them later.
 
     @property
     def banner_url(self):
-        return f"{self.nice_url}banner?v={safe64encodedsha(self.banner.name)}"
+        return f"{self.nice_url}banner?v={shortsafe64encodedsha(self.banner.name)}"
 
     def thumbnail(self, mime="image/jpeg"):
         cache_key = f"club:{self.aid}:thumbnail:{self.modification_date}:{mime}"
@@ -617,7 +617,7 @@ class Map(models.Model, SomewhereOnEarth):
 
     @property
     def hash(self):
-        return shortsafe64encodedsha(f"{self.path}:{self.calibration_string_raw}")[:8]
+        return shortsafe64encodedsha(f"{self.path}:{self.calibration_string_raw}")
 
     @property
     def calibration_values(self):
@@ -1975,7 +1975,7 @@ class Event(models.Model, SomewhereOnEarth):
                 host="api",
                 kwargs={"event_id": self.aid},
             )
-            + f"?v={safe64encodedsha(self.geojson_layer.name)}"
+            + f"?v={shortsafe64encodedsha(self.geojson_layer.name)}"
         )
 
     def get_absolute_export_url(self):
@@ -2930,7 +2930,7 @@ class Competitor(models.Model, SomewhereOnEarth):
 
     @property
     def locations_hash(self):
-        return shortsafe64encodedsha(self.locations_encoded)[:8]
+        return shortsafe64encodedsha(self.locations_encoded)
 
 
 @receiver([pre_save, post_delete], sender=Competitor)
