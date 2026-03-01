@@ -1973,6 +1973,7 @@ class Event(models.Model, SomewhereOnEarth):
             "event_geojson_download",
             host="api",
             kwargs={"event_id": self.aid},
+            query={"v": safe64encodedsha(self.geojson_layer.name)},
         )
 
     def get_absolute_export_url(self):
