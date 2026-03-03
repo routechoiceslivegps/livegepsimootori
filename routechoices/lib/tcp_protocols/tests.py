@@ -155,8 +155,21 @@ class TCPConnectionsTest(AsyncTestCase, TransactionTestCase):
     async def test_queclink(self):
         hbt_data = b"+ACK:GTHBD,C30203,860201061588748,,20240201161532,FFFF$"
         ack_data = b"+SACK:GTHBD,C30203,FFFF$"
-        gps_data = b"+BUFF:GTFRI,8020040200,860201061588748,,12194,10,1,3,0.0,0,20.1,-71.596533,-33.524718,20240201161533,0730,0001,772A,052B253E,02,0,0.0,,,,,0,420000,,,,20230926200340,1549$"
-        battery_data = b"+RESP:GTINF,020102,860201061588748,,41,898600810906F8048812,16,0,0,0,,4.10,0,0,0,0,,020240201161534,69,,,+0800,0,20100214093254,11F0$"
+        gps_data = [
+            b"+RESP:GTERI,C30209,860201061588748,,00000080,0,16,1,1,47.2,245,169.3,-122.234955, 47.906141,20260131234254,0310,0260,2CA2,014A2E17,,27,,20260131234255,51D8$",
+            (
+                b"+RESP:GTFRI,1A0900,860201061588748,G3-313,0,0,4,"
+                b"1,2.1,0,426.7,8.611466,47.681639,20181214134603,0228,0001,077F,4812,25.2,"
+                b"1,5.7,34,437.3,8.611600,47.681846,20181214134619,0228,0001,077F,4812,25.2,"
+                b"1,4.4,62,438.2,8.611893,47.681983,20181214134633,0228,0001,077F,4812,25.2,"
+                b"1,4.8,78,436.6,8.612236,47.682040,20181214134648,0228,0001,077F,4812,25.2,"
+                b"83,20181214134702,0654$"
+            ),
+            b"+RESP:GTINF,020102,860201061588748,,41,898600810906F8048812,16,0,0,0,,4.10,0,0,0,0,,020240201161534,69,,,+0800,0,20100214093254,11F0$",
+            b"+BUFF:GTFRI,8020040200,860201061588748,,12194,10, 1,3, 0.0,  0, 20.1, -71.596533,-33.524718,20240201161533,0730,0001,772A,052B253E,02,0,0.0,,,,,0,420000,,,,20230926200340,1549$",
+        ]
+        nb_data = [1, 5, 5, 6]
+        battery_data = [None, 83, 69, 69]
         server = client = None
         device = await create_imei_device("860201061588748")
         sock, port = bind_unused_port()
@@ -167,14 +180,12 @@ class TCPConnectionsTest(AsyncTestCase, TransactionTestCase):
         await client.write(hbt_data)
         data = await client.read_bytes(255, partial=True)
         self.assertEqual(data, ack_data)
-        await client.write(gps_data)
-        await asyncio.sleep(0.05)
-        device = await refresh_device(device)
-        self.assertEqual(device.location_count, 1)
-        await client.write(battery_data)
-        await asyncio.sleep(0.05)
-        device = await refresh_device(device)
-        self.assertEqual(device.battery_level, 69)
+        for data, nb, batt in zip(gps_data, nb_data, battery_data):
+            await client.write(data)
+            await asyncio.sleep(0.05)
+            device = await refresh_device(device)
+            self.assertEqual(device.location_count, nb)
+            self.assertEqual(device.battery_level, batt)
         if server is not None:
             server.stop()
         if client is not None:
