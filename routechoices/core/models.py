@@ -59,6 +59,7 @@ from routechoices.lib.helpers import (
     delete_domain,
     distance_between_locations,
     epoch_to_datetime,
+    flatten,
     general_2d_projection,
     get_current_site,
     gpsseuranta_encode_data,
@@ -1670,6 +1671,16 @@ class Event(models.Model, SomewhereOnEarth):
         ):
             raise PermissionDenied
 
+    @property
+    def categories(self):
+        tags = set(self.competitors.exclude(tags="").values_list("tags", flat=True))
+        return sorted(set(flatten([tag.split(" ") for tag in tags])))
+
+    def get_competitors_in_category(self, category):
+        return self.competitors.filter(
+            tags__iregex=rf"^([^ ]+ )?{re.escape(category)}$( [^ ]+)?"
+        )
+
     @classmethod
     def get_by_url(cls, url):
         if url.startswith(settings.SHORTCUT_URL):
@@ -1687,12 +1698,19 @@ class Event(models.Model, SomewhereOnEarth):
                 filters["club__domain"] = domain
         return cls.objects.filter(**filters).first()
 
-    def iterate_competitors(self):
-        competitors = (
-            self.competitors.select_related("device")
-            .all()
-            .order_by("start_time", "name")
-        )
+    def iterate_competitors(self, category=None):
+        if category is None:
+            competitors = (
+                self.competitors.select_related("device")
+                .all()
+                .order_by("start_time", "name")
+            )
+        else:
+            competitors = (
+                self.get_competitors_in_category(category)
+                .select_related("device")
+                .order_by("start_time", "name")
+            )
         # We need this to determine the end time of each of this event's competitors
         # For each devices used in the event we fetch all the competitors that starts during this event's span
         # We order the device's competitors by their start time
