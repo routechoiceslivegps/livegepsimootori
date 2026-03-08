@@ -1231,16 +1231,10 @@ def event_data(request, event_id):
         "key": cache_ts,
     }
 
-    cache.set(
-        cache_key,
-        response,
-        60
-        + (
-            EVENT_CACHE_INTERVAL_LIVE
-            if event.is_live
-            else EVENT_CACHE_INTERVAL_ARCHIVED
-        ),
+    cache_duration = DURATION_ONE_MINUTE + (
+        EVENT_CACHE_INTERVAL_LIVE if event.is_live else EVENT_CACHE_INTERVAL_ARCHIVED
     )
+    cache.set(cache_key, response, cache_duration)
 
     headers = {"ETag": f'W/"{safe64encodedsha(json.dumps(response))}"'}
     if event.privacy == PRIVACY_PRIVATE:
@@ -1290,7 +1284,7 @@ def event_new_data(request, event_id, key):
     req.user = request.user
     req.session = request.session
     if tag:
-        req.GET.set("category", tag)
+        req.GET.update({"category": tag})
     current_resp = event_data(req, event_id)
     if not current_resp.data or current_resp.data.get("error"):
         raise Http404()
