@@ -75,6 +75,10 @@ function RCEvent(infoURL, clockURL, locale) {
 	let loaded = false;
 	const MAX_RUNNER_DISPLAYED = 200;
 
+	const fetchDataUrlSuffix = window.location.hash
+		? `?category=${encodeURIComponent(window.location.hash.slice(1))}`
+		: "";
+
 	const getBatteryLevelTitle = (battery, route) => {
 		const lastTs = route?.getLastPosition()?.[0];
 		const whenLastPos = dayjs(lastTs).fromNow();
@@ -2138,6 +2142,7 @@ function RCEvent(infoURL, clockURL, locale) {
 		if (isLive && liveDataLastKey) {
 			targetURL += `/${liveDataLastKey}`;
 		}
+		targetURL += fetchDataUrlSuffix;
 		fetch(targetURL, {
 			method: "GET",
 			credentials: window.local.isPrivate ? "include" : "same-origin",

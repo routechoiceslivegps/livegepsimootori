@@ -1163,11 +1163,13 @@ def competitor_route_upload(request, competitor_id):
 )
 @api_GET_view
 def event_data(request, event_id):
+    tag = request.GET.get("category")
+
     t0_perf = time.perf_counter()
     t0 = time.time()
 
     cache_ts = int(t0 // EVENT_CACHE_INTERVAL_LIVE)
-    cache_key = f"event:{event_id}:data:{cache_ts}:live"
+    cache_key = f"event:{event_id}:tag:{tag or ""}:data:{cache_ts}:live"
     if data := cache.get(cache_key):
         headers = {
             "ETag": f'W/"{safe64encodedsha(json.dumps(data))}"',
@@ -1186,7 +1188,7 @@ def event_data(request, event_id):
 
     if not event.is_live:
         cache_ts = int(t0 // EVENT_CACHE_INTERVAL_ARCHIVED)
-        cache_key = f"event:{event_id}:data:{cache_ts}:archived"
+        cache_key = f"event:{event_id}:tag:{tag or ""}:data:{cache_ts}:archived"
         if data := cache.get(cache_key):
             headers = {
                 "ETag": f'W/"{safe64encodedsha(json.dumps(data))}"',
@@ -1199,7 +1201,7 @@ def event_data(request, event_id):
     total_nb_pts = 0
     competitors_data = []
 
-    for competitor, from_date, end_date in event.iterate_competitors():
+    for competitor, from_date, end_date in event.iterate_competitors(tag):
         encoded_data = ""
         if competitor.device_id:
             encoded_data, nb_pts = competitor.device.get_locations_between_dates(
@@ -1253,11 +1255,13 @@ def event_data(request, event_id):
 )
 @api_GET_view
 def event_new_data(request, event_id, key):
+    tag = request.GET.get("category")
+
     t0_perf = time.perf_counter()
     t0 = time.time()
 
     cache_ts = int(t0 // EVENT_CACHE_INTERVAL_LIVE)
-    cache_key = f"event:{event_id}:data-diff:{key}:{cache_ts}"
+    cache_key = f"event:{event_id}:tag:{tag or ""}:data-diff:{key}:{cache_ts}"
 
     if cache_ts == key:
         response = {
@@ -1273,7 +1277,7 @@ def event_new_data(request, event_id, key):
     if cached_resp := cache.get(cache_key):
         return Response(cached_resp, headers={"X-Cache-Hit": 1})
 
-    src_cache_key = f"event:{event_id}:data:{key}:live"
+    src_cache_key = f"event:{event_id}:tag:{tag or ""}:data:{key}:live"
     prev_data = cache.get(src_cache_key)
     if not prev_data:
         return Response(
@@ -1285,6 +1289,8 @@ def event_new_data(request, event_id, key):
     req.method = "GET"
     req.user = request.user
     req.session = request.session
+    if tag:
+        req.GET.set("category", tag)
     current_resp = event_data(req, event_id)
     if not current_resp.data or current_resp.data.get("error"):
         raise Http404()
