@@ -1163,11 +1163,10 @@ def competitor_route_upload(request, competitor_id):
 )
 @api_GET_view
 def event_data(request, event_id):
-    tag = request.GET.get("category")
-
     t0_perf = time.perf_counter()
     t0 = time.time()
 
+    tag = request.GET.get("category")
     cache_ts = int(t0 // EVENT_CACHE_INTERVAL_LIVE)
     cache_key = f"event:{event_id}:tag:{tag or ""}:data:{cache_ts}:live"
     if data := cache.get(cache_key):
@@ -1249,10 +1248,10 @@ def event_data(request, event_id):
 )
 @api_GET_view
 def event_new_data(request, event_id, key):
-    tag = request.GET.get("category")
-
     t0_perf = time.perf_counter()
     t0 = time.time()
+
+    tag = request.GET.get("category")
 
     cache_ts = int(t0 // EVENT_CACHE_INTERVAL_LIVE)
     cache_key = f"event:{event_id}:tag:{tag or ""}:data-diff:{key}:{cache_ts}"

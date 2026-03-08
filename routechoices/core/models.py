@@ -1673,8 +1673,10 @@ class Event(models.Model, SomewhereOnEarth):
 
     @property
     def categories(self):
-        tags = set(self.competitors.exclude(tags="").values_list("tags", flat=True))
-        return sorted(set(flatten([tag.split(" ") for tag in tags])))
+        if self.pk:
+            tags = set(self.competitors.exclude(tags="").values_list("tags", flat=True))
+            return sorted(set(flatten([tag.split(" ") for tag in tags])))
+        return []
 
     def get_competitors_in_category(self, category):
         return self.competitors.filter(
@@ -2063,7 +2065,8 @@ class Event(models.Model, SomewhereOnEarth):
                 )
             )
             for offset in range(0, -2, -1):
-                cache_key = f"event:{self.aid}:data:{cache_ts + offset}:{cache_suffix}"
+                for tag in self.categories + [""]:
+                    cache_key = f"event:{self.aid}:tag:{tag}:data:{cache_ts + offset}:{cache_suffix}"
                 cache.delete(cache_key)
 
     @property
