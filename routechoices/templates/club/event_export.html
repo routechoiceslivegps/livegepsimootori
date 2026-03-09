@@ -65,16 +65,56 @@
                 </div>
             {% else %}
                 {% if event.map_id or event.competitors.all %}
+                <h4 class="padded-multiline mb-4">
+                    <span>Download</span>
+                </h4>
+                <div class="mb-3">
+                    <a href="{{ event.club.nice_url }}{{ event.slug }}/zip"
+                       class="btn btn-primary mb-1 me-1"><i class="fa-solid fa-download"></i> Download all data</a>
+                </div>
+                {% if event.map_id %}
+                <h4 class="padded-multiline mb-4">
+                    <span>Analysis</span>
+                </h4>
+                <div class="mb-3">
+                    <a href="https://2d.routegadget.net/#routechoices={{ event.get_absolute_url }}" class="btn btn-primary mb-1 me-1"><i class="fa-solid fa-arrow-up-right-from-square"></i> Routegadget</a>
+                </div>
+                {% endif %}
+                {% endif %}
+                {% if event.map_id and event.ended and event.privacy != "private" %}
+                    <hr/>
                     <div class="mb-3">
-                        <a href="{{ event.club.nice_url }}{{ event.slug }}/zip"
-                           class="btn btn-primary mb-1 me-1"><i class="fa-solid fa-download"></i> Download all data</a>
-                        {% if event.map_id %}
-                        <a href="https://2d.routegadget.net/#routechoices={{ event.get_absolute_url }}" class="btn btn-primary mb-1 me-1">RouteGadget Analysis</a>
-                        {% endif %}
+                        <form class="row g-3" id="two-d-rerun-export-form">
+                            <input type="hidden" name="api_root" value="{% host_url 'api_doc' host 'api' %}"/>
+                            <input type="hidden" name="event_id" value="{{ event.aid }}"/>
+                            <div class="col-auto">
+                                <label for="map_idx" class="visually-hidden">Map</label>
+                                <select name="map_idx" id="map_idx" class="form-select">
+                                    <option value="1">{% if event.map_title %}{{ event.map_title }}{% else %}Main map{% endif %}</option>
+                                    {% for map in event.map_assignations.all %}
+                                        <option value="{{ forloop.counter|add:1 }}">{{ map.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% if event.categories %}
+                            <div class="col-auto">
+                                <label for="tag" class="visually-hidden">Category</label>
+                                <select name="tag" id="tag" class="form-select">
+                                    <option value="">All categories</option>
+                                    {% for tag in event.categories %}
+                                        <option value="{{ tag }}">{{ tag }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            {% endif %}
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-arrow-up-right-from-square"></i> 2Drerun Analysis</button>
+                            </div>
+                        </form>
                     </div>
                 {% endif %}
                 {% if event.map_id %}
-                    <h4 class="padded-multiline">
+                    <h4 class="padded-multiline mt-4">
                         <span>Maps</span>
                     </h4>
                     <div class="row">
@@ -92,12 +132,6 @@
                                        class="btn btn-sm btn-primary mb-1 me-1"><i class="fa-solid fa-download"></i> Image</a>
                                     <a href="{{ event.club.nice_url }}{{ event.slug }}/kmz"
                                        class="btn btn-sm btn-primary mb-1 me-1"><i class="fa-solid fa-download"></i> KMZ</a>
-                                    {% if event.ended and event.privacy != "private" %}
-                                        {# djlint:off H022 #}<a href="http://3drerun.worldofo.com/2d/?server={% host_url 'api_doc' host 'api' %}woo&eventid={{ event.aid }}&liveid=-"
-   target="_blank"
-   rel="noopener noreferrer"
-   class="btn btn-sm btn-primary mb-1 text-nowrap"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> 2DRerun</a>{# djlint:on #}
-                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -110,12 +144,6 @@
                                            class="btn btn-sm btn-primary mb-1 me-1"><i class="fa-solid fa-download"></i> Image</a>
                                         <a href="{{ event.club.nice_url }}{{ event.slug }}/kmz-{{ forloop.counter|add:1 }}"
                                            class="btn btn-sm btn-primary mb-1 me-1"><i class="fa-solid fa-download"></i> KMZ</a>
-                                        {% if event.ended and event.privacy != "private" %}
-                                            {# djlint:off H022 #}<a href="http://3drerun.worldofo.com/2d/?server={% host_url 'api_doc' host 'api' %}woo&eventid={{ event.aid }}/{{ forloop.counter|add:1 }}&liveid=-"
-   target="_blank"
-   rel="noopener noreferrer"
-   class="btn btn-sm btn-primary mb-1 text-nowrap"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> 2DRerun</a>{# djlint:on #}
-                                        {% endif %}
                                     </div>
                                 </div>
                             </div>

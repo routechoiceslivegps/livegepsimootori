@@ -1936,20 +1936,19 @@ def competitor_gpx_download(request, competitor_id):
 )
 @api_GET_view
 def two_d_rerun_race_status(request):
-    event_id = request.GET.get("eventid")
-    if not event_id:
+    args = request.GET.get("eventid")
+    args_match = re.match(
+        r"^(?P<event_id>[^\/]+)(\/(?P<map_idx>[1-9][\d]*))?(\/(?P<category>.+))?$", args
+    )
+    if not args_match:
         raise Http404()
-    map_idx = 1
-    if "/" in event_id:
-        event_id, map_idx = event_id.split("/", 1)
-        try:
-            map_idx = int(map_idx)
-        except Exception:
-            raise Http404()
-    if map_idx < 1:
-        raise Http404()
+
+    event_id = args_match.group("event_id")
+    map_idx = int(args_match.group("map_idx") or 1)
+    tag = args_match.group("category")
+
     event, raster_map, _ = Event.get_public_map_at_index(
-        request.user, event_id, map_idx, load_competitors=True
+        request.user, event_id, map_idx
     )
 
     event.check_user_permission(request.user)
@@ -1985,8 +1984,15 @@ def two_d_rerun_race_status(request):
         ],
         "competitors": [],
     }
-    for c in event.competitors.all():
-        response_json["competitors"].append([c.aid, c.name, c.start_time])
+
+    if tag is None:
+        competitors = event.competitors.all()
+    else:
+        competitors = event.get_competitors_in_category(tag)
+    for competitor in competitors:
+        response_json["competitors"].append(
+            [competitor.aid, competitor.name, competitor.start_time]
+        )
 
     response_raw = str(json.dumps(response_json), "utf-8")
     content_type = "application/json"
@@ -2008,11 +2014,16 @@ def two_d_rerun_race_status(request):
 )
 @api_GET_view
 def two_d_rerun_race_data(request):
-    event_id = request.GET.get("eventid")
-    if "/" in event_id:
-        event_id, _ = event_id.split("/", 1)
-    if not event_id:
+    args = request.GET.get("eventid")
+    args_match = re.match(
+        r"^(?P<event_id>[^\/]+)(\/(?P<map_idx>[1-9][\d]*))?(\/(?P<category>.+))?$", args
+    )
+    if not args_match:
         raise Http404()
+
+    event_id = args_match.group("event_id")
+    tag = args_match.group("category")
+
     event = get_object_or_404(
         Event.objects.prefetch_related(
             Prefetch(
@@ -2030,7 +2041,7 @@ def two_d_rerun_race_data(request):
 
     total_nb_pts = 0
     results = []
-    for competitor, from_date, end_date in event.iterate_competitors():
+    for competitor, from_date, end_date in event.iterate_competitors(tag):
         if competitor.device_id:
             locations, nb_pts = competitor.device.get_locations_between_dates(
                 from_date, end_date
