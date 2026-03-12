@@ -105,7 +105,7 @@ sqlparse==0.5.5
 staticmap==0.5.7
 timezonefinder==8.2.1
 tinycss2==1.4.0
-tornado==6.5.4
+tornado==6.5.5
 typing-extensions==4.15.0
 typing-inspection==0.4.2
 tzdata==2025.3
