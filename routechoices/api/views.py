@@ -170,6 +170,7 @@ def event_set_creation(request):
                         "privacy": "public",
                         "backdrop": "blank",
                         "open_registration": False,
+                        "acceptable_tags": [],
                         "open_route_upload": False,
                         "url": "http://www.routechoices.com/ksk/Jukola-2019-1st-leg",
                     },
@@ -185,6 +186,7 @@ def event_set_creation(request):
                         },
                         "privacy": "public",
                         "open_registration": False,
+                        "acceptable_tags": [],
                         "open_route_upload": False,
                         "url": "http://www.routechoices.com/ksk/Jukola-2019-2nd-leg",
                     },
@@ -243,6 +245,12 @@ def event_set_creation(request):
                     "Can public register themselves to the event. Default False"
                 ),
             ),
+            "acceptable_tags": openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description=(
+                    "If an event has open registration, a space separated list of categories that users can create competitor within"
+                ),
+            ),
             "open_route_upload": openapi.Schema(
                 type=openapi.TYPE_BOOLEAN,
                 description=(
@@ -270,6 +278,7 @@ def event_set_creation(request):
                     "privacy": "public",
                     "backdrop": "blank",
                     "open_registration": False,
+                    "acceptable_tags": [],
                     "open_route_upload": False,
                     "url": "http://www.routechoices.com/ksk/Jukola-2019-1st-leg",
                 },
@@ -303,7 +312,7 @@ def event_list(request):
             try:
                 validate_nice_slug(slug_raw)
             except Exception:
-                raise ValidationError("slug invalid")
+                raise ValidationError("Invalid slug")
             else:
                 slug = slug_raw
 
@@ -313,7 +322,7 @@ def event_list(request):
             try:
                 start_date = arrow.get(start_date_raw).datetime
             except Exception:
-                raise ValidationError("start_date invalid")
+                raise ValidationError("Invalid start_date")
 
         end_date_raw = request.data.get("end_date")
         if not end_date_raw:
@@ -321,23 +330,29 @@ def event_list(request):
         try:
             end_date = arrow.get(end_date_raw).datetime
         except Exception:
-            raise ValidationError("end_date_invalid")
+            raise ValidationError("Invalid end_date")
         else:
             if end_date <= start_date:
-                raise ValidationError("end_date invalid, should be after start_date")
+                raise ValidationError("Invalid end_date, should be after start_date")
 
         backdrop_map = request.data.get("backdrop", MAP_BLANK)
         if backdrop_map not in (m[0] for m in MAP_CHOICES):
-            raise ValidationError("backdrop invalid")
+            raise ValidationError("Invalid backdrop")
 
         privacy = request.data.get("privacy", PRIVACY_SECRET)
         if privacy.lower() not in (PRIVACY_PUBLIC, PRIVACY_SECRET, PRIVACY_PRIVATE):
-            raise ValidationError("privacy invalid")
+            raise ValidationError("Invalid privacy")
 
         open_registration = False
+        acceptable_tags = ""
         open_registration_raw = request.data.get("open_registration")
         if open_registration_raw:
             open_registration = True
+            if acceptable_tags_raw := request.data.get("acceptable_tags", ""):
+                try:
+                    acceptable_tags = " ".join(acceptable_tags_raw.split(" "))
+                except Exception:
+                    raise ValidationError("Invalid acceptable_tags")
 
         allow_route_upload = False
         allow_route_upload_raw = request.data.get("allow_route_upload")
@@ -353,6 +368,7 @@ def event_list(request):
             privacy=privacy,
             backdrop_map=backdrop_map,
             open_registration=open_registration,
+            acceptable_tags=acceptable_tags,
             allow_route_upload=allow_route_upload,
         )
         try:
@@ -373,6 +389,7 @@ def event_list(request):
             "privacy": event.privacy,
             "backdrop": event.backdrop_map,
             "open_registration": event.open_registration,
+            "acceptable_tags": event.acceptable_categories,
             "open_route_upload": event.allow_route_upload,
             "url": request.build_absolute_uri(event.get_absolute_url()),
         }
@@ -433,6 +450,7 @@ def event_list(request):
                 "privacy": event.privacy,
                 "backdrop": event.backdrop_map,
                 "open_registration": event.open_registration,
+                "acceptable_tags": event.acceptable_categories,
                 "open_route_upload": event.allow_route_upload,
                 "url": request.build_absolute_uri(event.get_absolute_url()),
             }
@@ -491,9 +509,6 @@ def club_list_view(request):
     return Response(output)
 
 
-# kayak
-
-
 @swagger_auto_schema(
     method="get",
     operation_id="event_detail",
@@ -519,6 +534,7 @@ def club_list_view(request):
                         },
                         "privacy": "public",
                         "open_registration": False,
+                        "acceptable_tags": [],
                         "open_route_upload": False,
                         "url": "https://ksk.routechoices.com/Jukola-2019-1st-leg",
                         "shortcut": "https://routechoic.es/ksk/Jukola-2019-1st-leg",
@@ -612,6 +628,7 @@ def event_detail(request, event_id):
             },
             "privacy": event.privacy,
             "open_registration": event.open_registration,
+            "acceptable_tags": event.acceptable_categories,
             "open_route_upload": event.allow_route_upload,
             "url": request.build_absolute_uri(event.get_absolute_url()),
             "shortcut": event.shortcut,
@@ -715,6 +732,10 @@ def event_detail(request, event_id):
                 type=openapi.TYPE_STRING,
                 description="Color, hexadecimal format, e.g. #ff9900",
             ),
+            "tag": openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description="Category, must be listed as an acceptable registration category if you are not an event administrator",
+            ),
         },
         required=["event_id", "name"],
     ),
@@ -729,6 +750,7 @@ def event_detail(request, event_id):
                     "start_time": "<start_time>",
                     "device_id": "<device_id>",
                     "color": "<color>",
+                    "tag": "<tag>",
                 }
             },
         ),
@@ -753,12 +775,13 @@ def create_competitor(request):
 
     errors = []
 
-    tag = request.data.get("tag", "")
-    if not event.open_registration:
-        if not is_event_admin:
-            raise PermissionDenied()
-    elif tag and tag not in event.acceptable_categories:
-        errors.append("Invalid category")
+    tag = ""
+    if not event.open_registration and not is_event_admin:
+        raise PermissionDenied()
+    else:
+        tag = request.data.get("tag", "")
+        if tag and not is_event_admin and tag not in event.acceptable_categories:
+            errors.append("Invalid category")
 
     if event.end_date < now() and not event.allow_route_upload:
         raise ValidationError("Registration is closed")
@@ -2124,6 +2147,7 @@ def third_party_event(request, provider, uid):
             },
             "privacy": "secret",
             "open_registration": False,
+            "acceptable_tags": [],
             "open_route_upload": False,
             "url": request.build_absolute_uri(event.get_absolute_url()),
             "shortcut": "",
