@@ -1555,6 +1555,12 @@ class Event(models.Model, SomewhereOnEarth):
         default=False,
         help_text="Participants can register themselves to the event.",
     )
+    acceptable_tags = models.CharField(
+        verbose_name="Registration accepted categories",
+        max_length=256,
+        blank=True,
+        default="",
+    )
     allow_route_upload = models.BooleanField(
         default=False,
         help_text="Participants can add their GPS trace from a file after the event.",
@@ -1670,6 +1676,12 @@ class Event(models.Model, SomewhereOnEarth):
             or not self.club.admins.filter(id=user.id).exists()
         ):
             raise PermissionDenied
+
+    @property
+    def acceptable_categories(self):
+        if not self.acceptable_tags:
+            return []
+        return self.acceptable_tags.split(" ")
 
     @cached_property
     def categories(self):

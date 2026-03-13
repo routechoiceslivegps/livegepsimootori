@@ -692,6 +692,17 @@ function showLocalTime(el) {
 
 	u(".tag-input").each(createTagWidget);
 
+	function onRegistrationTypeChange(e) {
+		if (e.target.checked) {
+			u("#id_acceptable_tags").parent().show();
+		} else {
+			u("#id_acceptable_tags").parent().hide();
+		}
+	}
+
+	u("#id_open_registration").on("change", onRegistrationTypeChange);
+	u("#id_open_registration").trigger("change");
+
 	if (window.performance) {
 		const navEntries = window.performance.getEntriesByType("navigation");
 		if (navEntries.length > 0 && navEntries[0].type === "back_forward") {

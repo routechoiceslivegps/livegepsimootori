@@ -164,6 +164,9 @@ function selectizeDeviceInput(field) {
 				name: formData.get("name"),
 				short_name: formData.get("short_name"),
 			};
+			if (formData.get("tag")) {
+				data.tag = formData.get("tag");
+			}
 			if (formData.get("device_id")) {
 				data.device_id = formData.get("device_id");
 			}

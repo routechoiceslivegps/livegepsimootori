@@ -751,14 +751,17 @@ def create_competitor(request):
     if request.user.is_authenticated:
         is_event_admin = event.club.admins.filter(id=request.user.id).exists()
 
+    errors = []
+
+    tag = request.data.get("tag", "")
     if not event.open_registration:
         if not is_event_admin:
             raise PermissionDenied()
+    elif tag and tag not in event.acceptable_categories:
+        errors.append("Invalid category")
 
     if event.end_date < now() and not event.allow_route_upload:
         raise ValidationError("Registration is closed")
-
-    errors = []
 
     name = request.data.get("name")
 
@@ -834,6 +837,7 @@ def create_competitor(request):
         device=device,
         user=user,
         color=color,
+        tags=tag,
     )
 
     output = {

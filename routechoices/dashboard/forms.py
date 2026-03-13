@@ -409,6 +409,7 @@ class EventForm(ModelForm):
             "start_date",
             "end_date",
             "open_registration",
+            "acceptable_tags",
             "allow_route_upload",
             "privacy",
             "send_interval",
@@ -427,6 +428,7 @@ class EventForm(ModelForm):
             "end_date": DateTimeInput(
                 attrs={"class": "datetimepicker", "autocomplete": "off"}
             ),
+            "acceptable_tags": TextInput(attrs={"class": "tag-input"}),
         }
 
     def validate_unique(self):
@@ -509,6 +511,13 @@ class EventForm(ModelForm):
         if result and timezone:
             result = from_timezone_to_utc(result, timezone)
         return result
+
+    def clean_acceptable_tags(self):
+        acceptable_tags = self.cleaned_data.get("acceptable_tags")
+        open_registration = self.data.get("open_registration")
+        if not open_registration:
+            return ""
+        return acceptable_tags
 
     def clean_map(self):
         raster_map = self.cleaned_data.get("map")
@@ -929,12 +938,14 @@ ExtraMapFormSet = inlineformset_factory(
 class RegisterForm(Form):
     name = CharField(max_length=64, required=True)
     short_name = CharField(max_length=32, required=False)
+    tag = ChoiceField(label="Category", required=False)
     device_id = ModelChoiceField(
         required=False, queryset=Device.objects.none(), label="Device ID"
     )
 
     def __init__(self, *args, **kwargs):
         self.event = kwargs.pop("event", None)
+
         super().__init__(*args, **kwargs)
 
 

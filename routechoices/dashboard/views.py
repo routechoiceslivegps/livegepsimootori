@@ -1703,6 +1703,10 @@ def event_contribute_view(request, club_slug, slug):
     register_form = None
     if can_register:
         register_form = RegisterForm(event=event)
+        if tags := event.acceptable_categories:
+            register_form.fields["tag"].choices = [(tag, tag) for tag in tags]
+        else:
+            del register_form.fields["tag"]
 
     upload_form = None
     if can_upload:
