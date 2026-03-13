@@ -18,7 +18,7 @@ repos:
     -   id: check-merge-conflict
     -   id: check-case-conflict
 -   repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 26.1.0
+    rev: 26.3.1
     hooks:
     - id: black
 -   repo: https://github.com/pycqa/flake8
@@ -26,17 +26,17 @@ repos:
     hooks:
     -   id: flake8
 -   repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.15.2'
+    rev: 'v0.15.6'
     hooks:
     -   id: ruff
         args: [--fix, --exit-non-zero-on-fix]
 -   repo: https://github.com/adamchainz/djade-pre-commit
-    rev: "1.8.0"
+    rev: "1.9.0"
     hooks:
     -   id: djade
         args: [--target-version, "5.1"]
 -   repo: https://github.com/biomejs/pre-commit
-    rev: "v2.4.4"
+    rev: "v2.4.6"
     hooks:
     -   id: biome-check
         exclude: ^static_assets/vendor/

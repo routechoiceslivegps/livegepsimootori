@@ -1671,7 +1671,7 @@ class Event(models.Model, SomewhereOnEarth):
         ):
             raise PermissionDenied
 
-    @property
+    @cached_property
     def categories(self):
         if self.pk:
             tags = set(self.competitors.exclude(tags="").values_list("tags", flat=True))
