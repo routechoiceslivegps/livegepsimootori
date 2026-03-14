@@ -456,6 +456,7 @@ const geoJSONs = [
 			maxZoom: 19,
 			attribution:
 				'&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+			referrerPolicy: "origin",
 		}).addTo(map);
 		const geoJsonLayer = L.geoJSON.css(geoJSON);
 		geoJsonLayer.addTo(map);
