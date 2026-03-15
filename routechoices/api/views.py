@@ -10,7 +10,6 @@ import arrow
 import gps_data_codec
 import orjson as json
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.gis.geoip2 import GeoIP2
 from django.core.exceptions import PermissionDenied
@@ -24,8 +23,9 @@ from django_hosts.resolvers import reverse
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import renderers, status
-from rest_framework.decorators import api_view, throttle_classes
+from rest_framework.decorators import api_view, throttle_classes, permission_classes
 from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
 
@@ -122,7 +122,7 @@ mine_param = openapi.Parameter(
     method="post",
     auto_schema=None,
 )
-@login_required
+@permission_classes([IsAuthenticated])
 @api_POST_view
 def event_set_creation(request):
     club_slug = request.data.get("club_slug")
@@ -934,7 +934,7 @@ def create_competitor(request):
     },
 )
 @api_view(["DELETE", "PATCH"])
-@login_required
+@permission_classes([IsAuthenticated])
 def competitor_api(request, competitor_id):
     competitor = (
         Competitor.objects.select_related("event", "event__club")
@@ -1696,7 +1696,7 @@ def get_time(request):
     auto_schema=None,
 )
 @api_GET_view
-@login_required
+@permission_classes([IsAuthenticated])
 def user_search(request):
     users = []
     q = request.GET.get("q")
@@ -1712,7 +1712,7 @@ def user_search(request):
     auto_schema=None,
 )
 @api_GET_view
-@login_required
+@permission_classes([IsAuthenticated])
 def user_view(request):
     user = request.user
     clubs = Club.objects.filter(admins=user)
@@ -1786,7 +1786,7 @@ def device_registrations(request, device_id):
     auto_schema=None,
 )
 @api_view(["PATCH", "DELETE"])
-@login_required
+@permission_classes([IsAuthenticated])
 def device_ownership_api_view(request, club_slug, device_id):
     club = get_object_or_404(
         Club.objects.filter(admins=request.user), slug__iexact=club_slug
@@ -1909,7 +1909,7 @@ def event_geojson_download(request, event_id):
     auto_schema=None,
 )
 @api_GET_HEAD_view
-@login_required
+@permission_classes([IsAuthenticated])
 def map_kmz_download(request, map_id, *args, **kwargs):
     club_list = Club.objects.filter(admins=request.user)
     raster_map = get_object_or_404(Map, aid=map_id, club__in=club_list)
