@@ -1,5 +1,4 @@
 from curl_cffi import requests
-
 from django.conf import settings
 
 

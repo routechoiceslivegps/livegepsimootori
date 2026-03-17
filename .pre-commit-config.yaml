@@ -36,9 +36,14 @@ repos:
     -   id: djade
         args: [--target-version, "5.1"]
 -   repo: https://github.com/biomejs/pre-commit
-    rev: "v2.4.6"
+    rev: "v2.4.7"
     hooks:
     -   id: biome-check
         exclude: ^static_assets/vendor/
         additional_dependencies:
         - '@biomejs/biome@1.9.4'
+-   repo: https://github.com/pycqa/isort
+    rev: 8.0.1
+    hooks:
+    - id: isort
+      args: ["--profile", "black", "--filter-files"]

@@ -1,6 +1,7 @@
+from datetime import timedelta
+
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
-from datetime import timedelta
 
 from routechoices.core.models import Competitor
 

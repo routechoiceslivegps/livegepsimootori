@@ -3,12 +3,13 @@ name = "livegepsimootori"
 version = "0.1.0"
 requires-python = ">=3.14"
 
-[tool.isort]
-profile = "black"
 
 [tool.black]
-target-version = ['py311']
+target-version = ['py314']
 line-length = 88
+
+[tool.isort]
+profile = "black"
 
 [tool.djlint]
 ignore="H021"

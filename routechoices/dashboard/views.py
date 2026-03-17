@@ -1,9 +1,9 @@
 import csv
-from copy import deepcopy
-from io import StringIO
 import json
+from copy import deepcopy
 from datetime import timedelta
-from django.views.decorators.cache import cache_page
+from io import StringIO
+
 from allauth.account.adapter import get_adapter
 from allauth.account.forms import default_token_generator
 from allauth.account.models import EmailAddress
@@ -19,18 +19,21 @@ from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db.models import Case, Prefetch, Q, Value, When
 from django.dispatch import receiver
-from django.http import HttpResponse, Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.decorators import method_decorator
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.timezone import now
+from django.views.decorators.cache import cache_page
 from django_hosts.resolvers import reverse
 from hijack.views import ReleaseUserView
 from invitations.forms import InviteForm
 from kagi.views.backup_codes import BackupCodesView
-from user_sessions.views import SessionDeleteOtherView
 from oauth2_provider.models import AccessToken
+from user_sessions.views import SessionDeleteOtherView
+
 from routechoices.core.models import (
+    PRIVACY_SECRET,
     Club,
     Competitor,
     Device,
@@ -40,12 +43,12 @@ from routechoices.core.models import (
     ImeiDevice,
     Map,
     Notice,
-    PRIVACY_SECRET,
 )
 from routechoices.dashboard.forms import (
     ClubDomainForm,
     ClubForm,
     CompetitorFormSet,
+    CompetitorUploadGPXForm,
     DeviceForm,
     EventForm,
     EventSetForm,
@@ -53,24 +56,23 @@ from routechoices.dashboard.forms import (
     MapForm,
     MergeMapsForm,
     NoticeForm,
+    RegisterForm,
     RequestInviteForm,
     UploadGPXForm,
     UploadKmzForm,
     UploadMapGPXForm,
     UserForm,
-    RegisterForm,
-    CompetitorUploadGPXForm,
 )
+from routechoices.lib.duration_constants import DURATION_ONE_DAY
 from routechoices.lib.helpers import (
     get_current_site,
+    long_random_key,
     set_content_disposition,
     short_random_key,
-    long_random_key,
 )
 from routechoices.lib.lemonsqueezy import get_subscriptions
 from routechoices.lib.s3 import serve_from_s3
 from routechoices.lib.streaming_response import StreamingHttpRangeResponse
-from routechoices.lib.duration_constants import DURATION_ONE_DAY
 
 DEFAULT_PAGE_SIZE = 25
 

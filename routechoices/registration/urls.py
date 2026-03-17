@@ -1,4 +1,5 @@
 from django.urls import re_path
+
 from routechoices.site import views
 
 urlpatterns = [

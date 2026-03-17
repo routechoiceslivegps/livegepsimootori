@@ -27,6 +27,7 @@ from hijack.contrib.admin import HijackUserAdminMixin
 from kagi.models import BackupCode, TOTPDevice, WebAuthnKey
 
 from routechoices.core.models import (
+    PRIVACY_PUBLIC,
     Club,
     Competitor,
     Device,
@@ -40,7 +41,6 @@ from routechoices.core.models import (
     MapAssignation,
     Notice,
     TcpDeviceCommand,
-    PRIVACY_PUBLIC,
 )
 from routechoices.lib.helpers import epoch_to_datetime, get_device_name
 

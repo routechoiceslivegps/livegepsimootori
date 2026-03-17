@@ -20,7 +20,6 @@ import gpxpy.gpx
 import magic
 import numpy as np
 import orjson as json
-from staticmap import StaticMap, CircleMarker
 from allauth.account.models import EmailAddress
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -42,6 +41,7 @@ from django.utils.functional import cached_property
 from django.utils.timezone import now
 from django_hosts.resolvers import reverse
 from PIL import Image, ImageDraw, ImageFile
+from staticmap import CircleMarker, StaticMap
 
 from routechoices.lib import cache, plausible
 from routechoices.lib.duration_constants import DURATION_ONE_MONTH
@@ -63,6 +63,7 @@ from routechoices.lib.helpers import (
     general_2d_projection,
     get_current_site,
     gpsseuranta_encode_data,
+    meters_to_wgs84,
     project,
     random_device_id,
     random_key,
@@ -76,13 +77,12 @@ from routechoices.lib.helpers import (
     timezone_at_coords,
     triangle_area,
     wgs84_to_meters,
-    meters_to_wgs84,
 )
-from routechoices.lib.storages import OverwriteImageStorage
 from routechoices.lib.slippy_tiles import (
     latlon_to_tile_xy,
     tile_xy_to_north_west_latlon,
 )
+from routechoices.lib.storages import OverwriteImageStorage
 from routechoices.lib.validators import (
     color_hex_validator,
     validate_calibration_string,

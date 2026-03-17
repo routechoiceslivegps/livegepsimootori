@@ -2,10 +2,11 @@ from django.conf import settings
 from django.urls import include, path, re_path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
-from rest_framework import permissions
-from oauth2_provider.urls import app_name, base_urlpatterns
-from routechoices.api import views
 from health_check.views import HealthCheckView
+from oauth2_provider.urls import app_name, base_urlpatterns
+from rest_framework import permissions
+
+from routechoices.api import views
 
 schema_view = get_schema_view(
     openapi.Info(

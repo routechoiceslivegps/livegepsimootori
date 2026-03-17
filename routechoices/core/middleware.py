@@ -1,9 +1,8 @@
+import hashlib
 import logging
 import time
 from re import compile
 
-import hashlib
-from oauth2_provider.models import AccessToken
 import arrow
 from corsheaders.middleware import CorsMiddleware as OrigCorsMiddleware
 from django.conf import settings
@@ -19,15 +18,13 @@ from django.utils.cache import patch_vary_headers
 from django.utils.functional import cached_property
 from django.utils.http import http_date
 from django_hosts.middleware import HostsBaseMiddleware
+from oauth2_provider.models import AccessToken
 from rest_framework import status
 from user_sessions.middleware import SessionMiddleware as OrigSessionMiddleware
 
-
 from routechoices.core.models import Club
 from routechoices.lib import cache
-from routechoices.lib.duration_constants import (
-    DURATION_ONE_MINUTE,
-)
+from routechoices.lib.duration_constants import DURATION_ONE_MINUTE
 
 XFF_EXEMPT_URLS = []
 if hasattr(settings, "XFF_EXEMPT_URLS"):

@@ -11,13 +11,13 @@ from django.core.mail import EmailMessage
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.utils.http import url_has_allowed_host_and_scheme, urlencode
+from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
 from django_hosts.resolvers import reverse
-from django.utils.timezone import now
 
 from routechoices.core.models import Club, Event, FrontPageFeedback
-from routechoices.lib.streaming_response import StreamingHttpRangeResponse
 from routechoices.lib.s3 import serve_image_from_s3
+from routechoices.lib.streaming_response import StreamingHttpRangeResponse
 from routechoices.site.forms import ContactForm
 
 
