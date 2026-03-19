@@ -130,7 +130,7 @@
 {% endblock sub_content %}
 
 {% block extra_body %}
-    <script src="{% static 'scripts/load-local-variables.js' %}?_=2023112700"
+    <script src="{% static 'scripts/load-local-variables.js' %}?v=2023112700"
             data-csrf-token="{{ csrf_token }}"
             data-api-base-url="{% host_url 'api_doc' host 'api' %}"></script>
     {% compress js %}

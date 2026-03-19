@@ -3,7 +3,7 @@
 {% block extra_head %}
     {{ block.super }}
     <link rel="stylesheet"
-          href="{% static 'styles/site/tracker.css' %}?_=2022022600" />
+          href="{% static 'styles/site/tracker.css' %}?v=2022022600" />
 {% endblock extra_head %}
 
 {% block head_title %}Trackers | Routechoices — Live GPS Tracking{% endblock %}
@@ -353,7 +353,7 @@
 {% endblock contentup %}
 
 {% block extra_body %}
-    <script src="{% static 'scripts/load-local-variables.js' %}?_=2023112700"
+    <script src="{% static 'scripts/load-local-variables.js' %}?v=2023112700"
             data-csrf-token="{{ csrf_token }}"></script>
     {% compress js %}
         <script src="{% static 'vendor/reqwest-2.0.5/reqwest.min.js' %}"></script>
