@@ -40,9 +40,11 @@ def handle_alt_club_url(request, club_slug, path):
             default_mime="image/webp",
         )
 
-    return redirect(
-        f"//{club_slug}.{settings.PARENT_HOST}/{path}?{request.GET.urlencode()}"
-    )
+    qp_url = ""
+    if qp := request.GET.urlencode():
+        qp_url = f"?{qp}"
+
+    return redirect(f"//{club_slug}.{settings.PARENT_HOST}/{path}{qp_url}")
 
 
 def landing_page(request):
