@@ -236,7 +236,7 @@ function parseGpx(xmlstr) {
 			short_name: shortName,
 			device_id: deviceId,
 		};
-		if (tag || tag === "") {
+		if (u("#id_tag > option").nodes.length > 0) {
 			data.tags = tag;
 		}
 		reqwest({
