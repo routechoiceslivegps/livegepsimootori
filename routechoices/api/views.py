@@ -122,8 +122,8 @@ mine_param = openapi.Parameter(
     method="post",
     auto_schema=None,
 )
-@permission_classes([IsAuthenticated])
 @api_POST_view
+@permission_classes([IsAuthenticated])
 def event_set_creation(request):
     club_slug = request.data.get("club_slug")
     name = request.data.get("name")
