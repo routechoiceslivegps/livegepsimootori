@@ -1019,10 +1019,10 @@ def competitor_api(request, competitor_id):
             raise ValidationError(
                 "This device is already registered for the same start time"
             )
-
-        for tag in tags:
-            if tag and tag not in event.acceptable_categories:
-                raise ValidationError("Tag not accepted")
+        if tags is not None:
+            for tag in tags:
+                if tag and tag not in event.acceptable_categories:
+                    raise ValidationError("Tag not accepted")
 
     if new_name:
         competitor.name = new_name

@@ -203,7 +203,7 @@ function parseGpx(xmlstr) {
 					.text(t),
 			);
 			for (const option of options) {
-				u("#id_tag").append(el);
+				u("#id_tag").append(option);
 			}
 			u("#id_tag").parent().show();
 		} else {
