@@ -192,6 +192,24 @@ function parseGpx(xmlstr) {
 		u("#id_name").val(el.attr("data-competitor-name"));
 		u("#id_short_name").val(el.attr("data-competitor-short-name"));
 		u("#id_id").val(el.attr("data-competitor-id"));
+		const currentTag = el.attr("data-competitor-tags").split(" ")?.[0];
+		u("#id_tag").text("");
+		const allowedTags = el.attr("data-competition-allowed-tags").split(" ");
+		if (el.attr("data-competition-allowed-tags") !== "") {
+			u("#id_tag").append(u("<option>").attr({ value: "" }).text("------"));
+			const options = allowedTags.map((t) =>
+				u("<option>")
+					.attr({ selected: currentTag === t, value: t })
+					.text(t),
+			);
+			for (const option of options) {
+				u("#id_tag").append(el);
+			}
+			u("#id_tag").parent().show();
+		} else {
+			u("#id_tag").parent().hide();
+		}
+
 		tsDevId.clear();
 		tsDevId.clearOptions();
 		tsDevId.addOption({ device_id: el.attr("data-device-id") });
@@ -212,6 +230,7 @@ function parseGpx(xmlstr) {
 		const shortName = u("#id_short_name").val();
 		const competitorId = u("#id_id").val();
 		const deviceId = u("#id_device_id").val();
+		const tag = u("id_tag").val();
 
 		reqwest({
 			url: `/competitors/${competitorId}/`,
@@ -225,6 +244,7 @@ function parseGpx(xmlstr) {
 				name,
 				short_name: shortName,
 				device_id: deviceId,
+				tags: tag,
 			},
 			success: () => {
 				window.location.href = `${window.location.href}?info-edited=1`;

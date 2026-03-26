@@ -905,6 +905,10 @@ def create_competitor(request):
                 type=openapi.TYPE_STRING,
                 description="Color, hexadecimal format, e.g. #ff9900",
             ),
+            "tag": openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description="List of categories separated by spaces",
+            ),
         },
     ),
     responses={
@@ -959,7 +963,8 @@ def competitor_api(request, competitor_id):
     new_name = request.data.get("name")
     new_short_name = request.data.get("short_name")
     new_device_id = request.data.get("device_id")
-    new_device = None
+    new_tags = request.data.get("tags")
+
     if is_user_event_admin:
         new_color = request.data.get("color")
     else:
@@ -971,11 +976,19 @@ def competitor_api(request, competitor_id):
         new_short_name = initial_of_name(competitor.name)
     if new_short_name:
         new_short_name = new_short_name[:32]
+
+    new_device = None
     if new_device_id:
         dev = Device.objects.filter(aid=new_device_id).first()
         if not dev:
             raise ValidationError("Invalid device ID")
         new_device = dev
+
+    tags = None
+    if new_tags is not None:
+        new_tags = new_tags[:256]
+        tags = new_tags.split(" ")
+
     if new_color is not None:
         try:
             color_hex_validator(new_color)
@@ -1007,6 +1020,10 @@ def competitor_api(request, competitor_id):
                 "This device is already registered for the same start time"
             )
 
+        for tag in tags:
+            if tag and tag not in event.acceptable_categories:
+                raise ValidationError("Tag not accepted")
+
     if new_name:
         competitor.name = new_name
     if new_short_name:
@@ -1015,6 +1032,8 @@ def competitor_api(request, competitor_id):
         competitor.device = new_device
     if new_color:
         competitor.color = new_color
+    if tags is not None:
+        competitor.tags = " ".join(tags)
 
     if new_name or new_short_name or new_device_id or new_color:
         competitor.save()

@@ -28,6 +28,8 @@
                                                 data-competitor-short-name="{{ p.short_name }}"
                                                 data-competitor-id="{{ p.aid }}"
                                                 data-device-id="{{ p.device.aid }}"
+                                                data-competition-allowed-tags="{{ p.event.acceptable_tags }}"
+                                                data-competitor-tags="{{ p.tags }}"
                                                 class="me-1 mb-1 btn btn-secondary edit-info-btn">Edit info</button>
                                         {% if p.event.allow_route_upload %}
                                             <button data-competitor-id="{{ p.aid }}"
@@ -80,6 +82,10 @@
                         <div class="mb-3">
                             <label class="form-label" for="id_device_id">Device ID</label>
                             <select class="form-select" id="id_device_id" name="device_id"></select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="id_tag">Category</label>
+                            <select class="form-select" id="id_tag" name="tag"></select>
                         </div>
                         <input type="hidden" id="id_id" />
                     </div>
