@@ -231,7 +231,14 @@ function parseGpx(xmlstr) {
 		const competitorId = u("#id_id").val();
 		const deviceId = u("#id_device_id").val();
 		const tag = u("id_tag").val();
-
+		const data = {
+			name,
+			short_name: shortName,
+			device_id: deviceId,
+		};
+		if (tag || tag === "") {
+			data.tags = tag;
+		}
 		reqwest({
 			url: `/competitors/${competitorId}/`,
 			method: "PATCH",
@@ -240,12 +247,7 @@ function parseGpx(xmlstr) {
 			headers: {
 				"X-CSRFToken": window.local.csrfToken,
 			},
-			data: {
-				name,
-				short_name: shortName,
-				device_id: deviceId,
-				tags: tag,
-			},
+			data,
 			success: () => {
 				window.location.href = `${window.location.href}?info-edited=1`;
 			},
