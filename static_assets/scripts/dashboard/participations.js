@@ -230,7 +230,7 @@ function parseGpx(xmlstr) {
 		const shortName = u("#id_short_name").val();
 		const competitorId = u("#id_id").val();
 		const deviceId = u("#id_device_id").val();
-		const tag = u("id_tag").val();
+		const tag = u("#id_tag").val();
 		const data = {
 			name,
 			short_name: shortName,
