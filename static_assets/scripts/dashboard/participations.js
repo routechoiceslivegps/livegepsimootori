@@ -192,7 +192,7 @@ function parseGpx(xmlstr) {
 		u("#id_name").val(el.attr("data-competitor-name"));
 		u("#id_short_name").val(el.attr("data-competitor-short-name"));
 		u("#id_id").val(el.attr("data-competitor-id"));
-		const currentTag = el.attr("data-competitor-tags").split(" ")?.[0];
+		const currentTag = (el.attr("data-competitor-tags") ?? "").split(" ")?.[0];
 		u("#id_tag").text("");
 		const allowedTags = el.attr("data-competition-allowed-tags").split(" ");
 		if (el.attr("data-competition-allowed-tags") !== "") {
