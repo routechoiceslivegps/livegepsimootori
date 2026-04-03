@@ -235,6 +235,12 @@ a.navbar-brand.logo:focus {
 
 .padded-multiline span {
 	background-color: #000;
+	clip-path: polygon(
+		10px 2px,
+		99% 0,
+		calc(100% - 10px) 100%,
+		5px calc(100% - 4px)
+	);
 	color: #fff;
 	display: inline;
 	padding: 0.45rem 20px;
