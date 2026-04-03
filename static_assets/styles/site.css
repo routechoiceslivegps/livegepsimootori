@@ -146,6 +146,10 @@ body {
 	text-decoration: none;
 }
 
+#myFooter .logosmall a {
+	color: white;
+}
+
 #myFooter a:hover,
 #myFooter a:focus {
 	text-decoration: none;
