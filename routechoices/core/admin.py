@@ -779,7 +779,7 @@ class DeviceAdmin(admin.ModelAdmin):
     class Media:
         js = [
             "/static/vendor/gps-encoding-2025.02.28/gps-encoding.js",
-            "/static/scripts/admin/device.js?v=1.1",
+            "/static/scripts/admin/device.js?v=2026040400",
         ]
 
     list_display = (
@@ -810,9 +810,11 @@ class DeviceAdmin(admin.ModelAdmin):
     show_full_result_count = False
 
     def download_gpx(self, obj):
-        return mark_safe(
+        return format_html(
             '<input value="Download GPX File" '
-            'name="_download_gpx_button" type="button">'
+            'name="_download_gpx_button" type="button" '
+            "data-id={}>",
+            obj.aid,
         )
 
     def locations_sample(self, obj):
