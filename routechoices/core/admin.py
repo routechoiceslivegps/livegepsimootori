@@ -813,7 +813,7 @@ class DeviceAdmin(admin.ModelAdmin):
         return format_html(
             '<input value="Download GPX File" '
             'name="_download_gpx_button" type="button" '
-            "data-id={}>",
+            'data-id="{}" />',
             obj.aid,
         )
 
