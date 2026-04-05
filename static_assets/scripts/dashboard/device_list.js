@@ -103,9 +103,11 @@
 	});
 	u(".gpsseuranta-set-btn").on("click", function (ev) {
 		const devId = u(this).attr("data-dev-id");
+		const activate = ev.target.checked;
+		const property = `${activate ? "" : "de"}activate-gpsseuranta-relay`;
 		reqwest({
 			url: `/clubs/${window.local.clubSlug}/devices/${devId}`,
-			data: { "activate-gpsseuranta-relay": 1 },
+			data: { [property]: 1 },
 			headers: {
 				"X-CSRFToken": window.local.csrfToken,
 			},

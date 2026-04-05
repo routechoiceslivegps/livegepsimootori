@@ -1823,13 +1823,18 @@ def device_ownership_api_view(request, club_slug, device_id):
             raise ValidationError("Can not be more than 12 characters")
 
         activate_gpsseuranta = request.data.get("activate-gpsseuranta-relay")
-        if activate_gpsseuranta:
+        deactivate_gpsseuranta = request.data.get("deactivate-gpsseuranta-relay")
+        if activate_gpsseuranta or deactivate_gpsseuranta:
             if not device.gpsseuranta_known:
                 raise ValidationError("Device is not known by GPSSeuranta.net")
 
         response = {}
         if activate_gpsseuranta:
             device.gpsseuranta_relay_until = now() + timedelta(hours=24)
+            device.save()
+            response["gpsseuranta_until"] = device.gpsseuranta_relay_until
+        elif deactivate_gpsseuranta:
+            device.gpsseuranta_relay_until = now()
             device.save()
             response["gpsseuranta_until"] = device.gpsseuranta_relay_until
         if nick:

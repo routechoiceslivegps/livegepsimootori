@@ -91,15 +91,16 @@
                                 </td>
                                 <td>
                                     {% if device.gpsseuranta_known %}
-                                    <div class="me-1 mb-1">
-                                        <button class="btn btn-info gpsseuranta-set-btn"
-                                                data-dev-id="{{ device.aid }}"
-                                                type="button">
-                                            Relay data to GPSSeuranta.net for the next 24Hours{% if device.should_relay_to_gpsseuranta %}*{% endif %}
-                                        </button>
-                                        {% if device.should_relay_to_gpsseuranta %}
-                                        <small class="text-muted"><b>*</b>Currently relaying data to GPSSeuranta.net until <span class="date-utc text-nowrap" data-date="{{ device.gpsseuranta_relay_until|date:'c' }}"></span></small>
-                                        {% endif %}
+
+                                    <div>
+                                    <div class="me-2 d-inline-block border rounded p-2">
+                                        <div class="form-check form-switch">
+                                          <input class="form-check-input gpsseuranta-set-btn" data-dev-id="{{ device.aid }}" type="checkbox" role="switch" id="gpsseuranta-{{ device.aid }}" {% if device.should_relay_to_gpsseuranta %}checked{% endif %}>
+                                          <label class="form-check-label" for="gpsseuranta-{{ device.aid }}"><i>GPSSeuranta.net</i> Proxy{% if device.should_relay_to_gpsseuranta %}
+                                        <br/><small class="text-muted">(Until <span class="date-utc text-nowrap" data-date="{{ device.gpsseuranta_relay_until|date:'c' }}"></span>)</small>
+                                        {% endif %}</label>
+                                        </div>
+
                                     </div>
                                     {% endif %}
                                     <button class="btn btn-danger remove-btn mb-1"
@@ -107,6 +108,7 @@
                                             type="button">
                                         <i class="fa-solid fa-xmark"></i> Delete
                                     </button>
+                                </div>
                                 </td>
                             </tr>
                         {% endwith %}
