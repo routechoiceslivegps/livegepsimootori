@@ -93,7 +93,7 @@
                                     {% if device.gpsseuranta_known %}
 
                                     <div>
-                                    <div class="me-2 d-inline-block border rounded p-2">
+                                    <div class="me-2 mb-1 d-inline-block border rounded p-2">
                                         <div class="form-check form-switch">
                                           <input class="form-check-input gpsseuranta-set-btn" data-dev-id="{{ device.aid }}" type="checkbox" role="switch" id="gpsseuranta-{{ device.aid }}" {% if device.should_relay_to_gpsseuranta %}checked{% endif %}>
                                           <label class="form-check-label" for="gpsseuranta-{{ device.aid }}"><i>GPSSeuranta.net</i> Proxy{% if device.should_relay_to_gpsseuranta %}
