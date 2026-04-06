@@ -2988,7 +2988,7 @@ function RCEvent(infoURL, clockURL, locale) {
 		let pace = s;
 		const isImperial = prefUnit === "imperial";
 		if (isImperial) {
-			distText = "mile";
+			distText = "mi";
 			pace *= metersInMile / 1000;
 		}
 
@@ -3162,7 +3162,7 @@ function RCEvent(infoURL, clockURL, locale) {
 					}
 					if (checkVisible(competitor.odometer)) {
 						const totalDistance = route.distanceUntil(viewedTime);
-						competitor.odometerValue = `${(totalDistance / (prefUnit === "imperial" ? metersInMile : 1000)).toFixed(1)}${prefUnit === "imperial" ? "mile" : "km"}`;
+						competitor.odometerValue = `${(totalDistance / (prefUnit === "imperial" ? metersInMile : 1000)).toFixed(1)}${prefUnit === "imperial" ? "mi" : "km"}`;
 						competitor.odometer.textContent = competitor.odometerValue;
 					}
 
