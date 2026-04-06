@@ -56,5 +56,8 @@
 	"icons-size": "Kuvakkeiden koko",
 	"last-seen": "Viimeksi nähty $1",
 	"coordinates": "Koordinaatit",
-	"too-many-runners": "Osallistujia on yli 200, mutta nyt näytetään vain yksi."
+	"too-many-runners": "Osallistujia on yli 200, mutta nyt näytetään vain yksi.",
+	"units": "Yksiköt",
+	"unit-metric": "Metrinen",
+	"unit-imperial": "Imperiaalinen"
 }

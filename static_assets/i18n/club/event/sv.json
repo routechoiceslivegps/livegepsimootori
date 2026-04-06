@@ -56,5 +56,8 @@
 	"icons-size": "Ikoner storlek",
 	"last-seen": "Sågs senast $1",
 	"coordinates": "Koordinater",
-	"too-many-runners": "Det finns fler än 200 deltagare, endast 1 visas nu."
+	"too-many-runners": "Det finns fler än 200 deltagare, endast 1 visas nu.",
+	"units": "Enheter",
+	"unit-metric": "Metriska",
+	"unit-imperial": "Imperiala"
 }

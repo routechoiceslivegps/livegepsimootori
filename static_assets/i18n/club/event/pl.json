@@ -56,5 +56,8 @@
 	"icons-size": "Rozmiar ikon",
 	"last-seen": "Ostatnio widziano $1",
 	"coordinates": "Współrzędne",
-	"too-many-runners": "Jest ponad 200 uczestników, teraz wyświetla się tylko 1."
+	"too-many-runners": "Jest ponad 200 uczestników, teraz wyświetla się tylko 1.",
+	"units": "Jednostki",
+	"unit-metric": "Metryczne",
+	"unit-imperial": "Imperialne"
 }

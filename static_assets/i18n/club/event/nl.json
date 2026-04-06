@@ -56,5 +56,8 @@
 	"icons-size": "Pictogrammen grootte",
 	"last-seen": "Laatst gezien $1",
 	"coordinates": "Coördinaten",
-	"too-many-runners": "Er zijn meer dan 200 deelnemers, er wordt er nu maar 1 weergegeven."
+	"too-many-runners": "Er zijn meer dan 200 deelnemers, er wordt er nu maar 1 weergegeven.",
+	"units": "Eenheden",
+	"unit-metric": "Metrisch",
+	"unit-imperial": "Imperiaal"
 }

@@ -25,6 +25,9 @@ function RCEvent(infoURL, clockURL, locale) {
 	let zoomOnRunners = false;
 	let rasterMapLayer;
 	let mapOpacity = 1;
+	const metersInMile = 1609.344;
+
+	let prefUnit = "metric";
 
 	let isRealTime = true;
 	let isCustomStart = false;
@@ -2466,6 +2469,190 @@ function RCEvent(infoURL, clockURL, locale) {
 		});
 
 		{
+			const langWidget = u("<div/>").addClass("mb-2");
+
+			const widgetTitle = u("<h4/>")
+				.addClass("text-nowrap")
+				.html(
+					`<i class="fa-solid fa-language"></i> ${banana.i18n("language")}`,
+				);
+
+			const langSelector = u("<select/>")
+				.addClass("form-select")
+				.attr({ ariaLabel: "Language" })
+				.on("change", (e) => {
+					window.localStorage.setItem("lang", e.target.value);
+					window.location.search = `lang=${e.target.value}`;
+				});
+
+			for (const lang of Object.keys(supportedLanguages)) {
+				const option = u("<option/>");
+				option.attr({ value: lang });
+				option.html(supportedLanguages[lang]);
+				if (locale === lang) {
+					option.attr({ selected: true });
+				}
+				langSelector.append(option);
+			}
+
+			langWidget.append(widgetTitle).append(langSelector);
+
+			optionsSidebar.append(langWidget);
+		}
+		{
+			const unitWidget = u("<div/>").addClass("mb-2");
+
+			const widgetTitle = u("<h4/>")
+				.addClass("text-nowrap")
+				.html(`<i class="fa-solid fa-ruler"></i> ${banana.i18n("units")}`);
+
+			const unitSelector = u("<select/>")
+				.addClass("form-select")
+				.attr({ ariaLabel: "Units" })
+				.on("change", (e) => {
+					prefUnit = e.target.value;
+				});
+
+			for (const unit of ["metric", "imperial"]) {
+				const option = u("<option/>");
+				option.attr({ value: unit });
+				option.text(banana.i18n(`unit-${unit}`));
+				if (prefUnit === unit) {
+					option.attr({ selected: true });
+				}
+				unitSelector.append(option);
+			}
+
+			unitWidget.append(widgetTitle).append(unitSelector);
+
+			optionsSidebar.append(unitWidget);
+		}
+		{
+			const coordsCRSWidget = u("<div/>").addClass("mb-2");
+
+			const widgetTitle = u("<h4/>")
+				.text(banana.i18n("coordinates"))
+				.addClass("text-nowrap");
+
+			const crsSelector = u("<select/>")
+				.addClass("form-select")
+				.attr({ ariaLabel: "Background map" })
+				.on("change", (e) => {
+					coordsUsed = e.target.value;
+					coordsControl.remove();
+					coordsControl = L.control
+						.mapCenterCoord({
+							position: "bottomright",
+							latLngFormatter: coordsFormatters[coordsUsed].format,
+						})
+						.addTo(map);
+				});
+
+			for (const [key, { name }] of Object.entries(coordsFormatters)) {
+				const option = u("<option/>");
+				option.attr({ value: key });
+				option.text(name);
+				if (coordsUsed === key) {
+					option.attr({ selected: true });
+				}
+				crsSelector.append(option);
+			}
+
+			coordsCRSWidget.append(widgetTitle).append(crsSelector);
+
+			optionsSidebar.append(coordsCRSWidget);
+		}
+
+		{
+			const bgMapWidget = u("<div/>").addClass("mb-2");
+
+			const widgetTitle = u("<h4/>")
+				.text(banana.i18n("background-map"))
+				.addClass("text-nowrap");
+
+			const mapSelector = u("<select/>")
+				.addClass("form-select")
+				.attr({ ariaLabel: "Background map" })
+				.on("change", (e) => {
+					if (bgLayer) {
+						bgLayer.remove();
+						bgLayer = null;
+					}
+					if (e.target.value === "blank") {
+						u("#map").css({ background: "#fff" });
+					} else {
+						u("#map").css({ background: "#ddd" });
+						const layer = cloneLayer(backdropMaps[e.target.value]);
+						layer.nickname = e.target.value;
+						layer.setZIndex(-1);
+						layer.addTo(map);
+						bgLayer = layer;
+					}
+				});
+
+			const blankOption = u("<option/>");
+			blankOption.attr({ value: "blank" });
+			blankOption.text("Blank");
+			if (!bgLayer) {
+				blankOption.attr({ selected: true });
+			}
+			mapSelector.append(blankOption);
+
+			for (const kv of Object.entries(backgroundMapTitles)) {
+				const option = u("<option/>");
+				option.attr({ value: kv[0] });
+				option.text(kv[1]);
+				if (bgLayer?.nickname === kv[0]) {
+					option.attr({ selected: true });
+				}
+				mapSelector.append(option);
+			}
+
+			bgMapWidget.append(widgetTitle).append(mapSelector);
+
+			optionsSidebar.append(bgMapWidget);
+		}
+		if (rasterMapLayer) {
+			const toggleMapWidget = u("<div/>").addClass("mb-2");
+
+			const widgetTitle = u("<h4/>")
+				.text(banana.i18n("map"))
+				.addClass("text-nowrap");
+
+			const widgetContent = u("<div/>").addClass(
+				"form-check",
+				"form-switch",
+				"d-inline-block",
+				"ms-1",
+			);
+
+			const widgetInput = u("<input/>")
+				.addClass("form-check-input")
+				.attr({
+					id: "toggleMapSwitch",
+					type: "checkbox",
+					checked: mapOpacity === 0,
+				})
+				.on("click", (e) => {
+					if (mapOpacity === 0) {
+						mapOpacity = 1;
+					} else {
+						mapOpacity = 0;
+					}
+					rasterMapLayer?.setOpacity(mapOpacity);
+				});
+			const widgetLabel = u("<label/>")
+				.addClass("form-check-label")
+				.attr({ for: "toggleMapSwitch" })
+				.text(banana.i18n("hide-map"));
+
+			widgetContent.append(widgetInput).append(widgetLabel);
+
+			toggleMapWidget.append(widgetTitle).append(widgetContent);
+
+			optionsSidebar.append(toggleMapWidget);
+		}
+		{
 			const tailLenWidget = u("<div/>").addClass("mb-2");
 
 			const widgetTitle = u("<h4/>")
@@ -2685,37 +2872,6 @@ function RCEvent(infoURL, clockURL, locale) {
 			optionsSidebar.append(groupWidget);
 		}
 		{
-			const langWidget = u("<div/>").addClass("mb-2");
-
-			const widgetTitle = u("<h4/>")
-				.addClass("text-nowrap")
-				.html(
-					`<i class="fa-solid fa-language"></i> ${banana.i18n("language")}`,
-				);
-
-			const langSelector = u("<select/>")
-				.addClass("form-select")
-				.attr({ ariaLabel: "Language" })
-				.on("change", (e) => {
-					window.localStorage.setItem("lang", e.target.value);
-					window.location.search = `lang=${e.target.value}`;
-				});
-
-			for (const lang of Object.keys(supportedLanguages)) {
-				const option = u("<option/>");
-				option.attr({ value: lang });
-				option.html(supportedLanguages[lang]);
-				if (locale === lang) {
-					option.attr({ selected: true });
-				}
-				langSelector.append(option);
-			}
-
-			langWidget.append(widgetTitle).append(langSelector);
-
-			optionsSidebar.append(langWidget);
-		}
-		{
 			const locWidget = u("<div/>").addClass("mb-2");
 
 			const widgetTitle = u("<h4/>")
@@ -2754,133 +2910,6 @@ function RCEvent(infoURL, clockURL, locale) {
 			locWidget.append(widgetTitle).append(widgetContent);
 
 			optionsSidebar.append(locWidget);
-		}
-
-		if (rasterMapLayer) {
-			const toggleMapWidget = u("<div/>").addClass("mb-2");
-
-			const widgetTitle = u("<h4/>")
-				.text(banana.i18n("map"))
-				.addClass("text-nowrap");
-
-			const widgetContent = u("<div/>").addClass(
-				"form-check",
-				"form-switch",
-				"d-inline-block",
-				"ms-1",
-			);
-
-			const widgetInput = u("<input/>")
-				.addClass("form-check-input")
-				.attr({
-					id: "toggleMapSwitch",
-					type: "checkbox",
-					checked: mapOpacity === 0,
-				})
-				.on("click", (e) => {
-					if (mapOpacity === 0) {
-						mapOpacity = 1;
-					} else {
-						mapOpacity = 0;
-					}
-					rasterMapLayer?.setOpacity(mapOpacity);
-				});
-			const widgetLabel = u("<label/>")
-				.addClass("form-check-label")
-				.attr({ for: "toggleMapSwitch" })
-				.text(banana.i18n("hide-map"));
-
-			widgetContent.append(widgetInput).append(widgetLabel);
-
-			toggleMapWidget.append(widgetTitle).append(widgetContent);
-
-			optionsSidebar.append(toggleMapWidget);
-		}
-
-		{
-			const bgMapWidget = u("<div/>").addClass("mb-2");
-
-			const widgetTitle = u("<h4/>")
-				.text(banana.i18n("background-map"))
-				.addClass("text-nowrap");
-
-			const mapSelector = u("<select/>")
-				.addClass("form-select")
-				.attr({ ariaLabel: "Background map" })
-				.on("change", (e) => {
-					if (bgLayer) {
-						bgLayer.remove();
-						bgLayer = null;
-					}
-					if (e.target.value === "blank") {
-						u("#map").css({ background: "#fff" });
-					} else {
-						u("#map").css({ background: "#ddd" });
-						const layer = cloneLayer(backdropMaps[e.target.value]);
-						layer.nickname = e.target.value;
-						layer.setZIndex(-1);
-						layer.addTo(map);
-						bgLayer = layer;
-					}
-				});
-
-			const blankOption = u("<option/>");
-			blankOption.attr({ value: "blank" });
-			blankOption.text("Blank");
-			if (!bgLayer) {
-				blankOption.attr({ selected: true });
-			}
-			mapSelector.append(blankOption);
-
-			for (const kv of Object.entries(backgroundMapTitles)) {
-				const option = u("<option/>");
-				option.attr({ value: kv[0] });
-				option.text(kv[1]);
-				if (bgLayer?.nickname === kv[0]) {
-					option.attr({ selected: true });
-				}
-				mapSelector.append(option);
-			}
-
-			bgMapWidget.append(widgetTitle).append(mapSelector);
-
-			optionsSidebar.append(bgMapWidget);
-		}
-
-		{
-			const coordsCRSWidget = u("<div/>").addClass("mb-2");
-
-			const widgetTitle = u("<h4/>")
-				.text(banana.i18n("coordinates"))
-				.addClass("text-nowrap");
-
-			const crsSelector = u("<select/>")
-				.addClass("form-select")
-				.attr({ ariaLabel: "Background map" })
-				.on("change", (e) => {
-					coordsUsed = e.target.value;
-					coordsControl.remove();
-					coordsControl = L.control
-						.mapCenterCoord({
-							position: "bottomright",
-							latLngFormatter: coordsFormatters[coordsUsed].format,
-						})
-						.addTo(map);
-				});
-
-			for (const [key, { name }] of Object.entries(coordsFormatters)) {
-				const option = u("<option/>");
-				option.attr({ value: key });
-				option.text(name);
-				if (coordsUsed === key) {
-					option.attr({ selected: true });
-				}
-				crsSelector.append(option);
-			}
-
-			coordsCRSWidget.append(widgetTitle).append(crsSelector);
-
-			optionsSidebar.append(coordsCRSWidget);
 		}
 
 		if (shortcutURL) {
@@ -2955,12 +2984,20 @@ function RCEvent(infoURL, clockURL, locale) {
 	this.getRelativeTime = getRelativeTime;
 
 	function formatSpeed(s) {
-		const min = Math.floor(s / 60);
-		const sec = Math.floor(s % 60);
-		if (min > 99) {
-			return "--'--\"/km";
+		let distText = "km";
+		let pace = s;
+		const isImperial = prefUnit === "imperial";
+		if (isImperial) {
+			distText = "mile";
+			pace *= metersInMile / 1000;
 		}
-		return `${min}'${(`0${sec}`).slice(-2)}"/km`;
+
+		const min = Math.floor(pace / 60);
+		const sec = Math.floor(pace % 60);
+		if (min > 99) {
+			return `--'--"/${distText}`;
+		}
+		return `${min}'${(`0${sec}`).slice(-2)}"/${distText}`;
 	}
 
 	function checkVisible(elem) {
@@ -3109,7 +3146,7 @@ function RCEvent(infoURL, clockURL, locale) {
 						viewedTime,
 					);
 					if (!hasPointInTail) {
-						competitor.speedometerValue = "--'--\"/km";
+						competitor.speedometerValue = formatSpeed(Number.POSITIVE_INFINITY);
 						competitor.speedometer.textContent = competitor.speedometerValue;
 					} else {
 						if (checkVisible(competitor.speedometer)) {
@@ -3125,7 +3162,7 @@ function RCEvent(infoURL, clockURL, locale) {
 					}
 					if (checkVisible(competitor.odometer)) {
 						const totalDistance = route.distanceUntil(viewedTime);
-						competitor.odometerValue = `${(totalDistance / 1000).toFixed(1)}km`;
+						competitor.odometerValue = `${(totalDistance / (prefUnit === "imperial" ? metersInMile : 1000)).toFixed(1)}${prefUnit === "imperial" ? "mile" : "km"}`;
 						competitor.odometer.textContent = competitor.odometerValue;
 					}
 
