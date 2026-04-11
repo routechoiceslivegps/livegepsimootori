@@ -345,6 +345,23 @@ class HasGeoJSONFilter(admin.SimpleListFilter):
             )
 
 
+class HasEmailVerified(admin.SimpleListFilter):
+    title = "wether it email is verified"
+    parameter_name = "email_verified"
+
+    def lookups(self, request, model_admin):
+        return [
+            ("true", "Verified"),
+            ("false", "Not verified"),
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value() == "false":
+            return queryset.filter(has_verified_email=False)
+        if self.value():
+            return queryset.filter(has_verified_email=True)
+
+
 class HasClubsFilter(admin.SimpleListFilter):
     title = "whether it admins a club"
     parameter_name = "has_club"
@@ -1088,7 +1105,7 @@ class MyUserAdmin(HijackUserAdminMixin, UserAdmin):
         )
 
     def get_list_filter(self, request):
-        return super().get_list_filter(request) + (HasClubsFilter,)
+        return super().get_list_filter(request) + (HasClubsFilter, HasEmailVerified)
 
     def get_hijack_user(self, obj):
         return obj
