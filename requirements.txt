@@ -27,7 +27,7 @@ django-admincommand @ git+https://github.com/rphlo/django-admincommand.git@09f8b
 django-allauth==65.15.0
 django-appconf==1.2.0
 django-background-tasks @ git+https://github.com/rphlo/django-background-tasks@6b247d0b3a7565613656d0ec07b55f6c66aa03cc
-django-bootstrap5 @ git+https://github.com/rphlo/django-bootstrap5.git@9250748480a5862cfc94f76d96181f08bd022fff
+django-bootstrap5==26.2
 django-compressor==4.6.0
 django-cors-headers==4.9.0
 django-csp==4.0
