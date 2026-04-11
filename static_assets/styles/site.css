@@ -481,8 +481,3 @@ a.navbar-brand.logo:focus {
 label:has(+ input:required) {
 	font-weight: bold;
 }
-
-label:has(+ input:required):after {
-	content: " *";
-	font-weight: bold;
-}
