@@ -477,7 +477,3 @@ a.navbar-brand.logo:focus {
 .status-indicator-default {
 	background-color: #808080;
 }
-
-label:has(+ input:required) {
-	font-weight: bold;
-}
