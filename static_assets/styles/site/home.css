@@ -105,6 +105,19 @@
 		url("../../img/emma.jpg?v=2") 1x
 	);
 }
+.image-tv {
+	background-image: url("../../img/broadcast-room.webp"); /* fallback for non image-set browser */
+	background-image: -webkit-image-set(
+		url("../../img/broadcast-room.avif?v=2") 1x /* type("image/avif") */,
+		url("../../img/broadcast-room.webp?v=2") 1x /* type("image/webp") */,
+		url("../../img/broadcast-room.jpg?v=2") 1x /* type("image/png") */
+	);
+	background-image: image-set(
+		url("../../img/broadcast-room.avif?v=2") 1x,
+		url("../../img/broadcast-room.webp?v=2") 1x,
+		url("../../img/broadcast-room.jpg?v=2") 1x
+	);
+}
 
 .image-banner > div {
 	background: var(--rc-opacity-cover);
