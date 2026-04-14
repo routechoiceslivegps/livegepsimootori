@@ -2751,8 +2751,8 @@ class ImeiDevice(models.Model):
 
     class Meta:
         ordering = ["imei"]
-        verbose_name = "imei device"
-        verbose_name_plural = "imei devices"
+        verbose_name = "IMEI"
+        verbose_name_plural = "IMEIs"
 
     def __str__(self):
         return self.imei
@@ -3010,6 +3010,10 @@ class FrontPageFeedback(models.Model):
     stars = models.PositiveIntegerField(validators=[MaxValueValidator(5)])
     name = models.CharField(max_length=50)
     club_name = models.CharField(max_length=50)
+
+    class Meta:
+        verbose_name = "feedback"
+        verbose_name_plural = "feedbacks"
 
     def __str__(self):
         return f"Feedback from {self.name} ({self.club_name})"

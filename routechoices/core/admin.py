@@ -476,6 +476,37 @@ class DeviceBrandFilter(admin.SimpleListFilter):
         return queryset
 
 
+class ClubDeviceOwnershipInline(admin.TabularInline):
+    model = DeviceClubOwnership
+    fields = ("device_link", "nickname")
+    ordering = ("creation_date",)
+    readonly_fields = ["device_link"]
+    extra = 0
+
+    def device_link(self, obj):
+        return format_html(
+            '<a href="/admin/core/device/{}/change">{}</a>',
+            obj.device_id,
+            obj.device.aid,
+        )
+
+    device_link.short_description = "Device"
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related("device", "club")
+
+
+class DeviceOwnershipInline(admin.TabularInline):
+    model = DeviceClubOwnership
+    fields = ("club", "nickname")
+    ordering = ("creation_date",)
+    readonly_fields = ["club"]
+    extra = 0
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related("device", "club")
+
+
 @admin.register(EventSet)
 class EventSetAdmin(admin.ModelAdmin):
     list_display = (
@@ -536,12 +567,14 @@ class ClubAdmin(admin.ModelAdmin):
         "creator",
         "admins",
     )
+    readonly_fields = ("links",)
     list_filter = (
         HasEventsFilter,
         HasMapsFilter,
         HasDeviceFilter,
         "upgraded",
     )
+    inlines = [ClubDeviceOwnershipInline]
     show_facets = False
     search_fields = ("name",)
 
@@ -619,6 +652,13 @@ class ClubAdmin(admin.ModelAdmin):
                     for a in obj.admins.all()
                 )
             )
+        )
+
+    def links(self, obj):
+        return format_html(
+            '<a href="/admin/core/map/?club__id__exact={}">Maps</a> - <a href="/admin/core/event/?club__id__exact={}">Events</a>',
+            obj.id,
+            obj.id,
         )
 
     event_count.admin_order_field = "event_count"
@@ -785,20 +825,10 @@ class DeviceCompetitorInline(admin.TabularInline):
     readonly_fields = ("link",)
     ordering = ("-start_time",)
     autocomplete_fields = ["event"]
+    extra = 0
 
     def link(self, obj):
         return format_html('<a href="{}">Open</a>', obj.event.get_absolute_url())
-
-
-class DeviceOwnershipInline(admin.TabularInline):
-    model = DeviceClubOwnership
-    fields = ("club", "nickname")
-    ordering = ("creation_date",)
-    readonly_fields = ["club"]
-    extra = 0
-
-    def get_queryset(self, request):
-        return super().get_queryset(request).select_related("device", "club")
 
 
 class DeviceArchiveReferenceInline(admin.TabularInline):
@@ -1098,30 +1128,6 @@ class MapAdmin(admin.ModelAdmin):
         return format_html(
             '<a href="/admin/core/club/{}/change">{}</a>', obj.club_id, obj.club
         )
-
-    club_link.short_description = "Club"
-
-
-@admin.register(DeviceClubOwnership)
-class DeviceClubOwnershipAdmin(admin.ModelAdmin):
-    list_display = ("device", "club_link", "nickname")
-    list_filter = ("club",)
-    autocomplete_fields = ["device", "club"]
-
-    def get_queryset(self, request):
-        return (
-            super()
-            .get_queryset(request)
-            .select_related("club", "device")
-            .defer("device__locations_encoded")
-            .order_by("club", "device__aid")
-        )
-
-    search_fields = ("device__aid", "nickname")
-
-    def club_link(self, obj):
-        link = f"/admin/core/club/{obj.club_id}/change/"
-        return format_html('<a href="{}">{}</a>', link, obj.club)
 
     club_link.short_description = "Club"
 
