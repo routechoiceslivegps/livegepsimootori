@@ -2998,11 +2998,11 @@ class TcpDeviceCommand(models.Model):
 
     class Meta:
         ordering = ["-modification_date"]
-        verbose_name = "TCP Device command"
-        verbose_name_plural = "TCP Devices commands"
+        verbose_name = "TCP command"
+        verbose_name_plural = "TCP commands"
 
     def __str__(self):
-        return f"Command for imei {self.target}"
+        return f"Command for IMEI {self.target}"
 
 
 class FrontPageFeedback(models.Model):
