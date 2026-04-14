@@ -803,7 +803,7 @@ class DeviceOwnershipInline(admin.TabularInline):
 class DeviceArchiveReferenceInline(admin.TabularInline):
     model = DeviceArchiveReference
     fields = ("archive",)
-    ordering = ("archive___last_location_datetime",)
+    ordering = ("-archive___last_location_datetime",)
     autocomplete_fields = ["archive"]
     fk_name = "original"
 
