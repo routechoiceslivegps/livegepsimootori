@@ -794,7 +794,7 @@ class DeviceOwnershipInline(admin.TabularInline):
     model = DeviceClubOwnership
     fields = ("club", "nickname")
     ordering = ("creation_date",)
-    autocomplete_fields = ["club"]
+    readonly_fields = ["club"]
     extra = 0
 
     def get_queryset(self, request):
@@ -809,11 +809,11 @@ class DeviceArchiveReferenceInline(admin.TabularInline):
         "last_location_datetime",
     )
     readonly_fields = (
+        "archive",
         "first_location_datetime",
         "last_location_datetime",
     )
     ordering = ("-archive___last_location_datetime",)
-    autocomplete_fields = ["archive"]
     fk_name = "original"
     extra = 0
 
