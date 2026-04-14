@@ -292,6 +292,23 @@ class HasCompetitorFilter(admin.SimpleListFilter):
             return queryset.filter(competitor_count__gt=0)
 
 
+class HasArchiveFilter(admin.SimpleListFilter):
+    title = "whether it has been archived"
+    parameter_name = "has_archives"
+
+    def lookups(self, request, model_admin):
+        return [
+            ("true", "Has been archived"),
+            ("false", "Never archived"),
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value() == "false":
+            return queryset.filter(archive_count=0)
+        if self.value():
+            return queryset.filter(archive_count__gt=0)
+
+
 class HasEventsFilter(admin.SimpleListFilter):
     title = "whether any events use it"
     parameter_name = "has_events"
@@ -809,6 +826,7 @@ class DeviceAdmin(admin.ModelAdmin):
         "location_count",
         "battery_level",
         "competitor_count",
+        "archive_count",
     )
     readonly_fields = ()
     search_fields = ("aid",)
@@ -817,6 +835,7 @@ class DeviceAdmin(admin.ModelAdmin):
         VirtualDeviceFilter,
         DeviceBrandFilter,
         ModifiedDateFilter,
+        HasArchiveFilter,
         HasCompetitorFilter,
         HasLocationFilter,
     )
@@ -826,8 +845,8 @@ class DeviceAdmin(admin.ModelAdmin):
         extra = ()
         if obj and not obj.virtual:
             extra += (
-                DeviceArchiveReferenceInline,
                 DeviceOwnershipInline,
+                DeviceArchiveReferenceInline,
             )
         return self.inlines + extra
 
@@ -900,7 +919,10 @@ class DeviceAdmin(admin.ModelAdmin):
         qs = (
             super()
             .get_queryset(request)
-            .annotate(competitor_count=Count("competitor_set"))
+            .annotate(
+                competitor_count=Count("competitor_set", distinct=True),
+                archive_count=Count("archives_ref", distinct=True),
+            )
         )
         return qs
 
@@ -909,6 +931,11 @@ class DeviceAdmin(admin.ModelAdmin):
 
     def competitor_count(self, obj):
         return obj.competitor_count
+
+    def archive_count(self, obj):
+        if obj.virtual:
+            return None
+        return obj.archive_count
 
     def last_location_datetime(self, obj):
         return obj._last_location_datetime
@@ -934,6 +961,7 @@ class DeviceAdmin(admin.ModelAdmin):
 
     location_count.admin_order_field = "_location_count"
     competitor_count.admin_order_field = "competitor_count"
+    archive_count.admin_order_field = "archive_count"
     last_location_datetime.admin_order_field = "_last_location_datetime"
 
     def device_name(self, obj):
