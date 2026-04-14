@@ -795,6 +795,7 @@ class DeviceOwnershipInline(admin.TabularInline):
     fields = ("club", "nickname")
     ordering = ("creation_date",)
     autocomplete_fields = ["club"]
+    extra = 0
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related("device", "club")
@@ -802,10 +803,25 @@ class DeviceOwnershipInline(admin.TabularInline):
 
 class DeviceArchiveReferenceInline(admin.TabularInline):
     model = DeviceArchiveReference
-    fields = ("archive",)
+    fields = (
+        "archive",
+        "first_location_datetime",
+        "archive___last_location_datetime",
+    )
+    readonly_fields = (
+        "first_location_datetime",
+        "archive___last_location_datetime",
+    )
     ordering = ("-archive___last_location_datetime",)
     autocomplete_fields = ["archive"]
     fk_name = "original"
+    extra = 0
+
+    def first_location_datetime(self, obj):
+        return obj.archive.first_location_datetime
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related("archive")
 
 
 @admin.register(Device)

@@ -2613,6 +2613,12 @@ class Device(models.Model, SomewhereOnEarth):
         return None
 
     @property
+    def first_location_datetime(self):
+        if not self._location_count:
+            return None
+        return epoch_to_datetime(self.locations[0][LOCATION_TIMESTAMP_INDEX])
+
+    @property
     def last_location_datetime(self):
         return self._last_location_datetime
 
