@@ -2722,6 +2722,9 @@ class DeviceArchiveReference(models.Model):
         Device, related_name="archives_ref", on_delete=models.CASCADE
     )
 
+    class Meta:
+        ordering = ["-creation_date"]
+
     def __str__(self):
         return f"Archive {self.archive.aid} of {self.original.aid}"
 
