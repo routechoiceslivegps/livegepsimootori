@@ -810,13 +810,9 @@ class DeviceAdmin(admin.ModelAdmin):
         "battery_level",
         "competitor_count",
     )
-    readonly_fields = ("locations_sample", "download_gpx", "imei")
+    readonly_fields = ()
     search_fields = ("aid",)
-    inlines = [
-        DeviceCompetitorInline,
-        DeviceOwnershipInline,
-        DeviceArchiveReferenceInline,
-    ]
+    inlines = (DeviceCompetitorInline,)
     list_filter = (
         VirtualDeviceFilter,
         DeviceBrandFilter,
@@ -826,13 +822,50 @@ class DeviceAdmin(admin.ModelAdmin):
     )
     show_full_result_count = False
 
+    def get_inlines(self, request, obj):
+        extra = ()
+        if obj and not obj.virtual:
+            extra += (
+                DeviceArchiveReferenceInline,
+                DeviceOwnershipInline,
+            )
+        return self.inlines + extra
+
+    def get_readonly_fields(self, request, obj=None):
+        extra_fields = ()
+        if obj and hasattr(obj, "physical_device") and obj.physical_device:
+            extra_fields += ("imei",)
+        if (
+            obj
+            and obj.virtual
+            and obj.aid.endswith("_ARC")
+            and hasattr(obj, "original_ref")
+            and obj.original_ref is not None
+        ):
+            extra_fields += ("original_link",)
+        if obj and obj.locations:
+            extra_fields += ("locations_sample", "download_gpx")
+        return self.readonly_fields + extra_fields
+
+    def original_link(self, obj):
+        original = obj.original_ref.original
+        return format_html(
+            '<a href="/admin/core/device/{}/change">{}</a>',
+            original.id,
+            original.aid,
+        )
+
+    original_link.short_description = "Original Device"
+
     def download_gpx(self, obj):
         return format_html(
-            '<input value="Download GPX File" '
+            '<input value="Download GPX" '
             'name="_download_gpx_button" type="button" '
             'data-id="{}" />',
             obj.aid,
         )
+
+    download_gpx.short_description = "Download GPX"
 
     def locations_sample(self, obj):
         locations = obj.locations
@@ -905,29 +938,6 @@ class DeviceAdmin(admin.ModelAdmin):
 
     def device_name(self, obj):
         return get_device_name(obj.user_agent) or obj.user_agent
-
-
-@admin.register(DeviceArchiveReference)
-class DeviceArchiveReferenceAdmin(admin.ModelAdmin):
-    list_display = (
-        "archive",
-        "original_link",
-        "creation_date",
-    )
-
-    autocomplete_fields = ["original", "archive"]
-
-    def get_queryset(self, request):
-        return super().get_queryset(request).select_related("archive", "original")
-
-    def original_link(self, obj):
-        return format_html(
-            '<a href="/admin/core/device/{}/change">{}</a>',
-            obj.original_id,
-            obj.original,
-        )
-
-    original_link.short_description = "Original"
 
 
 @admin.register(ImeiDevice)
