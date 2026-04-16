@@ -158,6 +158,14 @@ function selectizeDeviceInput(field) {
 	if (u("#registration-form").nodes.length) {
 		u("#registration-form").on("submit", (e) => {
 			e.preventDefault();
+			const submitButton = u("#registration-form").find(
+				"button:not([type]),button[type=submit]",
+			);
+			submitButton.attr("disabled", true);
+			submitButton
+				.find("i")
+				.removeClass("fa-file-signature")
+				.addClass("fa-spinner fa-spin");
 			const formData = new FormData(e.target);
 			const data = {
 				event_id: window.local.eventId,
@@ -181,9 +189,23 @@ function selectizeDeviceInput(field) {
 					"X-CSRFToken": window.local.csrfToken,
 				},
 				success: () => {
-					window.location.href = `${window.location.href}?competitor-added=1`;
+					window.localStorage.setItem(
+						"userInfoRegistration",
+						JSON.stringify({
+							name: data.name,
+							shortName: data.short_name,
+							deviceId: data.device_id,
+						}),
+					);
+					window.location = `${window.location.href}?competitor-added=1`;
+					return false;
 				},
 				error: (err) => {
+					submitButton.attr("disabled", false);
+					submitButton
+						.find("i")
+						.removeClass("fa-spinner fa-spin")
+						.addClass("fa-file-signature");
 					if (err.status === 400) {
 						swal({
 							text: JSON.parse(err.responseText).join("\n"),
@@ -209,15 +231,33 @@ function selectizeDeviceInput(field) {
 					u("#warning-if-device-id").removeClass("d-none");
 				}
 			});
+			let deviceIdfromHash = false;
 			if (window.location.hash) {
 				const hash = window.location.hash;
 				const searchParams = new URLSearchParams(hash.slice(1));
 				const deviceId = searchParams.get("device_id");
 				if (deviceId) {
+					deviceIdfromHash = true;
 					tsDevId.clear();
 					tsDevId.clearOptions();
 					tsDevId.addOption({ device_id: deviceId });
 					tsDevId.setValue(deviceId);
+				}
+			}
+			const savedRegistrationInfoRaw = window.localStorage.getItem(
+				"userInfoRegistration",
+			);
+			if (savedRegistrationInfoRaw) {
+				const savedRegistrationInfo = JSON.parse(savedRegistrationInfoRaw);
+				const { name, shortName, deviceId } = savedRegistrationInfo;
+				u("#id_name").val(name);
+				u("#id_short_name").val(shortName);
+				if (deviceId && !deviceIdfromHash) {
+					tsDevId.clear();
+					tsDevId.clearOptions();
+					tsDevId.addOption({ device_id: deviceId });
+					tsDevId.setValue(deviceId);
+					deviceIdfromHash = true;
 				}
 			}
 		}
