@@ -148,10 +148,10 @@ function selectizeDeviceInput(field) {
 }
 
 (() => {
-	const thisUrl = window.location.href;
+	const queryParams = window.location.search;
 	if (
-		thisUrl.includes("competitor-added=1") ||
-		thisUrl.includes("route-uploaded=1")
+		queryParams.includes("competitor-added=1") ||
+		queryParams.includes("route-uploaded=1")
 	) {
 		window.history.pushState("-", null, window.location.pathname);
 	}
@@ -234,6 +234,7 @@ function selectizeDeviceInput(field) {
 			let deviceIdfromHash = false;
 			if (window.location.hash) {
 				const hash = window.location.hash;
+				window.history.pushState("-", null, window.location.pathname);
 				const searchParams = new URLSearchParams(hash.slice(1));
 				const deviceId = searchParams.get("device_id");
 				if (deviceId) {
