@@ -213,7 +213,7 @@ def get_device_name(ua):
         return "Apple Watch"
     if ua.startswith("Dalvik"):
         return "Android"
-    if ua.startswith("ConnectMobile"):
+    if ua.startswith("ConnectMobile") or ua.startswith("ConnectIQ") or ua == "Mozilla/5.0 ( compatible )":
         return "Garmin"
     if ua.startswith("Traccar"):
         return "Traccar"

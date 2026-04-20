@@ -454,7 +454,11 @@ class DeviceBrandFilter(admin.SimpleListFilter):
         if self.value() == "apple_watch":
             return queryset.filter(user_agent__startswith="Routechoices-watch-tracker/")
         if self.value() == "garmin":
-            return queryset.filter(user_agent__startswith="ConnectMobile/")
+            return queryset.filter(
+                Q(user_agent__startswith="ConnectMobile/")
+                | Q(user_agent__startswith="ConnectIQ/")
+                | Q(user_agent="Mozilla/5.0 ( compatible )")
+            )
         if self.value() == "gt06":
             return queryset.filter(user_agent="GT06")
         if self.value() == "h02":
