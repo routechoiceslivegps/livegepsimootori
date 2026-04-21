@@ -2174,12 +2174,15 @@ class Event(models.Model, SomewhereOnEarth):
             cache_key = f"geojson:{self.geojson_layer.name}:coords"
             if cached := cache.get(cache_key):
                 return cached
-            geojson_raw = self.geojson_layer.read()
-            geojson = json.loads(geojson_raw)
-            pt = get_geojson_coordinates(geojson)
-            coords = [pt[1], pt[0]]
-            cache.set(cache_key, coords, DURATION_ONE_MONTH)
-            return coords
+            try:
+                geojson_raw = self.geojson_layer.read()
+                geojson = json.loads(geojson_raw)
+                pt = get_geojson_coordinates(geojson)
+                coords = [pt[1], pt[0]]
+                cache.set(cache_key, coords, DURATION_ONE_MONTH)
+                return coords
+            except Exception:
+                pass
         sample_competitors = (
             self.competitors.select_related("device")
             .filter(
