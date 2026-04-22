@@ -61,7 +61,7 @@ jmespath==1.1.0
 jwcrypto==1.5.7
 kagi @ git+https://github.com/rphlo/kagi@9d02f068abf0963575819455f2e3f05888726153
 loguru==0.7.3
-lxml==6.0.3
+lxml==6.1.0
 markdown==3.10.2
 markdown-it-py==4.0.0
 maxminddb==3.1.1
