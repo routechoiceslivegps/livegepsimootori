@@ -1934,6 +1934,7 @@ function RCEvent(infoURL, clockURL, locale) {
 							if (activeCompetitorCategories.has(cat)) {
 								activeCompetitorCategories.delete(cat);
 							} else {
+								activeCompetitorCategories.clear();
 								activeCompetitorCategories.add(cat);
 							}
 							btn.toggleClass("active");
