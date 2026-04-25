@@ -30,6 +30,7 @@ services:
       VGW_BACKEND: posix
       VGW_BACKEND_ARGS: /data/s3
       VGW_META_SIDECAR: /data/sidecar
+      VGW_CORS_ALLOW_ORIGIN: "*"
     restart: unless-stopped
   smtp:
     container_name: rc_mailpit
