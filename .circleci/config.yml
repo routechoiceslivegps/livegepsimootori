@@ -10,7 +10,12 @@ commands:
       - run: ./gen-local-certs.sh
       - run: chmod -R 755 ./letsencrypt/live/routechoices.dev/
       - run: echo "127.0.0.1 routechoices.dev api.routechoices.dev www.routechoices.dev events.routechoices.dev dashboard.routechoices.dev halden-sk.routechoices.dev kangasala-sk.routechoices.dev registration.routechoices.dev livelox.routechoices.dev loggator.routechoices.dev gpsseuranta.routechoices.dev" | sudo tee -a /etc/hosts
-      - run: mkdir -p media/routechoices/maps/
+
+      - run: mkdir -p media/s3/routechoices
+      - run: mkdir -p media/iam
+      - run: mkdir -p media/versioning
+      - run: mkdir -p media/sidecar
+
       - run: mv ./.env.dev ./.env
       - run: echo "SECURE_SSL_REDIRECT = False" > ./routechoices/settings_overrides.py
       - run: echo "DEBUG = False" >> ./routechoices/settings_overrides.py
