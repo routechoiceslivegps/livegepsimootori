@@ -11,19 +11,26 @@ services:
       - "5432"
   minio:
     container_name: rc_minio
-    image: minio/minio:latest
+    image: ghcr.io/versity/versitygw:latest
     volumes:
-      - ../media:/data
+      - ../media/s3:/data/s3
+      - ../media/versioning:/data/versioning
+      - ../media/iam:/data/iam
+      - ../media/sidecar:/data/sidecar
     expose:
       - "9000"
     ports:
       - 9000:9000
     environment:
-      MINIO_ROOT_USER: minio
-      MINIO_ROOT_PASSWORD: minio123
-    command:
-      - server
-      - /data
+      ROOT_ACCESS_KEY: minio
+      ROOT_SECRET_KEY: minio123
+      VGW_PORT: ":9000"
+      VGW_IAM_DIR: /data/iam
+      VGW_VERSIONING_DIR: /data/versioning
+      VGW_BACKEND: posix
+      VGW_BACKEND_ARGS: /data/s3
+      VGW_META_SIDECAR: /data/sidecar
+    restart: unless-stopped
   smtp:
     container_name: rc_mailpit
     image: axllent/mailpit:latest
