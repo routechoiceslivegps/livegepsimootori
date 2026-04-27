@@ -43,6 +43,11 @@ urlpatterns = [
                         r"^events/?$", views.events_view, name="public_events_view"
                     ),
                     re_path(
+                        r"^typo/(?P<typo>.*)",
+                        TemplateView.as_view(template_name="site/typo.html"),
+                        name="typo_view",
+                    ),
+                    re_path(
                         r"^feed(.rss)?$",
                         feeds.live_event_feed,
                         name="public_events_feed",
