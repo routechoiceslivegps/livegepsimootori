@@ -125,7 +125,13 @@ const createStartTimeWidget = (i) => {
 	makeTimeFieldClearable(i);
 	makeFieldNowable(i);
 	new tempusDominus.TempusDominus(i);
-	i.addEventListener(tempusDominus.Namespace.events.change, (e) => {
+	u(i).on([tempusDominus.Namespace.events.change, "change"], (e) => {
+		const value = dayjs(e.target.value).local().format("YYYY-MM-DD HH:mm:ss");
+		if (value === "Invalid Date") {
+			e.target.value = "";
+			return;
+		}
+		e.target.value = value;
 		showLocalTime(e.target);
 	});
 	showLocalTime(i);
@@ -512,7 +518,13 @@ function showLocalTime(el) {
 		makeFieldNowable(el);
 		new tempusDominus.TempusDominus(el);
 		el.autocomplete = "off";
-		el.addEventListener(tempusDominus.Namespace.events.change, (e) => {
+		u(el).on([tempusDominus.Namespace.events.change, "change"], (e) => {
+			const value = dayjs(e.target.value).local().format("YYYY-MM-DD HH:mm:ss");
+			if (value === "Invalid Date") {
+				e.target.value = "";
+				return;
+			}
+			e.target.value = value;
 			showLocalTime(e.target);
 		});
 		showLocalTime(el);
@@ -525,7 +537,7 @@ function showLocalTime(el) {
 	).nodes;
 
 	u(competitorsStartTimeElsWithSameStartAsEvents).on(
-		tempusDominus.Namespace.events.change,
+		[tempusDominus.Namespace.events.change, "change"],
 		(ev) => {
 			competitorsStartTimeElsWithSameStartAsEvents = u(
 				competitorsStartTimeElsWithSameStartAsEvents,
@@ -576,14 +588,17 @@ function showLocalTime(el) {
 
 	u(".utc-offset").text(`(Timezone ${userTimezone})`);
 
-	u("#id_start_date").on(tempusDominus.Namespace.events.change, (e) => {
-		const o = competitorsStartTimeElsWithSameStartAsEvents;
-		u(competitorsStartTimeElsWithSameStartAsEvents).each((el) => {
-			el.value = e.target.value;
-			u(el).trigger("change");
-		});
-		competitorsStartTimeElsWithSameStartAsEvents = o;
-	});
+	u("#id_start_date").on(
+		[tempusDominus.Namespace.events.change, "change"],
+		(e) => {
+			const o = competitorsStartTimeElsWithSameStartAsEvents;
+			u(competitorsStartTimeElsWithSameStartAsEvents).each((el) => {
+				el.value = e.target.value;
+				u(el).trigger(tempusDominus.Namespace.events.change);
+			});
+			competitorsStartTimeElsWithSameStartAsEvents = o;
+		},
+	);
 
 	const tailLength = u("#id_tail_length").addClass("d-none").val();
 	u('[for="id_tail_length"]').text("Tail length (Hours, Minutes, Seconds)");
