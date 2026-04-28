@@ -1034,20 +1034,24 @@ class Map(models.Model, SomewhereOnEarth):
         width, height = self.quick_size
         tile_bounds_poly = Polygon(
             LinearRing(
-                (min_x, min_y),
-                (min_x, max_y),
-                (max_x, max_y),
-                (max_x, min_y),
-                (min_x, min_y),
+                (
+                    (min_x, min_y),
+                    (min_x, max_y),
+                    (max_x, max_y),
+                    (max_x, min_y),
+                    (min_x, min_y),
+                )
             )
         )
         map_bounds_poly = Polygon(
             LinearRing(
-                self.map_xy_to_spherical_mercator((0, 0)).xy,
-                self.map_xy_to_spherical_mercator((0, height)).xy,
-                self.map_xy_to_spherical_mercator((width, height)).xy,
-                self.map_xy_to_spherical_mercator((width, 0)).xy,
-                self.map_xy_to_spherical_mercator((0, 0)).xy,
+                (
+                    self.map_xy_to_spherical_mercator((0, 0)).xy,
+                    self.map_xy_to_spherical_mercator((0, height)).xy,
+                    self.map_xy_to_spherical_mercator((width, height)).xy,
+                    self.map_xy_to_spherical_mercator((width, 0)).xy,
+                    self.map_xy_to_spherical_mercator((0, 0)).xy,
+                )
             )
         )
         return tile_bounds_poly.intersects(map_bounds_poly)
