@@ -12,7 +12,7 @@ boto3==1.42.97
 botocore==1.42.97
 cairocffi==1.7.1
 cairosvg==2.9.0
-cbor2==5.9.0
+cbor2==6.0.0
 certifi==2026.4.22
 cffi==2.0.0
 charset-normalizer==3.4.7
@@ -51,7 +51,7 @@ flatbuffers==25.12.19
 frozenlist==1.8.0
 geoip2==5.2.0
 geojson-validator==0.6.0
-gps-data-codec @ git+https://github.com/routechoiceslivegps/gps-data-codec@c0332843a9fd7d079bc69fff1de8d569ef996342
+gps-data-codec @ git+https://github.com/routechoiceslivegps/gps-data-codec@083dcc8fac75b2ba0658eef16a49800acb09b99d
 gpxpy==1.6.2
 gunicorn==25.3.0
 h3==4.4.2
