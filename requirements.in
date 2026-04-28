@@ -28,6 +28,7 @@ django-user-sessions @ git+https://github.com/jazzband/django-user-sessions@1ad4
 djangorestframework
 drf-orjson-renderer
 drf-yasg
+emoji-country-flag
 geoip2
 geojson-validator
 gps-data-codec @ git+https://github.com/routechoiceslivegps/gps-data-codec
@@ -39,15 +40,15 @@ numpy
 opencv-python
 orjson
 pillow
+psutil
 psycopg[binary,pool]
+pyproj
 python-magic
+reverse-geocode
 sentry-sdk[django]
 setuptools
 sewer @ git+https://github.com/rphlo/sewer@0.8.4b
+shapely
 staticmap
-tornado
-pyproj
-reverse-geocode
-emoji-country-flag
 timezonefinder
-psutil
+tornado

@@ -23,7 +23,6 @@ import orjson as json
 from allauth.account.models import EmailAddress
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.contrib.gis.geos import LinearRing, Polygon
 from django.core.exceptions import BadRequest, PermissionDenied, ValidationError
 from django.core.files.base import ContentFile, File
 from django.core.mail import EmailMessage
@@ -41,6 +40,7 @@ from django.utils.functional import cached_property
 from django.utils.timezone import now
 from django_hosts.resolvers import reverse
 from PIL import Image, ImageDraw, ImageFile
+from shapely.geometry import LinearRing, Polygon
 from staticmap import CircleMarker, StaticMap
 
 from routechoices.lib import cache, plausible
@@ -1050,8 +1050,7 @@ class Map(models.Model, SomewhereOnEarth):
                 self.map_xy_to_spherical_mercator((0, 0)).xy,
             )
         )
-        tile_bounds_poly_prep = tile_bounds_poly.prepared
-        return tile_bounds_poly_prep.intersects(map_bounds_poly)
+        return tile_bounds_poly.intersects(map_bounds_poly)
 
     @classmethod
     def from_points(cls, seg, waypoints):
