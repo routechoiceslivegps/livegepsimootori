@@ -37,7 +37,7 @@ gunicorn
 kagi @ git+https://github.com/rphlo/kagi@9d02f068abf0963575819455f2e3f05888726153
 lxml
 numpy
-opencv-python
+opencv-python-headless
 orjson
 pillow
 psutil

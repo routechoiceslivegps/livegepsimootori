@@ -9,9 +9,7 @@ ENV PYTHONUNBUFFERED=1 \
 
 
 RUN apt-get update -qq && \
-    apt-get install -y --no-install-recommends g++ gcc libcairo2-dev libjpeg-dev zlib1g-dev libwebp-dev libmagic-dev libgl1 libpq5 && \
-    apt-get clean -y && \
-    rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man
+    apt-get install -y --no-install-recommends g++ gcc libcairo2-dev libjpeg-dev zlib1g-dev libwebp-dev libmagic-dev libpq5
 
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 
@@ -25,13 +23,21 @@ COPY requirements.txt .
 
 RUN uv pip install -r requirements.txt
 
+RUN find /opt/venv -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null; \
+    find /opt/venv -type d -name "tests" -exec rm -rf {} + 2>/dev/null; \
+    find /opt/venv -type d -name "test" -exec rm -rf {} + 2>/dev/null; \
+    find /opt/venv -name "*.pyc" -delete 2>/dev/null; \
+    find /opt/venv -name "*.pyo" -delete 2>/dev/null; \
+    true
+
 # final stage
 FROM python:3.14-slim AS final
-RUN adduser --uid 1001 --disabled-password --gecos '' --no-create-home app
+
 RUN apt-get update -qq && \
-    apt-get install -y --no-install-recommends libcairo2 libgl1 libglib2.0-0 libmagic1 && \
+    apt-get install -y --no-install-recommends libcairo2 libglib2.0-0 libmagic1 && \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false && \
-    apt-get dist-clean
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man
 
 COPY --from=builder /opt/venv /opt/venv
 
@@ -50,6 +56,3 @@ EXPOSE 2000
 ENV DJANGO_SETTINGS_MODULE=routechoices.settings
 
 RUN DATABASE_URL="sqlite://:memory:" python manage.py collectstatic --noinput
-
-#RUN chown -R app:app /app
-#USER app
