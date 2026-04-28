@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
-from django.db.models import Count
+from django.db.models import Count, Func, F, TextField, Value
+ from django.db.models.functions import Length
 
 from routechoices.core.models import Device
 
@@ -12,6 +13,24 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         force = options["force"]
+        mismatched_devices = Device.objects.annotate(
+            nb_loc=(
+                Length(
+                    Func(
+                        F("locations_encoded"),
+                        Value(r"[^A-Z?@\[\\\]\^]"),
+                        Value(""),
+                        Value("g"),
+                        function="REGEXP_REPLACE",
+                        output_field=TextField()
+                    )
+                ) / 3
+            )
+        ).exclude(_location_count=F("nb_loc"))
+        for device in mismatched_devices:
+            device.update_cached_data()
+            if force:
+                device.save()
         nb_devices = 0
         devices = Device.objects.annotate(
             competitor_count=Count("competitor_set")
