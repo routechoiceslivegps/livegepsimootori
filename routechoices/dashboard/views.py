@@ -1500,9 +1500,7 @@ def quick_event(request):
                 c.device = device
                 c.save()
             return redirect(f"{club.nice_url}{e.slug}")
-        messages.success(
-            request, "You need to upgrade to be able to create new events!"
-        )
+        messages.error(request, "You need to upgrade to be able to create new events!")
     all_devices_id = set(club.devices.values_list("id", flat=True))
     devices_qs = (
         Device.objects.filter(id__in=all_devices_id)
