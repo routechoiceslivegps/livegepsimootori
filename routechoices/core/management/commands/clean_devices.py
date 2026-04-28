@@ -27,6 +27,10 @@ class Command(BaseCommand):
                 ) / 3
             )
         ).exclude(_location_count=F("nb_loc"))
+        nb_mismatched = mismatched_devices.count()
+        self.stdout.write(
+            self.style.WARNING(f"{nb_mismatched} devices with bad location count")
+        )
         for device in mismatched_devices:
             device.update_cached_data()
             if force:
