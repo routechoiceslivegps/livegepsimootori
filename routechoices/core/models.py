@@ -2598,6 +2598,18 @@ class Device(models.Model, SomewhereOnEarth):
         return n // 3
 
     @property
+    def first_location(self):
+        if not self._location_count:
+            return None
+        n = 0
+        encoded = self.locations_encoded[:25]
+        for idx, x in enumerate(encoded):
+            if n == 3:
+                return gps_data_codec.decode(encoded[:idx])[0]
+            if ord(x) - 63 < 0x20:
+                n += 1
+
+    @property
     def last_location(self):
         if not self._location_count:
             return None
@@ -2608,20 +2620,20 @@ class Device(models.Model, SomewhereOnEarth):
         )
 
     @property
-    def earth_coords(self):
-        if loc := self.last_location:
-            return [loc[1], loc[2]]
-        return None
-
-    @property
     def first_location_datetime(self):
-        if not self._location_count:
-            return None
-        return epoch_to_datetime(self.locations[0][LOCATION_TIMESTAMP_INDEX])
+        if first_loc := self.first_location:
+            return epoch_to_datetime(first_loc[LOCATION_TIMESTAMP_INDEX])
+        return None
 
     @property
     def last_location_datetime(self):
         return self._last_location_datetime
+
+    @property
+    def earth_coords(self):
+        if loc := self.last_location:
+            return [loc[LOCATION_LATITUDE_INDEX], loc[LOCATION_LONGITUDE_INDEX]]
+        return None
 
     def get_competitors_at_date(self, at, /, *, load_events=False):
         qs = (
@@ -2903,8 +2915,8 @@ class Competitor(models.Model, SomewhereOnEarth):
         archive = Device(
             aid=f"{short_random_key()}_ARC",
             virtual=True,
-            locations_encoded=self.locations_encoded,
         )
+        archive.add_locations(self.locations, save=False)
         self.device = archive
         if save:
             archive.save()
