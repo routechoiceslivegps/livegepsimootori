@@ -3,7 +3,9 @@
 	font-family: "Roboto Mono";
 	font-style: normal;
 	font-weight: 400;
-	src: local("Roboto Mono"), local("RobotoMono-Regular"),
+	src:
+		local("Roboto Mono"),
+		local("RobotoMono-Regular"),
 		url("../../fonts/roboto-mono-v5-latin-regular.woff2") format("woff2"),
 		url("../../fonts/roboto-mono-v5-latin-regular.woff") format("woff");
 }

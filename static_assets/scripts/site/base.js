@@ -18,7 +18,7 @@ function getStoredTheme() {
 	return null;
 }
 const setStoredTheme = (theme) => {
-	const domain = `${document.domain.match(/[^\.]*\.[^.]*$/)[0]};`;
+	const domain = `${document.domain.match(/[^.]*\.[^.]*$/)[0]};`;
 	document.cookie = `theme=${theme};path=/;domain=.${domain}`;
 };
 

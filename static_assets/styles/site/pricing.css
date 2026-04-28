@@ -59,19 +59,19 @@
 	color: #414141;
 }
 
-#generic_price_table .generic_content .generic_feature_list ul li {
+ul li #generic_price_table .generic_content .generic_feature_list {
 	color: #a7a7a7;
 }
 
-#generic_price_table .generic_content .generic_feature_list ul li span {
+ul li span #generic_price_table .generic_content .generic_feature_list {
 	color: #414141;
 }
-#generic_price_table .generic_content .generic_feature_list ul li:hover {
+ul li:hover #generic_price_table .generic_content .generic_feature_list {
 	background-color: #e4e4e4;
 	border-left: 5px solid #2ecc71;
 }
 
-#generic_price_table .generic_content .generic_price_btn a {
+a #generic_price_table .generic_content .generic_price_btn {
 	border: 1px solid #2ecc71;
 	color: #2ecc71;
 }
@@ -90,23 +90,23 @@
 	color: #fff;
 }
 
-#generic_price_table
+span
+	#generic_price_table
 	.generic_content:hover
 	.generic_head_price
 	.generic_head_content
-	.head
-	span,
-#generic_price_table
+	.head,
+span
+	#generic_price_table
 	.generic_content.active
 	.generic_head_price
 	.generic_head_content
-	.head
-	span {
+	.head {
 	color: #fff;
 }
 
-#generic_price_table .generic_content:hover .generic_price_btn a,
-#generic_price_table .generic_content.active .generic_price_btn a {
+a #generic_price_table .generic_content:hover .generic_price_btn,
+a #generic_price_table .generic_content.active .generic_price_btn {
 	background-color: #2ecc71;
 	color: #fff;
 }

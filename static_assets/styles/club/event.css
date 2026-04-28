@@ -197,14 +197,20 @@
 
 .runner-icon-light {
 	color: #fff;
-	text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0
-		#000;
+	text-shadow:
+		-1px -1px 0 #000,
+		1px -1px 0 #000,
+		-1px 1px 0 #000,
+		1px 1px 0 #000;
 }
 
 .runner-icon-dark {
 	color: #000;
-	text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0
-		#fff;
+	text-shadow:
+		-1px -1px 0 #fff,
+		1px -1px 0 #fff,
+		-1px 1px 0 #fff,
+		1px 1px 0 #fff;
 }
 
 #progress_bar {
@@ -212,8 +218,11 @@
 }
 
 .fa-circle.fa-3x.icon-sidebar {
-	text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.125), 1px -1px 0 rgba(0, 0, 0, 0.125),
-		-1px 1px 0 rgba(0, 0, 0, 0.125), 1px 1px 0 rgba(0, 0, 0, 0.125);
+	text-shadow:
+		-1px -1px 0 rgba(0, 0, 0, 0.125),
+		1px -1px 0 rgba(0, 0, 0, 0.125),
+		-1px 1px 0 rgba(0, 0, 0, 0.125),
+		1px 1px 0 rgba(0, 0, 0, 0.125);
 }
 
 .runner-icon span {

@@ -1,5 +1,4 @@
 function testPage(page) {
-	const origin = page.split("/").slice(0, 3).join("/");
 	cy.intercept("GET", `${page}map`).as(`mapLoaded${page}`, {
 		statusCode: 200,
 		forceNetworkError: true,

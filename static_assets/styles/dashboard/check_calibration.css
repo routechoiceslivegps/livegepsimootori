@@ -30,9 +30,10 @@
 }
 .map_preview h2 span {
 	color: white;
-	font: bold 15px / 30px Helvetica, sans-serif;
+	font:
+		bold 15px / 30px Helvetica,
+		sans-serif;
 	letter-spacing: -1px;
-	background: rgb(0, 0, 0); /* fallback color */
 	background: rgba(0, 0, 0, 0.7);
 	padding: 0 10px 0 30px;
 	margin: 0;

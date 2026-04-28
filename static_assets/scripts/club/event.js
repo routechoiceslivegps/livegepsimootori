@@ -579,12 +579,7 @@ function RCEvent(infoURL, clockURL, locale) {
 					secondLine.append(competitorFullRouteBtn);
 				}
 
-				if (
-					Object.prototype.hasOwnProperty.call(
-						competitorBatteyLevels,
-						competitor.id,
-					)
-				) {
+				if (Object.hasOwn(competitorBatteyLevels, competitor.id)) {
 					const batteryLevelDiv = u("<div/>").addClass(
 						"float-end",
 						"d-inline-block",
