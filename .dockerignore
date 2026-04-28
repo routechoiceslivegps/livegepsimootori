@@ -12,7 +12,8 @@ logs
 media
 nginx
 node_modules
-static/*
+static
+static_assets
 tmp
 var
 .coverage
