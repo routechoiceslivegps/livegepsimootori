@@ -18,7 +18,7 @@ class Command(BaseCommand):
                 Length(
                     Func(
                         F("locations_encoded"),
-                        Value(r"[^A-Z?@\[\\\]\^]"),
+                        Value(r"[^?-^]"),
                         Value(""),
                         Value("g"),
                         function="REGEXP_REPLACE",
