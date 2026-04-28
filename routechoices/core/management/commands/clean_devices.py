@@ -6,7 +6,7 @@ from routechoices.core.models import Device
 
 
 class Command(BaseCommand):
-    help = "Remove old images files from storage"
+    help = "Device cleaning: Fix bad cached values and trashes unused blank virtual devices"
 
     def add_arguments(self, parser):
         parser.add_argument("--force", action="store_true", default=False)
