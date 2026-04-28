@@ -27,11 +27,11 @@ from django.utils.timezone import now
 from django.views.decorators.cache import cache_page
 from django_hosts.resolvers import reverse
 from hijack.views import ReleaseUserView
+from invitations.forms import InviteForm
 from kagi.views.backup_codes import BackupCodesView
 from oauth2_provider.models import AccessToken
 from user_sessions.views import SessionDeleteOtherView
 
-from invitations.forms import InviteForm
 from routechoices.core.models import (
     PRIVACY_SECRET,
     Club,
@@ -1471,34 +1471,38 @@ def event_route_upload_view(request, event_id):
 def quick_event(request):
     club = request.club
     if request.method == "POST":
-        start_date = now()
-        duration = int(request.POST.get("duration", "60"))
-        end_date = start_date + timedelta(minutes=duration)
-        backdrop = request.POST.get("backdrop", "osm")
-        slug = short_random_key()
-        device_id = request.POST.get("device_id")
-        device = None
-        if device_id:
-            device = Device.objects.filter(virtual=False, aid=device_id).first()
-        name = f"Quick tracking {short_random_key()}"
-        e = Event.objects.create(
-            name=name,
-            slug=slug,
-            club=club,
-            start_date=start_date,
-            end_date=end_date,
-            backdrop_map=backdrop,
-            privacy=PRIVACY_SECRET,
+        if club.can_modify_events:
+            start_date = now()
+            duration = int(request.POST.get("duration", "60"))
+            end_date = start_date + timedelta(minutes=duration)
+            backdrop = request.POST.get("backdrop", "osm")
+            slug = short_random_key()
+            device_id = request.POST.get("device_id")
+            device = None
+            if device_id:
+                device = Device.objects.filter(virtual=False, aid=device_id).first()
+            name = f"Quick tracking {short_random_key()}"
+            e = Event.objects.create(
+                name=name,
+                slug=slug,
+                club=club,
+                start_date=start_date,
+                end_date=end_date,
+                backdrop_map=backdrop,
+                privacy=PRIVACY_SECRET,
+            )
+            cname = request.POST.get("name", "Anonymous")
+            c = Competitor.objects.create(
+                name=cname,
+                event=e,
+            )
+            if device:
+                c.device = device
+                c.save()
+            return redirect(f"{club.nice_url}{e.slug}")
+        messages.success(
+            request, "You need to upgrade to be able to create new events!"
         )
-        cname = request.POST.get("name", "Anonymous")
-        c = Competitor.objects.create(
-            name=cname,
-            event=e,
-        )
-        if device:
-            c.device = device
-            c.save()
-        return redirect(f"{club.nice_url}{e.slug}")
     all_devices_id = set(club.devices.values_list("id", flat=True))
     devices_qs = (
         Device.objects.filter(id__in=all_devices_id)
