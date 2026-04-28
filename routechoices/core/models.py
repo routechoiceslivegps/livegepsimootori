@@ -2604,13 +2604,7 @@ class Device(models.Model, SomewhereOnEarth):
     def first_location(self):
         if not self._location_count:
             return None
-        n = 0
-        encoded = self.locations_encoded[:25]
-        for idx, x in enumerate(encoded):
-            if n == 3:
-                return gps_data_codec.decode(encoded[:idx])[0]
-            if ord(x) - 63 < 0x20:
-                n += 1
+        return gps_data_codec.decode_first_location(self.locations_encoded[:25])
 
     @property
     def last_location(self):
