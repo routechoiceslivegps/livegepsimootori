@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.db.models import Count, Func, F, TextField, Value
- from django.db.models.functions import Length
+from django.db.models.functions import Length
 
 from routechoices.core.models import Device
 
