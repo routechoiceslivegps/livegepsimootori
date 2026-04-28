@@ -24,8 +24,6 @@ COPY requirements.txt .
 RUN uv pip install -r requirements.txt
 
 RUN find /opt/venv -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null; \
-    find /opt/venv -type d -name "tests" -exec rm -rf {} + 2>/dev/null; \
-    find /opt/venv -type d -name "test" -exec rm -rf {} + 2>/dev/null; \
     find /opt/venv -name "*.pyc" -delete 2>/dev/null; \
     find /opt/venv -name "*.pyo" -delete 2>/dev/null; \
     true
