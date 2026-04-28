@@ -159,7 +159,7 @@ function RCEvent(infoURL, clockURL, locale) {
 
 			u("#from-split").on("change", (e) => {
 				if (e.target.value !== "") {
-					rankingFromSplit = Number.parseInt(e.target.value);
+					rankingFromSplit = Number.parseInt(e.target.value, 10);
 					u("#from-lap").val(1);
 				} else {
 					rankingFromSplit = null;
@@ -171,12 +171,12 @@ function RCEvent(infoURL, clockURL, locale) {
 				if (rankingFromSplit == null) {
 					e.target.value = 1;
 				}
-				rankingFromLap = Math.max(1, Number.parseInt(e.target.value));
+				rankingFromLap = Math.max(1, Number.parseInt(e.target.value, 10));
 				computeSplitTimes();
 			});
 			u("#to-split").on("change", (e) => {
 				if (e.target.value !== "") {
-					rankingToSplit = Number.parseInt(e.target.value);
+					rankingToSplit = Number.parseInt(e.target.value, 10);
 				} else {
 					rankingToSplit = null;
 				}
@@ -184,7 +184,7 @@ function RCEvent(infoURL, clockURL, locale) {
 				computeSplitTimes();
 			});
 			u("#to-lap").on("change", (e) => {
-				rankingToLap = Math.max(1, Number.parseInt(e.target.value));
+				rankingToLap = Math.max(1, Number.parseInt(e.target.value, 10));
 				computeSplitTimes();
 			});
 			u("#from-lap").trigger("change");
@@ -246,7 +246,7 @@ function RCEvent(infoURL, clockURL, locale) {
 				});
 		},
 
-		onRemove: (map) => {
+		onRemove: () => {
 			u(".leaflet-control-ranking").remove();
 			u(".tmp").remove();
 		},
@@ -479,14 +479,14 @@ function RCEvent(infoURL, clockURL, locale) {
 								if (!competitor.isShown) {
 									return;
 								}
-								Object.values(competitorList).map((otherCompetitor) => {
+								for (const otherCompetitor of Object.values(competitorList)) {
 									if (otherCompetitor.focused) {
 										otherCompetitor.focused = false;
 										otherCompetitor.sidebarCard
 											?.find(".competitor-focus-btn")
 											.removeClass("focused");
 									}
-								});
+								}
 								competitor.focused = true;
 								competitor.sidebarCard
 									?.find(".competitor-focus-btn")
@@ -696,7 +696,7 @@ function RCEvent(infoURL, clockURL, locale) {
 				},
 			});
 		});
-		map.on("contextmenu.hide", (e) => {
+		map.on("contextmenu.hide", () => {
 			map.contextmenu.removeItem(map.contextmenu._items.length - 1);
 		});
 
@@ -1094,7 +1094,8 @@ function RCEvent(infoURL, clockURL, locale) {
 				}
 				setInterval(refreshData, 25_000);
 			})
-			.catch(() => {
+			.catch((e) => {
+				console.log(e);
 				u("#loading-event-modal").remove();
 				swal({ text: "Something went wrong", title: "error", type: "error" });
 			});
@@ -1407,7 +1408,7 @@ function RCEvent(infoURL, clockURL, locale) {
 					});
 					try {
 						mapSelectorLayer.addTo(map);
-					} catch (e) {}
+					} catch {}
 					map.off("baselayerchange", onLayerChange);
 					map.on("baselayerchange", onLayerChange);
 				}
@@ -2026,11 +2027,11 @@ function RCEvent(infoURL, clockURL, locale) {
 		}
 	}
 
-	function zoomIn(e) {
+	function zoomIn() {
 		map.zoomIn();
 	}
 
-	function zoomOut(e) {
+	function zoomOut() {
 		map.zoomOut();
 	}
 
@@ -2081,7 +2082,7 @@ function RCEvent(infoURL, clockURL, locale) {
 				.share(shareData)
 				.then(() => {})
 				.catch(() => {});
-		} catch (err) {}
+		} catch {}
 	}
 
 	function onPressCustomMassStart(e) {
@@ -2107,7 +2108,7 @@ function RCEvent(infoURL, clockURL, locale) {
 		}
 	}
 
-	function onPressResetMassStart(e) {
+	function onPressResetMassStart() {
 		isRealTime = false;
 		isCustomStart = false;
 
@@ -2152,7 +2153,7 @@ function RCEvent(infoURL, clockURL, locale) {
 		})
 			.then((r) => r.json())
 			.then((response) => {
-				if (!response || !response.competitors) {
+				if (!response?.competitors) {
 					// Prevent fetching competitor data for 1 second
 					liveDataLastKey = null;
 					setTimeout(() => {
@@ -2629,7 +2630,7 @@ function RCEvent(infoURL, clockURL, locale) {
 					type: "checkbox",
 					checked: mapOpacity === 0,
 				})
-				.on("click", (e) => {
+				.on("click", () => {
 					if (mapOpacity === 0) {
 						mapOpacity = 1;
 					} else {
@@ -2716,9 +2717,9 @@ function RCEvent(infoURL, clockURL, locale) {
 				const hourInput = commonDiv.find('input[name="hours"]');
 				const minInput = commonDiv.find('input[name="minutes"]');
 				const secInput = commonDiv.find('input[name="seconds"]');
-				const h = Number.parseInt(hourInput.val() || 0);
-				const m = Number.parseInt(minInput.val() || 0);
-				const s = Number.parseInt(secInput.val() || 0);
+				const h = Number.parseInt(hourInput.val() || 0, 10);
+				const m = Number.parseInt(minInput.val() || 0, 10);
+				const s = Number.parseInt(secInput.val() || 0, 10);
 				const v = 3600 * h + 60 * m + s;
 				if (Number.isNaN(v)) {
 					return;
@@ -3259,7 +3260,7 @@ function RCEvent(infoURL, clockURL, locale) {
 	(async () => {
 		try {
 			await navigator.wakeLock.request("screen");
-		} catch (err) {
+		} catch {
 			console.log("Wake Lock Screen failed");
 		}
 	})();
@@ -3267,7 +3268,7 @@ function RCEvent(infoURL, clockURL, locale) {
 		if (document.visibilityState === "visible") {
 			try {
 				await navigator.wakeLock.request("screen");
-			} catch (err) {
+			} catch {
 				console.log("Wake Lock Screen failed");
 			}
 		}
