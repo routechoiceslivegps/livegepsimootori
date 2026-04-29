@@ -6,27 +6,35 @@ class Command(BaseCommand):
     help = "Clean up"
 
     def handle(self, *args, **options):
-        self.stdout.write("Remove expired sessions")
+        self.stdout.write(self.style.MIGRATE_HEADING("Removing expired sessions"))
         call_command("clearsessions")
+        self.stdout.write(self.style.SUCCESS("Done"))
 
-        self.stdout.write("\nRemove expired invitations")
+        self.stdout.write(self.style.MIGRATE_HEADING("\nRemoving expired invitations"))
         call_command("clear_expired_invitations")
+        self.stdout.write(self.style.SUCCESS("Done"))
 
-        self.stdout.write("\nRemove unused files")
+        self.stdout.write(self.style.MIGRATE_HEADING("\nRemoving unused files"))
         call_command("clean_storage", force=True)
 
-        self.stdout.write("\nArchive old competitors devices")
+        self.stdout.write(
+            self.style.MIGRATE_HEADING("\nArchiving old competitors devices")
+        )
         call_command("archive_devices", force=True)
 
-        self.stdout.write("\nRemove unused locations from devices")
+        self.stdout.write(
+            self.style.MIGRATE_HEADING("\nRemoving unused locations from devices")
+        )
         call_command(
             "clean_locations",
             force=True,
             workers=2,
         )
 
-        self.stdout.write("\nDevices cleanup")
+        self.stdout.write(self.style.MIGRATE_HEADING("\nCleaning up devices"))
         call_command("clean_devices", force=True)
 
-        self.stdout.write("\nRemove clubs without activity")
+        self.stdout.write(
+            self.style.MIGRATE_HEADING("\nRemoving freemium clubs without activity")
+        )
         call_command("clean_clubs")
