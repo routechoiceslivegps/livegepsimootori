@@ -62,18 +62,13 @@ class Command(BaseCommand):
                     for device in devices
                 }
                 for future in as_completed(future_to_device):
-                    device = future_to_device[future]
                     device_deleted_count = future.result()
                     if device_deleted_count:
-                        self.stdout.write(
-                            f"Device {device.aid},"
-                            f" removing {device_deleted_count} locations"
-                        )
                         deleted_count += device_deleted_count
         except KeyboardInterrupt:
             return
         if deleted_count == 0:
-            self.stdout.write(self.style.SUCCESS("No locations to removed"))
+            self.stdout.write(self.style.SUCCESS("No locations to remove"))
         elif force:
             self.stdout.write(
                 self.style.SUCCESS(f"Successfully removed {deleted_count} locations")
