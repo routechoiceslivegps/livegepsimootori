@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from django.db.models import Count, Func, F, TextField, Value
+from django.db.models import Count, F, Func, Q, Value
 from django.db.models.functions import Length
 
 from routechoices.core.models import Device
@@ -13,8 +13,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         force = options["force"]
-        mismatched_devices = Device.objects.annotate(
-            nb_loc=(
+        invalid_cache_devices = Device.objects.annotate(
+            db_location_count=(
                 Length(
                     Func(
                         F("locations_encoded"),
@@ -22,26 +22,31 @@ class Command(BaseCommand):
                         Value(""),
                         Value("g"),
                         function="REGEXP_REPLACE",
-                        output_field=TextField()
                     )
-                ) / 3
+                )
+                / 3
             )
-        ).exclude(_location_count=F("nb_loc"))
-        nb_mismatched = mismatched_devices.count()
-        self.stdout.write(
-            self.style.WARNING(f"{nb_mismatched} devices with bad location count")
-        )
-        for device in mismatched_devices:
-            device.update_cached_data()
+        ).exclude(_location_count=F("db_location_count"))
+        nb_invalid = invalid_cache_devices.count()
+        if nb_invalid > 0:
+            self.stdout.write(
+                self.style.WARNING(f"{nb_invalid} devices with invalid cache")
+            )
+            for device in invalid_cache_devices:
+                device.update_cached_data()
+                if force:
+                    device.save()
             if force:
-                device.save()
+                self.stdout.write(self.style.SUCCESS("Successfully updated cache"))
+        else:
+            self.stdout.write(self.style.SUCCESS("No devices with invalid cache"))
         nb_devices = 0
-        devices = Device.objects.annotate(
-            competitor_count=Count("competitor_set")
-        ).filter(
-            virtual=True,
-            competitor_count=0,
-            _location_count=0,
+        devices = (
+            Device.objects.annotate(competitor_count=Count("competitor_set"))
+            .filter(
+                virtual=True,
+            )
+            .filter(Q(competitor_count=0) | Q(locations_encoded=""))
         )
         nb_devices = devices.count()
         if nb_devices == 0:

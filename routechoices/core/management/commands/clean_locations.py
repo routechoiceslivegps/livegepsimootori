@@ -48,7 +48,7 @@ class Command(BaseCommand):
                 )
             )
             .filter(virtual=False)
-            .exclude(_location_count=0)
+            .exclude(locations_encoded="")
         )
         if date_since:
             devices = devices.filter(modification_date__gte=date_since)

@@ -253,9 +253,9 @@ class HasLocationFilter(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value() == "false":
-            return queryset.filter(_location_count=0)
+            return queryset.filter(locations_encoded="")
         if self.value():
-            return queryset.filter(_location_count__gt=0)
+            return queryset.exclude(locations_encoded="")
 
 
 class HasDeviceFilter(admin.SimpleListFilter):
