@@ -51,10 +51,8 @@ flatbuffers==25.12.19
 frozenlist==1.8.0
 geoip2==5.2.0
 geojson-validator==0.6.0
-gevent==26.4.0
 gps-data-codec @ git+https://github.com/routechoiceslivegps/gps-data-codec@c9c9f0da1088f8de0fa95ed340e1f57c2df3807b
 gpxpy==1.6.2
-greenlet==3.5.0
 gunicorn==25.3.0
 h3==4.4.2
 idna==3.13
@@ -120,5 +118,3 @@ urllib3==2.6.3
 webauthn==1.11.1
 webencodings==0.5.1
 yarl==1.23.0
-zope-event==6.2
-zope-interface==8.4
