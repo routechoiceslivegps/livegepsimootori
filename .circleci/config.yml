@@ -16,12 +16,12 @@ commands:
       - run:
           name: DNS overrides
           command: |
-            echo "DNSStubListener=no" >> /etc/systemd/resolved.conf
+            echo "DNSStubListener=no" | sudo tee -a /etc/systemd/resolved.conf
             systemctl restart systemd-resolved
-            cat <(echo "nameserver 127.0.0.1") /etc/resolv.conf > /etc/resolv.conf
-            echo -e "bind-interfaces\nlisten-address=127.0.0.1\naddress=/routechoices.dev/127.0.0.1\naddress=/.routechoices.dev/127.0.0.1" > /etc/dnsmasq.conf
-            apt-get update
-            apt-get install -y dnsmasq
+            cat <(echo "nameserver 127.0.0.1") /etc/resolv.conf | sudo tee /etc/resolv.conf
+            echo -e "bind-interfaces\nlisten-address=127.0.0.1\naddress=/routechoices.dev/127.0.0.1\naddress=/.routechoices.dev/127.0.0.1" | sudo tee /etc/dnsmasq.conf
+            sudo apt-get update
+            sudo apt-get install -y dnsmasq
 
       - run:
           name: Create media directories
@@ -64,12 +64,11 @@ jobs:
       docker_layer_caching: false
     resource_class: large
     steps:
-      - run: sudo apt update
-      - run: sudo apt install -y libgbm-dev
+      - run: sudo apt-get update
+      - run: sudo apt-get install -y libgbm-dev
       - browser-tools/install-chrome
       - run:
           name: Install Cypress
-          # https://www.cloudesire.com/how-to-upgrade-node-on-circleci-machine-executor/
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
