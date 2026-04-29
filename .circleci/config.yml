@@ -72,13 +72,13 @@ jobs:
       - run: sudo apt-get install -y libgbm-dev
       - browser-tools/install-chrome
       - run:
-          name: Install Cypress
+          name: Install NodeJS and Cypress
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
             nvm install v25 && nvm use v25 && nvm alias default v25
             node -v
-            npm install --global cypress
+            npm install cypress
       - prepare-docker
       - run: ./dc stop django
       - run:
