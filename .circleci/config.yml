@@ -46,6 +46,12 @@ commands:
             ./da compress
             ./dc restart nginx
 
+  wait-app-online:
+    steps:
+      - run:
+          name: Wait for the site to be online
+          command: timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' https://www.routechoices.dev/)" != "200" ]]; do sleep 5; done' || false
+
 jobs:
   python-tests:
     machine:
@@ -55,9 +61,13 @@ jobs:
     steps:
       - checkout
       - prepare-docker
-      - run: ./dc restart django
-      - run: timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' https://www.routechoices.dev/)" != "200" ]]; do sleep 5; done' || false
-      - run: ./test
+      - run:
+          name: Restart django
+          command: ./dc restart django
+      - wait-app-online
+      - run:
+          name: Run tests
+          command: ./test
       - codecov/upload:
           file: coverage.xml
           flags: unittests
@@ -84,19 +94,24 @@ jobs:
             node -v
             npm install cypress
       - prepare-docker
-      - run: ./dc stop django
       - run:
-          command: ./dc up -d
+          name: Restart application with coverage enabled
+          command: |
+            ./dc stop django
+            ./dc up -d
           environment:
             WSGI_FILE: wsgi-with-cov
             NUM_PROCESSES: 1
-      - run: timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' https://www.routechoices.dev/)" != "200" ]]; do sleep 5; done' || false
+      - wait-app-online
       - run:
           name: Run tests
           command: TZ=Europe/Helsinki node_modules/cypress/bin/cypress run --browser chrome
-      - run: docker kill --signal=HUP rc_django
-      - run: sleep 5
-      - run: ./dc exec django coverage xml
+      - run:
+          name: Collect coverage
+          command: |
+            docker kill --signal=HUP rc_django
+            sleep 5
+            ./dc exec django coverage xml
       - codecov/upload:
          file: coverage.xml
          flags: e2e
@@ -116,7 +131,7 @@ jobs:
           command: |
             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
       - run:
-          name: Build docker images
+          name: Build docker image
           command: |
             docker build --progress plain --platform linux/amd64 --push -t rphlo/routechoices-dev-server:latest -f docker/django.dockerfile .
 
