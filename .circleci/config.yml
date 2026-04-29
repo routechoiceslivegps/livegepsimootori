@@ -69,8 +69,11 @@ jobs:
     resource_class: large
     steps:
       - checkout
-      - run: sudo apt-get update
-      - run: sudo apt-get install -y libgbm-dev
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y libgbm-dev
       - browser-tools/install-chrome
       - run:
           name: Install NodeJS and Cypress
@@ -90,7 +93,7 @@ jobs:
       - run: timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' https://www.routechoices.dev/)" != "200" ]]; do sleep 5; done' || false
       - run:
           name: Run tests
-          command: TZ=Europe/Helsinki cypress run --browser chrome
+          command: TZ=Europe/Helsinki node_modules/cypress/bin/cypress run --browser chrome
       - run: docker kill --signal=HUP rc_django
       - run: sleep 5
       - run: ./dc exec django coverage xml
