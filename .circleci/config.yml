@@ -68,15 +68,14 @@ jobs:
       - run: sudo apt install -y libgbm-dev
       - browser-tools/install-chrome
       - run:
-          name: Install Node.js and run cypress
+          name: Install Cypress
           # https://www.cloudesire.com/how-to-upgrade-node-on-circleci-machine-executor/
           command: |
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
             nvm install v25 && nvm use v25 && nvm alias default v25
             node -v
-            npm install --global pnpm
-            pnpm install
+            npm install --global cypress
       - prepare-docker
       - run: ./dc stop django
       - run:
@@ -85,7 +84,7 @@ jobs:
             WSGI_FILE: wsgi-with-cov
             NUM_PROCESSES: 1
       - run: timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' https://www.routechoices.dev/)" != "200" ]]; do sleep 5; done' || false
-      - run: TZ=Europe/Helsinki pnpm cypress run --browser chrome
+      - run: TZ=Europe/Helsinki cypress run --browser chrome
       - run: docker kill --signal=HUP rc_django
       - run: sleep 5
       - run: ./dc exec django coverage xml
