@@ -18,10 +18,11 @@ commands:
           command: |
             echo "DNSStubListener=no" | sudo tee -a /etc/systemd/resolved.conf
             sudo systemctl restart systemd-resolved
-            cat <(echo "nameserver 127.0.0.1") /etc/resolv.conf | sudo tee /etc/resolv.conf
-            echo -e "bind-interfaces\nlisten-address=127.0.0.1\naddress=/routechoices.dev/127.0.0.1\naddress=/.routechoices.dev/127.0.0.1" | sudo tee /etc/dnsmasq.conf
             sudo apt-get update
             sudo apt-get install -y dnsmasq
+            echo -e "bind-interfaces\nlisten-address=127.0.0.1\naddress=/routechoices.dev/127.0.0.1\naddress=/.routechoices.dev/127.0.0.1" | sudo tee /etc/dnsmasq.conf
+            sudo systemctl restart dnsmasq
+            cat <(echo "nameserver 127.0.0.1") /etc/resolv.conf | sudo tee /etc/resolv.conf
 
       - run:
           name: Create media directories
