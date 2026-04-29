@@ -2394,47 +2394,6 @@ class Device(models.Model, SomewhereOnEarth):
         if deleted_location_count:
             self.add_locations(valid_locs, reset=True, save=save)
 
-    def archive(self, /, *, until, save=False):
-        last_start = None
-
-        periods_used = self.get_active_periods()
-        periods_used_till_limit = []
-        for period in periods_used:
-            end = period[1]
-            if end < until:
-                periods_used_till_limit.append(period)
-        if periods_used_till_limit:
-            last_start = periods_used_till_limit[-1][0]
-
-        modified_competitors = [
-            c for c in self.competitor_set.all() if c.start_time < last_start
-        ]
-        archives = []
-        for competitor in modified_competitors:
-            archive = Device(
-                aid=f"{short_random_key()}_ARC",
-                virtual=True,
-            )
-            archive.add_locations(competitor.locations, save=False)
-            competitor.device = archive
-            ref = DeviceArchiveReference(original=self, archive=archive)
-            archives.append(archive)
-            if save:
-                archive.save()
-                ref.save()
-                competitor.save()
-
-        left_locations, _ = self.get_locations_between_dates(
-            last_start,
-            self.last_location_datetime,
-        )
-        self.add_locations(left_locations, reset=True, save=False)
-
-        if save:
-            self.save()
-
-        return archives
-
     def get_locations_over_periods(self, periods):
         locs = []
         for period in periods:
@@ -2907,7 +2866,7 @@ class Competitor(models.Model, SomewhereOnEarth):
 
     def archive_device(self, save=True):
         if not self.device:
-            return None
+            return
         original = self.device
         archive = Device(
             aid=f"{short_random_key()}_ARC",
@@ -2916,10 +2875,15 @@ class Competitor(models.Model, SomewhereOnEarth):
         archive.add_locations(self.locations, save=False)
         self.device = archive
         if save:
-            archive.save()
-            DeviceArchiveReference.objects.create(original=original, archive=archive)
-            self.save()
-        return archive
+            if archive.locations_encoded != "":
+                self.device.save()
+                self.save()
+                DeviceArchiveReference.objects.create(
+                    original=original, archive=archive
+                )
+            else:
+                self.device = None
+                self.save()
 
     @property
     def gpx(self):

@@ -14,7 +14,7 @@ CPU_COUNT = multiprocessing.cpu_count()
 
 
 class Command(BaseCommand):
-    help = "Delete unused locations older than 14 days"
+    help = "Remove unused locations older than 14 days from devices"
 
     def add_arguments(self, parser):
         parser.add_argument("--force", action="store_true", default=False)
@@ -79,4 +79,6 @@ class Command(BaseCommand):
                 self.style.SUCCESS(f"Successfully removed {deleted_count} locations")
             )
         else:
-            self.stdout.write(f"Would remove {deleted_count} locations")
+            self.stdout.write(
+                self.style.WARNING(f"{deleted_count} locations could be removed")
+            )

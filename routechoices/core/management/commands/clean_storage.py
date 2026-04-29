@@ -6,7 +6,7 @@ from routechoices.lib.s3 import get_s3_client, s3_delete_key
 
 
 class Command(BaseCommand):
-    help = "Remove old images files from storage"
+    help = "Remove old unused files from storage"
 
     def add_arguments(self, parser):
         parser.add_argument("--force", action="store_true", default=False)
@@ -28,17 +28,16 @@ class Command(BaseCommand):
                 key = obj["Key"]
                 yield key
 
-    def process_image_file(self, image_name, force):
-        if image_name not in self.image_paths:
-            self.n_image_removed += 1
-            self.stdout.write(f"File {image_name} is unused")
+    def process_file(self, file_name, force):
+        if file_name not in self.file_paths:
+            self.n_file_removed += 1
             if force:
-                s3_delete_key(image_name, settings.AWS_S3_BUCKET)
+                s3_delete_key(file_name, settings.AWS_S3_BUCKET)
 
     def handle(self, *args, **options):
         force = options["force"]
-        self.image_paths = set(Map.objects.values_list("image", flat=True))
-        self.image_paths.update(
+        self.file_paths = set(Map.objects.values_list("image", flat=True))
+        self.file_paths.update(
             set(
                 Club.objects.all()
                 .exclude(logo__isnull=True)
@@ -46,7 +45,7 @@ class Command(BaseCommand):
                 .values_list("logo", flat=True)
             )
         )
-        self.image_paths.update(
+        self.file_paths.update(
             set(
                 Club.objects.all()
                 .exclude(banner__isnull=True)
@@ -54,7 +53,7 @@ class Command(BaseCommand):
                 .values_list("banner", flat=True)
             )
         )
-        self.image_paths.update(
+        self.file_paths.update(
             set(
                 Event.objects.all()
                 .exclude(geojson_layer__isnull=True)
@@ -63,17 +62,19 @@ class Command(BaseCommand):
             )
         )
 
-        self.n_image_removed = 0
+        self.n_file_removed = 0
         self.s3 = get_s3_client()
         for directory in ("banners", "geojson", "logos", "maps"):
             for filename in self.scan_directory(directory):
-                self.process_image_file(filename, force)
+                self.process_file(filename, force)
 
-        if self.n_image_removed == 0:
-            self.stdout.write(self.style.SUCCESS("No files to removed"))
+        if self.n_file_removed == 0:
+            self.stdout.write(self.style.SUCCESS("No files to remove"))
         elif force:
             self.stdout.write(
-                self.style.SUCCESS(f"Successfully removed {self.n_image_removed} files")
+                self.style.SUCCESS(f"Successfully removed {self.n_file_removed} files")
             )
         else:
-            self.stdout.write(f"Would remove {self.n_image_removed} files")
+            self.stdout.write(
+                self.style.WARNING(f"{self.n_file_removed} files could be removed")
+            )

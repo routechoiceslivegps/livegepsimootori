@@ -6,7 +6,7 @@ from routechoices.core.models import Device
 
 
 class Command(BaseCommand):
-    help = "Device cleaning: Fix bad cached values and trashes unused blank virtual devices"
+    help = "Fixes invalid cache and trashes unused virtual devices"
 
     def add_arguments(self, parser):
         parser.add_argument("--force", action="store_true", default=False)
@@ -27,34 +27,39 @@ class Command(BaseCommand):
                 / 3
             )
         ).exclude(_location_count=F("db_location_count"))
-        nb_invalid = invalid_cache_devices.count()
-        if nb_invalid > 0:
+        invalid_cache_devices = invalid_cache_devices.count()
+        if invalid_cache_devices:
             self.stdout.write(
-                self.style.WARNING(f"{nb_invalid} devices with invalid cache")
+                self.style.WARNING(
+                    f"{invalid_cache_devices} devices with invalid cache"
+                )
             )
-            for device in invalid_cache_devices:
-                device.update_cached_data()
-                if force:
-                    device.save()
-            if force:
-                self.stdout.write(self.style.SUCCESS("Successfully updated cache"))
         else:
             self.stdout.write(self.style.SUCCESS("No devices with invalid cache"))
-        nb_devices = 0
-        devices = (
+
+        if force and invalid_cache_devices:
+            for device in invalid_cache_devices:
+                device.update_cached_data()
+                device.save()
+            self.stdout.write(self.style.SUCCESS("Successfully updated cache"))
+
+        void_devices = (
             Device.objects.annotate(competitor_count=Count("competitor_set"))
             .filter(
                 virtual=True,
             )
             .filter(Q(competitor_count=0) | Q(locations_encoded=""))
         )
-        nb_devices = devices.count()
-        if nb_devices == 0:
-            self.stdout.write(self.style.SUCCESS("No devices to remove"))
-        elif force:
-            devices.delete()
-            self.stdout.write(
-                self.style.SUCCESS(f"Successfully removed {nb_devices} devices")
-            )
+        void_devices_count = void_devices.count()
+        if void_devices_count:
+            self.stdout.write(f"{void_devices_count} virtual devices without any uses")
         else:
-            self.stdout.write(f"Would remove {nb_devices} devices")
+            self.stdout.write(self.style.SUCCESS("No virtual devices without any uses"))
+
+        if void_devices_count and force:
+            void_devices.delete()
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f"Successfully removed {void_devices_count} virtual devices"
+                )
+            )

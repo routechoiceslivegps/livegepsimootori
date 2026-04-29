@@ -34,7 +34,7 @@ class Command(BaseCommand):
             write_nginx_conf(domain)
             nginx_need_restart = True
         if nginx_need_restart:
-            print("Reload nginx for changes to take effect...")
+            self.stdout.write("Reload nginx for changes to take effect...")
             if options["post-hook"]:
                 subprocess.run(
                     options["post-hook"],

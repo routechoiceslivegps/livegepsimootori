@@ -13,7 +13,7 @@ START_PROCESS = parse("2025-05-24T00:00:00Z")
 
 
 class Command(BaseCommand):
-    help = "Remove club without activity"
+    help = "Remove clubs without activity"
 
     def add_arguments(self, parser):
         parser.add_argument("-d", "--date", type=str, required=False)

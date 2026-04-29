@@ -7,7 +7,7 @@ from routechoices.core.models import Competitor
 
 
 class Command(BaseCommand):
-    help = "Release competitors trapped in a freezed event"
+    help = "Archive competitors device two weeks after event finishes"
 
     def add_arguments(self, parser):
         parser.add_argument("--force", action="store_true", default=False)
@@ -15,23 +15,30 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         force = options["force"]
         two_weeks_ago = now() - timedelta(days=14)
-        chilling_competitor = Competitor.objects.filter(
+        idle_competitors = Competitor.objects.filter(
             event__end_date__lt=two_weeks_ago,
+            device__isnull=False,
             device__virtual=False,
         )
-        competitor_released = 0
-        for competitor in chilling_competitor:
-            archive = competitor.archive_device(force)
-            if archive:
-                competitor_released += 1
-                self.stdout.write(f"Competitor {competitor} is trapped, releasing him")
-        if not competitor_released:
-            self.stdout.write(self.style.SUCCESS("No competitor trapped"))
-        elif force:
+        idle_competitor_count = idle_competitors.count()
+        if idle_competitor_count:
             self.stdout.write(
-                self.style.SUCCESS(
-                    f"Successfully released {competitor_released} competitors"
+                self.style.WARNING(
+                    f"{idle_competitor_count} competitors still associated to an actual device two week after the event end"
                 )
             )
         else:
-            self.stdout.write(f"Would released {competitor_released} competitors")
+            self.stdout.write(
+                self.style.SUCCESS(
+                    "No competitors associated to an actual device two week after the event end"
+                )
+            )
+
+        if idle_competitor_count and force:
+            for competitor in idle_competitors:
+                competitor.archive_device()
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f"Successfully archived {idle_competitor_count} competitor devices"
+                )
+            )
