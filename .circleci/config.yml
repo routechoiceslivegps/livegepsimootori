@@ -7,44 +7,41 @@ commands:
   prepare-docker:
     steps:
       - checkout
-      - run: ./gen-local-certs.sh
-      - run: chmod -R 755 ./letsencrypt/live/routechoices.dev/
-      - run: echo "127.0.0.1 routechoices.dev api.routechoices.dev www.routechoices.dev events.routechoices.dev dashboard.routechoices.dev halden-sk.routechoices.dev kangasala-sk.routechoices.dev registration.routechoices.dev livelox.routechoices.dev loggator.routechoices.dev gpsseuranta.routechoices.dev" | sudo tee -a /etc/hosts
-
-      - run: mkdir -p media/s3/routechoices
-      - run: mkdir -p media/iam
-      - run: mkdir -p media/versioning
-      - run: mkdir -p media/sidecar
-
-      - run: mv ./.env.dev ./.env
-      - run: echo "SECURE_SSL_REDIRECT = False" > ./routechoices/settings_overrides.py
-      - run: echo "DEBUG = False" >> ./routechoices/settings_overrides.py
-      - run: ./dc up -d
-      - run: ./da migrate
-      - run: ./da collectstatic
-      - run: ./da compress
-      - run: ./dc restart nginx
-
-  setup-docker:
-    steps:
       - run:
-          name: Setup buildx and qemu
+          name: Local certificates setup
           command: |
-            sudo apt-get update
-            sudo apt-get install -y qemu-user-static
-            sudo apt-get install -y binfmt-support
+            ./gen-local-certs.sh
+            chmod -R 755 ./letsencrypt/live/routechoices.dev/
+
       - run:
-          name: Check versions
+          name: DNS overrides
           command: |
-            qemu-aarch64-static --version
-            update-binfmts --version
+            echo "DNSStubListener=no" >> /etc/systemd/resolved.conf
+            systemctl restart systemd-resolved
+            cat <(echo "nameserver 127.0.0.1") /etc/resolv.conf > /etc/resolv.conf
+            echo -e "bind-interfaces\nlisten-address=127.0.0.1\naddress=/routechoices.dev/127.0.0.1\naddress=/.routechoices.dev/127.0.0.1" > /etc/dnsmasq.conf
+            apt-get update
+            apt-get install -y dnsmasq
+
       - run:
-          name: Create builder
+          name: Create media directories
+          command: mkdir -p media/s3/routechoices media/iam media/versioning media/sidecar
+
+      - run:
+          name: Setup environment
           command: |
-            export DOCKER_CLI_EXPERIMENTAL=enabled
-            docker buildx create --name arm-builder
-            docker buildx use arm-builder
-            docker buildx inspect --bootstrap
+            mv ./.env.dev ./.env
+            echo "SECURE_SSL_REDIRECT = False" > ./routechoices/settings_overrides.py
+            echo "DEBUG = False" >> ./routechoices/settings_overrides.py
+
+      - run:
+          name: Start application
+          command: |
+            ./dc up -d
+            ./da migrate
+            ./da collectstatic
+            ./da compress
+            ./dc restart nginx
 
 jobs:
   python-tests:
@@ -67,14 +64,6 @@ jobs:
       docker_layer_caching: false
     resource_class: large
     steps:
-      - prepare-docker
-      - run: ./dc stop django
-      - run:
-          command: ./dc up -d
-          environment:
-            WSGI_FILE: wsgi-with-cov
-            NUM_PROCESSES: 1
-      - run: timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' https://www.routechoices.dev/)" != "200" ]]; do sleep 5; done' || false
       - run: sudo apt update
       - run: sudo apt install -y libgbm-dev
       - browser-tools/install-chrome
@@ -88,7 +77,15 @@ jobs:
             node -v
             npm install --global pnpm
             pnpm install
-            TZ=Europe/Helsinki pnpm cypress run --browser chrome
+      - prepare-docker
+      - run: ./dc stop django
+      - run:
+          command: ./dc up -d
+          environment:
+            WSGI_FILE: wsgi-with-cov
+            NUM_PROCESSES: 1
+      - run: timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' https://www.routechoices.dev/)" != "200" ]]; do sleep 5; done' || false
+      - run: TZ=Europe/Helsinki pnpm cypress run --browser chrome
       - run: docker kill --signal=HUP rc_django
       - run: sleep 5
       - run: ./dc exec django coverage xml
@@ -106,7 +103,6 @@ jobs:
     resource_class: large
     steps:
       - checkout
-      - setup-docker
       - run:
           name: Connect account
           command: |
@@ -114,7 +110,7 @@ jobs:
       - run:
           name: Build docker images
           command: |
-            DOCKER_CLI_EXPERIMENTAL=enabled docker buildx build --progress plain --platform linux/amd64 --push -t rphlo/routechoices-dev-server:latest -f docker/django.dockerfile .
+            docker build --progress plain --platform linux/amd64 --push -t rphlo/routechoices-dev-server:latest -f docker/django.dockerfile .
 
 workflows:
   version: 2
