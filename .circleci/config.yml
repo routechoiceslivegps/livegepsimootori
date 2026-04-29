@@ -7,13 +7,13 @@ commands:
   prepare-docker:
     steps:
       - run:
-          name: Local certificates setup
+          name: Setup local certificates
           command: |
             ./gen-local-certs.sh
             chmod -R 755 ./letsencrypt/live/routechoices.dev/
 
       - run:
-          name: DNS overrides
+          name: Override DNS for routechoices.dev
           command: |
             echo "DNSStubListener=no" | sudo tee -a /etc/systemd/resolved.conf
             sudo systemctl restart systemd-resolved
