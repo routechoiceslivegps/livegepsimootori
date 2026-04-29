@@ -84,7 +84,9 @@ jobs:
             WSGI_FILE: wsgi-with-cov
             NUM_PROCESSES: 1
       - run: timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' https://www.routechoices.dev/)" != "200" ]]; do sleep 5; done' || false
-      - run: TZ=Europe/Helsinki cypress run --browser chrome
+      - run:
+          name: Run tests
+          command: TZ=Europe/Helsinki cypress run --browser chrome
       - run: docker kill --signal=HUP rc_django
       - run: sleep 5
       - run: ./dc exec django coverage xml
