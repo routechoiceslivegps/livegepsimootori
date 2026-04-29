@@ -51,7 +51,7 @@ flatbuffers==25.12.19
 frozenlist==1.8.0
 geoip2==5.2.0
 geojson-validator==0.6.0
-gps-data-codec @ git+https://github.com/routechoiceslivegps/gps-data-codec@fcca69c698c425190c69f10ee97a9f12681f408f
+gps-data-codec @ git+https://github.com/routechoiceslivegps/gps-data-codec@c9c9f0da1088f8de0fa95ed340e1f57c2df3807b
 gpxpy==1.6.2
 gunicorn==25.3.0
 h3==4.4.2
