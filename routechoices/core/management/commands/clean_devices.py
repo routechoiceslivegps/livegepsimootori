@@ -27,17 +27,17 @@ class Command(BaseCommand):
                 / 3
             )
         ).exclude(_location_count=F("db_location_count"))
-        invalid_cache_devices = invalid_cache_devices.count()
-        if invalid_cache_devices:
+        invalid_cache_devices_count = invalid_cache_devices.count()
+        if invalid_cache_devices_count:
             self.stdout.write(
                 self.style.WARNING(
-                    f"{invalid_cache_devices} devices with invalid cache"
+                    f"{invalid_cache_devices_count} devices with invalid cache"
                 )
             )
         else:
             self.stdout.write(self.style.SUCCESS("No devices with invalid cache"))
 
-        if force and invalid_cache_devices:
+        if force and invalid_cache_devices_count:
             for device in invalid_cache_devices:
                 device.update_cached_data()
                 device.save()
@@ -52,7 +52,11 @@ class Command(BaseCommand):
         )
         void_devices_count = void_devices.count()
         if void_devices_count:
-            self.stdout.write(f"{void_devices_count} virtual devices without any uses")
+            self.stdout.write(
+                self.style.WARNING(
+                    f"{void_devices_count} virtual devices without any uses"
+                )
+            )
         else:
             self.stdout.write(self.style.SUCCESS("No virtual devices without any uses"))
 
