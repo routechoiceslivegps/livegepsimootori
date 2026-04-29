@@ -6,7 +6,6 @@ orbs:
 commands:
   prepare-docker:
     steps:
-      - checkout
       - run:
           name: Local certificates setup
           command: |
@@ -54,6 +53,7 @@ jobs:
       docker_layer_caching: false
     resource_class: large
     steps:
+      - checkout
       - prepare-docker
       - run: ./dc restart django
       - run: timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' https://www.routechoices.dev/)" != "200" ]]; do sleep 5; done' || false
@@ -68,6 +68,7 @@ jobs:
       docker_layer_caching: false
     resource_class: large
     steps:
+      - checkout
       - run: sudo apt-get update
       - run: sudo apt-get install -y libgbm-dev
       - browser-tools/install-chrome
