@@ -33,7 +33,7 @@ geoip2
 geojson-validator
 gps-data-codec @ git+https://github.com/routechoiceslivegps/gps-data-codec
 gpxpy
-gunicorn
+gunicorn[gevent]
 kagi @ git+https://github.com/rphlo/kagi@9d02f068abf0963575819455f2e3f05888726153
 lxml
 numpy
