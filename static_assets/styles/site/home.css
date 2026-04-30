@@ -80,42 +80,42 @@
 }
 
 .image-forest {
-	background-image: url("../../img/banner4.jpg"); /* fallback for non image-set browser */
+	background-image: url("../../img/backgrounds/banner4.jpg"); /* fallback for non image-set browser */
 	background-image: -webkit-image-set(
-		url("../../img/banner4.avif") 1x /* type("image/avif") */,
-		url("../../img/banner4.webp") 1x /* type("image/webp") */,
-		url("../../img/banner4.jpg") 1x /* type("image/png") */
+		url("../../img/backgrounds/banner4.avif") 1x /* type("image/avif") */,
+		url("../../img/backgrounds/banner4.webp") 1x /* type("image/webp") */,
+		url("../../img/backgrounds/banner4.jpg") 1x /* type("image/png") */
 	);
 	background-image: image-set(
-		url("../../img/banner4.avif") 1x,
-		url("../../img/banner4.webp") 1x,
-		url("../../img/banner4.jpg") 1x
+		url("../../img/backgrounds/banner4.avif") 1x,
+		url("../../img/backgrounds/banner4.webp") 1x,
+		url("../../img/backgrounds/banner4.jpg") 1x
 	);
 }
 .image-suunnistus {
-	background-image: url("../../img/emma.jpg?v=2"); /* fallback for non image-set browser */
+	background-image: url("../../img/backgrounds/emma.jpg"); /* fallback for non image-set browser */
 	background-image: -webkit-image-set(
-		url("../../img/emma.avif?v=2") 1x /* type("image/avif") */,
-		url("../../img/emma.webp?v=2") 1x /* type("image/webp") */,
-		url("../../img/emma.jpg?v=2") 1x /* type("image/png") */
+		url("../../img/backgrounds/emma.avif") 1x /* type("image/avif") */,
+		url("../../img/backgrounds/emma.webp") 1x /* type("image/webp") */,
+		url("../../img/backgrounds/emma.jpg") 1x /* type("image/png") */
 	);
 	background-image: image-set(
-		url("../../img/emma.avif?v=2") 1x,
-		url("../../img/emma.webp?v=2") 1x,
-		url("../../img/emma.jpg?v=2") 1x
+		url("../../img/backgrounds/emma.avif") 1x,
+		url("../../img/backgrounds/emma.webp") 1x,
+		url("../../img/backgrounds/emma.jpg") 1x
 	);
 }
 .image-tv {
-	background-image: url("../../img/broadcast-room.webp"); /* fallback for non image-set browser */
+	background-image: url("../../img/backgrounds/broadcast-room.webp"); /* fallback for non image-set browser */
 	background-image: -webkit-image-set(
-		url("../../img/broadcast-room.avif?v=2") 1x /* type("image/avif") */,
-		url("../../img/broadcast-room.webp?v=2") 1x /* type("image/webp") */,
-		url("../../img/broadcast-room.jpg?v=2") 1x /* type("image/png") */
+		url("../../img/backgrounds/broadcast-room.avif") 1x /* type("image/avif") */,
+		url("../../img/backgrounds/broadcast-room.webp") 1x /* type("image/webp") */,
+		url("../../img/backgrounds/broadcast-room.jpg") 1x /* type("image/png") */
 	);
 	background-image: image-set(
-		url("../../img/broadcast-room.avif?v=2") 1x,
-		url("../../img/broadcast-room.webp?v=2") 1x,
-		url("../../img/broadcast-room.jpg?v=2") 1x
+		url("../../img/backgrounds/broadcast-room.avif") 1x,
+		url("../../img/backgrounds/broadcast-room.webp") 1x,
+		url("../../img/backgrounds/broadcast-room.jpg") 1x
 	);
 }
 
