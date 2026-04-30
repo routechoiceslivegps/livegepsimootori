@@ -1,5 +1,4 @@
 wsgi_app = "routechoices.wsgi:application"
-preload_app = True
 daemon = False
 raw_env = ["DJANGO_SETTINGS_MODULE=routechoices.settings"]
 workers = 5
