@@ -1,3 +1,2 @@
 #!/bin/sh
-
 ./dc exec django python ./manage.py "$@"

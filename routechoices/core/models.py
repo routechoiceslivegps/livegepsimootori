@@ -432,7 +432,9 @@ Follow our events live or replay them later.
         return f"{self.nice_url}banner?v={shortsafe64encodedsha(self.banner.name)}"
 
     def thumbnail(self, mime="image/jpeg"):
-        cache_key = f"club:{self.aid}:thumbnail:{self.modification_date}:{mime}"
+        cache_key = (
+            f"club:{self.aid}:thumbnail:{self.modification_date.timestamp()}:{mime}"
+        )
         if cached := cache.get(cache_key):
             return cached
         if not self.banner:
@@ -2092,7 +2094,7 @@ class Event(models.Model, SomewhereOnEarth):
         if self.start_date > now() or not self.earth_coords:
             cache_key = (
                 f"map:{self.aid}:blank:thumbnail:{display_logo}"
-                f":{self.club.modification_date}:{mime}"
+                f":{self.club.modification_date.timestamp()}:{mime}"
             )
             if cached := cache.get(cache_key):
                 return cached
@@ -2101,7 +2103,7 @@ class Event(models.Model, SomewhereOnEarth):
             center = self.earth_coords
             cache_key = (
                 f"map:{self.aid}:{center[0]}-{center[1]}:thumbnail:{display_logo}"
-                f":{self.club.modification_date}:{mime}"
+                f":{self.club.modification_date.timestamp()}:{mime}"
             )
             if cached := cache.get(cache_key):
                 return cached
@@ -2113,7 +2115,7 @@ class Event(models.Model, SomewhereOnEarth):
             raster_map = self.map
             cache_key = (
                 f"map:{self.aid}:{raster_map.hash}:thumbnail:{display_logo}"
-                f":{self.club.modification_date}:{mime}"
+                f":{self.club.modification_date.timestamp()}:{mime}"
             )
             if cached := cache.get(cache_key):
                 return cached
