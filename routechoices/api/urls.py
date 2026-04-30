@@ -50,7 +50,7 @@ urlpatterns = [
         views.map_kmz_download,
         name="map_kmz_download",
     ),
-    re_path(r"^oauth2/", include((base_urlpatterns, app_name), namespace=app_name)),
+    path("oauth2/", include((base_urlpatterns, app_name), namespace=app_name)),
     re_path(r"^time/?$", views.get_time, name="time_api"),
     re_path(r"^user/?$", views.user_view, name="user_view_api"),
     re_path(r"^version/?$", views.get_version, name="version"),
@@ -119,7 +119,7 @@ urlpatterns = [
                                 name="event_data",
                             ),
                             re_path(
-                                r"data/(?P<key>\d+)",
+                                r"data/(?P<key>\d+)$",
                                 views.event_new_data,
                                 name="event_new_data",
                             ),
@@ -143,7 +143,7 @@ urlpatterns = [
                                             name="event_main_map_download_with_format",
                                         ),
                                         re_path(
-                                            r"^-(?P<index>[1-9]\d*)",
+                                            r"^-(?P<index>[1-9]\d*)$",
                                             include(
                                                 [
                                                     path(

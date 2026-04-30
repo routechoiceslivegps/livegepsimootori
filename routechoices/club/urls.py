@@ -128,7 +128,7 @@ urlpatterns = [
                                 name="event_main_map_view_with_format",
                             ),
                             re_path(
-                                r"-(?P<index>[1-9]\d*)",
+                                r"^-(?P<index>[1-9]\d*)$",
                                 include(
                                     [
                                         path(
@@ -157,7 +157,7 @@ urlpatterns = [
                                 name="event_main_kmz_view",
                             ),
                             re_path(
-                                r"-(?P<index>[1-9]\d*)$",
+                                r"^-(?P<index>[1-9]\d*)$",
                                 views.event_kmz_view,
                                 name="event_kmz_view",
                             ),

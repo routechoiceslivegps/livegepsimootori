@@ -7,3 +7,4 @@ threads = 3
 max_requests = 3000
 max_requests_jitter = 100
 protocol = "uwgsi"
+control_socket_disable = True
