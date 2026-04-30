@@ -83,4 +83,4 @@ services:
       - db
       - minio
       - smtp
-    command: ["gunicorn", "--protocol", "--bind", ":8000", "--workers", "${NUM_PROCESSES:-3}", "--threads", "${NUM_PROCESSES:-3}", "--reload", "routechoices.${WSGI_FILE:-wsgi}:application",]
+    command: ["gunicorn", "--bind", ":8000", "--workers", "${NUM_PROCESSES:-3}", "--threads", "${NUM_PROCESSES:-3}", "--reload", "routechoices.${WSGI_FILE:-wsgi}:application",]
