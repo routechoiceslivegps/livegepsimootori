@@ -353,8 +353,8 @@ context("Dashboard actions", () => {
 		// test the event view
 		cy.visit("https://halden-sk.routechoices.dev/Jukola-2019-2nd-leg");
 		cy.origin("https://halden-sk.routechoices.dev", () => {
-			cy.contains("Björn Ekeberg", { timeout: 20_000 });
-			cy.contains("Another map", { timeout: 20_000 });
+			cy.contains("Björn Ekeberg", { timeout: 10_000 });
+			cy.contains("Another map", { timeout: 10_000 });
 		});
 	});
 });
