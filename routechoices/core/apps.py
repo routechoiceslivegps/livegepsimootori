@@ -1,5 +1,5 @@
+import geojson_validator
 from django.apps import AppConfig
-from geojson_validator.main import logger as annoying_logger
 
 
 class CoreConfig(AppConfig):
@@ -7,4 +7,4 @@ class CoreConfig(AppConfig):
     verbose_name = "Routechoices"
 
     def ready(self):
-        annoying_logger.remove()
+        geojson_validator.configure_logging(enabled=False)
