@@ -139,7 +139,7 @@ class HelperTestCase(TestCase):
         self.assertEqual(get_device_name("Queclink"), "Queclink")
         self.assertEqual(get_device_name("Routechoices-ios-tracker/1.3.2"), "iOS")
         self.assertEqual(get_device_name("Dalvik/1.2.3"), "Android")
-        self.assertEqual(get_device_name("ConnectMobile/1.0.2"), "Garmin")
+        self.assertEqual(get_device_name("ConnectMobile/1.0.2"), "Garmin (iOS)")
         self.assertEqual(get_device_name("Traccar/2.1.3"), "Traccar")
         self.assertEqual(
             get_device_name(
