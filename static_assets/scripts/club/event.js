@@ -1405,6 +1405,8 @@ function RCEvent(infoURL, clockURL, locale) {
 				if (maps.length > 1) {
 					mapSelectorLayer = L.control.layers(mapChoices, null, {
 						collapsed: false,
+						sortFunction: (layerA, layerB) =>
+							layerA.sortIndex - layerB.sortIndex,
 					});
 					try {
 						mapSelectorLayer.addTo(map);
@@ -1571,6 +1573,7 @@ function RCEvent(infoURL, clockURL, locale) {
 			layer.options.bounds = bounds;
 		}
 		layer.data = mapData;
+		layer.sortIndex = indexEventMap;
 		return layer;
 	}
 
