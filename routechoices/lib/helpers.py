@@ -502,7 +502,7 @@ def is_valid_pil_image(data):
         with Image.open(data) as img:
             img.verify()
             return True
-    except (IOError, SyntaxError):
+    except IOError, SyntaxError:
         return False
 
 

@@ -262,7 +262,7 @@ class H02Connection(GenericConnection):
                 battery_level = min(max(0, int(parts[0])), 100)
                 self.db_device.battery_level = battery_level
                 print(f"H02 - Battery: {battery_level}%")
-            except (ValueError, IndexError):
+            except ValueError, IndexError:
                 print("H02 - Could not read battery value")
         await save_device(self.db_device)
 

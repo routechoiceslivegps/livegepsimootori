@@ -45,7 +45,7 @@ class Command(BaseCommand):
         try:
             print("Start listening TCP data...", flush=True)
             IOLoop.current().start()
-        except (KeyboardInterrupt, SystemExit):
+        except KeyboardInterrupt, SystemExit:
             for slug, server in servers:
                 if options.get("{slug}_port"):
                     server.stop()
