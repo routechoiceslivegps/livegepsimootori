@@ -1171,6 +1171,7 @@ class MyUserAdmin(HijackUserAdminMixin, UserAdmin):
         "has_verified_email",
         "date_joined",
         "clubs",
+        "participation_count",
     )
     actions = [
         "clean_fake_users",
@@ -1200,8 +1201,10 @@ class MyUserAdmin(HijackUserAdminMixin, UserAdmin):
             super()
             .get_queryset(request)
             .prefetch_related("club_set")
+            .prefetch_related("participations")
             .annotate(
-                club_count=Count("club"),
+                club_count=Count("club", distinct=True),
+                participation_count=Count("participations", distinct=True),
                 has_verified_email=Exists(
                     EmailAddress.objects.filter(user_id=OuterRef("pk"), verified=True)
                 ),
@@ -1211,6 +1214,11 @@ class MyUserAdmin(HijackUserAdminMixin, UserAdmin):
     @admin.display(boolean=True)
     def has_verified_email(self, obj):
         return obj.has_verified_email
+
+    def participation_count(self, obj):
+        return obj.participation_count
+
+    participation_count.admin_order_field = "participation_count"
 
     has_verified_email.short_description = "Is email verified"
     has_verified_email.admin_order_field = "has_verified_email"
