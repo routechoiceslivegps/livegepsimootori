@@ -1151,6 +1151,18 @@ admin.site.unregister(UserModel)
 admin.site.unregister(Group)
 
 
+class UserCompetitorInline(admin.TabularInline):
+    model = Competitor
+    fields = ("event", "name", "short_name", "start_time", "color", "tags", "link")
+    readonly_fields = ("link",)
+    ordering = ("-start_time",)
+    autocomplete_fields = ["event"]
+    extra = 0
+
+    def link(self, obj):
+        return format_html('<a href="{}">Open</a>', obj.event.get_absolute_url())
+
+
 @admin.register(UserModel)
 class MyUserAdmin(HijackUserAdminMixin, UserAdmin):
     list_display = (
@@ -1164,6 +1176,7 @@ class MyUserAdmin(HijackUserAdminMixin, UserAdmin):
         "clean_fake_users",
     ]
     show_facets = False
+    inlines = (DeviceCompetitorInline,)
 
     @property
     def media(self):
