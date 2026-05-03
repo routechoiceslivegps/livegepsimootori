@@ -292,6 +292,23 @@ class HasCompetitorFilter(admin.SimpleListFilter):
             return queryset.filter(competitor_count__gt=0)
 
 
+class HasParticipationFilter(admin.SimpleListFilter):
+    title = "whether it has participations associated with"
+    parameter_name = "has_participations"
+
+    def lookups(self, request, model_admin):
+        return [
+            ("true", "With participations"),
+            ("false", "Without participations"),
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value() == "false":
+            return queryset.filter(participation_count=0)
+        if self.value():
+            return queryset.filter(participation_count__gt=0)
+
+
 class HasArchiveFilter(admin.SimpleListFilter):
     title = "whether it has been archived"
     parameter_name = "has_archives"
@@ -1186,7 +1203,11 @@ class MyUserAdmin(HijackUserAdminMixin, UserAdmin):
         )
 
     def get_list_filter(self, request):
-        return super().get_list_filter(request) + (HasClubsFilter, HasEmailVerified)
+        return super().get_list_filter(request) + (
+            HasClubsFilter,
+            HasParticipationFilter,
+            HasEmailVerified,
+        )
 
     def get_hijack_user(self, obj):
         return obj
