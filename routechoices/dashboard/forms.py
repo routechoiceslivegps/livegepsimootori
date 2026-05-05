@@ -910,6 +910,8 @@ class UploadKmzForm(Form):
                 )
                 new_map.image.save("file", image_file, save=False)
                 new_maps.append(new_map)
+        if not new_maps:
+            raise ValidationError("Could not extract any maps")
         self.cleaned_data["extracted_maps"] = new_maps
         return file
 
