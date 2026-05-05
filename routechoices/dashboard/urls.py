@@ -248,6 +248,11 @@ urlpatterns = [
                                                                 name="edit_view",
                                                             ),
                                                             path(
+                                                                "map",
+                                                                views.event_map_edit_view,
+                                                                name="map_edit_view",
+                                                            ),
+                                                            path(
                                                                 "view",
                                                                 views.private_view,
                                                                 name="private_view",

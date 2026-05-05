@@ -27,11 +27,11 @@ from django.utils.timezone import now
 from django.views.decorators.cache import cache_page
 from django_hosts.resolvers import reverse
 from hijack.views import ReleaseUserView
+from invitations.forms import InviteForm
 from kagi.views.backup_codes import BackupCodesView
 from oauth2_provider.models import AccessToken
 from user_sessions.views import SessionDeleteOtherView
 
-from invitations.forms import InviteForm
 from routechoices.core.models import (
     PRIVACY_SECRET,
     Club,
@@ -618,8 +618,26 @@ def map_delete_view(request, map_id):
     raster_map = get_object_or_404(Map, aid=map_id)
 
     if request.method == "POST":
+
+        events_used_in = Event.objects.filter(map_id=raster_map.id).prefetch_related(
+            "map_assignations"
+        )
+        for event in events_used_in:
+            event.map = None
+            event.map_title = ""
+
+            next_map = event.map_assignations.first()
+            if next_map:
+                event.map = next_map.map
+                event.map_title = next_map.title
+                next_map.delete()
+
+            event.save()
+
         raster_map.delete()
         messages.success(request, "Map deleted")
+        if link := request.GET.get("next"):
+            return redirect(link)
         return redirect("dashboard_club:map:list_view", club_slug=request.club.slug)
     return render(
         request,
@@ -1108,6 +1126,52 @@ def event_edit_view(request, event_id):
             "notice_form": notice_form,
             "use_competitor_formset": use_competitor_formset,
         },
+    )
+
+
+@login_required
+@requires_club_in_session
+def event_map_edit_view(request, event_id):
+    club = request.club
+    if not club.can_modify_events:
+        messages.warning(
+            request,
+            "Your 10 days free trial has now expired, you cannot create or edit events anymore.",
+        )
+    event = get_object_or_404(
+        Event.objects.prefetch_related("notice", "competitors").select_related("map"),
+        aid=event_id,
+    )
+    form = MapForm()
+    if request.method == "POST" and club.can_modify_events:
+        if raster_map := event.map:
+            raster_map_copy = deepcopy(raster_map)
+            form = MapForm(request.POST, request.FILES, instance=raster_map_copy)
+        else:
+            form = MapForm(request.POST, request.FILES)
+        form.instance.club = club
+        # check whether it's valid:
+        if form.is_valid():
+            raster_map = form.save()
+            event.map = raster_map
+            event.save()
+            messages.success(request, "Changes saved successfully")
+            return redirect(
+                "dashboard_club:event:map_edit_view",
+                event_id=event.aid,
+                club_slug=request.club.slug,
+            )
+
+    data = {"club": club, "event": event, "form": form, "contest": "create"}
+    if event.map:
+        data["context"] = "edit"
+        data["map"] = event.map
+        data["form"] = MapForm(instance=event.map)
+
+    return render(
+        request,
+        "dashboard/map_edit.html",
+        data,
     )
 
 
