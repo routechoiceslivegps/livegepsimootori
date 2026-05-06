@@ -811,7 +811,7 @@ class EventApiTestCase(EssentialApiBase):
             "event_detail", f"/events/{event.aid}/", "api", {"event_id": event.aid}
         )
         res = self.client.delete(url)
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
         self.client.force_login(self.user)
 
