@@ -669,7 +669,7 @@ def event_detail(request, event_id):
 
     output["announcement"] = event.notice.text if event.has_notice else ""
 
-    if event.can_display_maps():
+    if event.could_display_maps():
         if event.map:
             map_data = {
                 "title": event.map_title,

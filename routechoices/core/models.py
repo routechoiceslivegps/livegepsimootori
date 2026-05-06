@@ -1694,17 +1694,16 @@ class Event(models.Model, SomewhereOnEarth):
         if qs.exists():
             raise ValidationError("An Event Set with this URL already exists.")
 
-    def can_display_maps(self, t=None):
-        if t is None:
-            t = now()
+    def could_display_maps(self):
+        t = now()
         return bool(
-            self.map
-            and (
                 self.visibility == VISIBILITY_PREVIEW
                 or (self.visibility == VISIBILITY_LIVE and self.start_date < t)
                 or (self.visibility == VISIBILITY_REPLAY and self.end_date < t)
-            )
         )
+
+    def can_display_maps(self):
+        return self.could_display_maps() and self.map
 
     def check_user_permission(self, user):
         if self.privacy == PRIVACY_PRIVATE and (
