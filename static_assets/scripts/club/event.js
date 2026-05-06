@@ -840,7 +840,7 @@ function RCEvent(infoURL, clockURL, locale) {
 	}
 
 	function CountDown() {
-		const targetTime = eventVisibility == "replay" ? eventEnd : eventStart;
+		const targetTime = eventVisibility === "replay" ? eventEnd : eventStart;
 		const duration = dayjs.duration(dayjs(targetTime).diff(dayjs()));
 		let durationInSeconds = Math.max(Math.ceil(duration.asSeconds()), 0);
 		const days = Math.floor(durationInSeconds / (24 * 3600));
@@ -884,6 +884,11 @@ function RCEvent(infoURL, clockURL, locale) {
 	}
 
 	(function initialize() {
+		const urlParams = new URLSearchParams(window.location.search);
+		if (urlParams.get("embeded")) {
+			u("#event-navbar").addClass("d-none");
+		}
+
 		window.addEventListener("resize", onAppResize);
 		window.addEventListener("fullscreenchange", () => {
 			onAppResize();
@@ -916,7 +921,6 @@ function RCEvent(infoURL, clockURL, locale) {
 		}
 
 		u("#fullscreen-switch").on("click", toggleFullscreen);
-
 		initializeMap();
 		fetch(infoURL, {
 			method: "GET",
@@ -945,8 +949,8 @@ function RCEvent(infoURL, clockURL, locale) {
 				eventVisibility = response.event.visibility;
 
 				if (
-					(eventVisibility == "live" && eventStart > now) ||
-					(eventVisibility == "replay" && eventEnd > now)
+					(eventVisibility === "live" && eventStart > now) ||
+					(eventVisibility === "replay" && eventEnd > now)
 				) {
 					// show event yet not visible modal
 
@@ -969,9 +973,9 @@ function RCEvent(infoURL, clockURL, locale) {
 					setInterval(() => {
 						u("#event-start-date-value").html(CountDown());
 						if (
-							eventVisibility == "preview" ||
-							(eventVisibility == "live" && eventStart <= clock.now()) ||
-							(eventVisibility == "replay" && eventEnd <= clock.now())
+							eventVisibility === "preview" ||
+							(eventVisibility === "live" && eventStart <= clock.now()) ||
+							(eventVisibility === "replay" && eventEnd <= clock.now())
 						) {
 							location.reload();
 						}
@@ -1369,18 +1373,18 @@ function RCEvent(infoURL, clockURL, locale) {
 					return;
 				}
 				const showCountDownBefore =
-					(eventVisibility == "live" && eventStart > clock.now()) ||
-					(eventVisibility == "replay" && eventEnd > clock.now());
+					(eventVisibility === "live" && eventStart > clock.now()) ||
+					(eventVisibility === "replay" && eventEnd > clock.now());
 				const eventVisibilityBefore = eventVisibility;
 				eventVisibility = response.event.visibility;
 				eventEnd = new Date(response.event.end_date);
 				eventStart = new Date(response.event.start_date);
 				const showCountDownAfter =
-					(eventVisibility == "live" && eventStart > clock.now()) ||
-					(eventVisibility == "replay" && eventEnd > clock.now());
+					(eventVisibility === "live" && eventStart > clock.now()) ||
+					(eventVisibility === "replay" && eventEnd > clock.now());
 				const CountDownChanged =
 					showCountDownBefore !== showCountDownAfter ||
-					(showCountDownAfter && eventVisibilityBefore != eventVisibility);
+					(showCountDownAfter && eventVisibilityBefore !== eventVisibility);
 				if (CountDownChanged) {
 					window.location.reload();
 					return;
@@ -1479,7 +1483,7 @@ function RCEvent(infoURL, clockURL, locale) {
 		const onUpdate = () => {
 			const isNowLive = eventStart <= clock.now();
 			const isNowReplay = eventEnd <= clock.now();
-			if (isNowLive && eventVisibility != "replay") {
+			if (isNowLive && eventVisibility !== "replay") {
 				onSwitchToLive();
 				return;
 			}

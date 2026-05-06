@@ -111,7 +111,7 @@
                         <form action="" method="post" id="upload-form">
                             <div class="modal-header">
                                 <h5 class="modal-title">
-                                    Upload GPX for <span id="uploader-name"></span>
+                                    Upload GPS for <span id="uploader-name"></span>
                                 </h5>
                                 <button type="button"
                                         class="btn-close"
@@ -142,8 +142,12 @@
     {% compress js %}
         <script src="{% static 'vendor/tom-select-2.0.1/tom-select.custom.js' %}"></script>
         <script src="{% static 'vendor/reqwest-2.0.5/reqwest.min.js' %}"></script>
+        <script src="{% static 'vendor/reqwest-2.0.5/reqwest.min.js' %}"></script>
         <script src="{% static 'vendor/umbrella-3.3.3/umbrella.min.js' %}"></script>
         <script src="{% static 'vendor/dayjs-1.11.7/dayjs.min.js' %}"></script>
+        <script src="{% static 'vendor/sax-1.6.0/sax.min.js' %}"></script>
+        <script src="{% static 'vendor/tcx-parser-0.1.0/tcx-parser.js' %}"></script>
+        <script src="{% static 'vendor/fit-file-parser-3.0.0/fit-file-parser.min.js' %}"></script>
         <script src="{% static 'scripts/club/event_contribute.js' %}"></script>
     {% endcompress %}
 {% endblock extra_body %}

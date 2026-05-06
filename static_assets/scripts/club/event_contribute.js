@@ -17,16 +17,87 @@ function onGPXLoaded(e) {
 		return;
 	}
 	let missingTimeInfo = false;
-	for (let i = 0; i < parsedGpx.segments[0].length; i++) {
-		const pos = parsedGpx.segments[0][i];
-		if (pos.loc[0] && pos.time) {
-			newRoute.push({ time: pos.time, latLon: [pos.loc[0], pos.loc[1]] });
-		} else if (pos.loc[0] && !missingTimeInfo) {
-			missingTimeInfo = true;
+	for (const segment of parsedGpx.segments) {
+		for (const pos of segment) {
+			if (pos.loc[0]) {
+				if (pos.time) {
+					newRoute.push({ time: pos.time, latLon: [pos.loc[0], pos.loc[1]] });
+				} else {
+					missingTimeInfo = true;
+				}
+			}
 		}
 	}
 	onRouteLoaded(newRoute, missingTimeInfo);
 }
+const onTCXParsed = (workout) => {
+	const newRoute = [];
+	let missingTimeInfo = false;
+	for (const lap of workout.laps) {
+		for (const pos of lap.track) {
+			if (pos.latitude) {
+				if (pos.datetime) {
+					newRoute.push({
+						time: +pos.datetime,
+						latLon: [pos.latitude, pos.longitude],
+					});
+				} else {
+					missingTimeInfo = true;
+				}
+			}
+		}
+	}
+	onRouteLoaded(newRoute, missingTimeInfo);
+};
+
+const onTCXLoaded = (e) => {
+	const xml = e.target.result;
+	try {
+		parseTCXString(xml, onTCXParsed);
+	} catch (e) {
+		swal({
+			text: "Error parsing your TCX file!",
+			title: "error",
+			type: "error",
+		});
+	}
+};
+
+const onFitLoaded = (e) => {
+	var fitParser = new Fit.FitParser({
+		force: true,
+		speedUnit: "km/h",
+		lengthUnit: "km",
+		temperatureUnit: "celsius",
+		elapsedRecordField: "timer_time",
+		mode: "list",
+	});
+	fitParser.parse(e.target.result, (error, data) => {
+		if (error) {
+			swal({
+				text: "Error parsing your FIT file!",
+				title: "error",
+				type: "error",
+			});
+			return;
+		}
+		const newRoute = [];
+		let missingTimeInfo = false;
+		for (const rec of data.records) {
+			if (rec.position_lat) {
+				if (rec.timestamp) {
+					newRoute.push({
+						time: +rec.timestamp,
+						latLon: [rec.position_lat, rec.position_long],
+					});
+				} else {
+					missingTimeInfo = true;
+				}
+			}
+		}
+		onRouteLoaded(newRoute, missingTimeInfo);
+	});
+};
 
 function onRouteLoaded(newRoute, missingTimeInfo) {
 	if (!newRoute?.length) {
@@ -46,9 +117,18 @@ function onRouteLoaded(newRoute, missingTimeInfo) {
 		return;
 	}
 	const ts = newRoute.map((pt) => Math.round(+pt.time / 1e3)).join(",");
-	const lats = newRoute.map((pt) => +pt.latLon[0]).join(",");
-	const lons = newRoute.map((pt) => +pt.latLon[1]).join(",");
+	const lats = newRoute.map((pt) => (+pt.latLon[0]).toFixed(5)).join(",");
+	const lons = newRoute.map((pt) => (+pt.latLon[1]).toFixed(5)).join(",");
 	route = { timestamps: ts, latitudes: lats, longitudes: lons };
+	if (JSON.stringify(route).length > 2 * 1e7) {
+		route = {};
+		u("#id_gpx_file").val("");
+		swal({
+			text: "File is too big!",
+			title: "error",
+			type: "error",
+		});
+	}
 }
 
 route = {};
@@ -270,22 +350,22 @@ function selectizeDeviceInput(field) {
 	}
 
 	if (u("#id_gpx_file").nodes.length) {
-		u("#id_gpx_file").attr("accept", ".gpx");
+		u("#id_gpx_file").attr("accept", ".gpx,.tcx,.fit");
 		u("#id_gpx_file").on("change", function (e) {
-			if (this.files.length > 0 && this.files[0].size > 2 * 1e7) {
-				swal({
-					title: "Error!",
-					text: "File is too big!",
-					type: "error",
-					confirmButtonText: "OK",
-				});
-				this.value = "";
-				return;
-			}
 			if (this.files.length > 0) {
-				const reader = new FileReader();
-				reader.onload = onGPXLoaded;
-				reader.readAsText(this.files[0]);
+				const gpsFile = this.files[0];
+				const filename = gpsFile.name;
+				const fr = new FileReader();
+				if (filename.toLowerCase().endsWith(".tcx")) {
+					fr.onload = onTCXLoaded;
+				} else if (filename.toLowerCase().endsWith(".fit")) {
+					fr.onload = onFitLoaded;
+					fr.readAsArrayBuffer(gpsFile);
+					return;
+				} else {
+					fr.onload = onGPXLoaded;
+				}
+				fr.readAsText(gpsFile);
 			}
 		});
 	}
