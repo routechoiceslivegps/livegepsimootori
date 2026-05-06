@@ -24,7 +24,7 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import renderers, status
 from rest_framework.decorators import api_view, permission_classes, throttle_classes
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import NotAuthenticated, ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
@@ -111,13 +111,6 @@ event_param = openapi.Parameter(
     openapi.IN_QUERY,
     description="Filter by this event slug or url",
     type=openapi.TYPE_STRING,
-)
-
-mine_param = openapi.Parameter(
-    "only_mine",
-    openapi.IN_QUERY,
-    description="Filter weither you own it",
-    type=openapi.TYPE_BOOLEAN,
 )
 
 
@@ -302,7 +295,7 @@ def event_set_creation(request):
 def event_list(request):
     if request.method == "POST":
         if not request.user.is_authenticated:
-            raise ValidationError("authentication required")
+            raise NotAuthenticated()
         club_slug = request.data.get("club_slug")
         if not club_slug:
             raise ValidationError("club_slug is required")
@@ -483,9 +476,8 @@ def event_list(request):
 @swagger_auto_schema(
     method="get",
     operation_id="club_list",
-    operation_description="List all the clubs.",
+    operation_description="List all your clubs.",
     tags=["Clubs"],
-    manual_parameters=[mine_param],
     responses={
         "200": openapi.Response(
             description="Success response",
@@ -510,24 +502,18 @@ def event_list(request):
     },
 )
 @api_GET_view
+@permission_classes([IsAuthenticated])
 def club_list_view(request):
-    only_yours = request.GET.get("only_mine") == "true"
-    clubs = Club.objects.all()
-    owned_clubs = Club.objects.none()
-    if request.user.is_authenticated:
-        owned_clubs = clubs.filter(admins=request.user)
-    if only_yours:
-        clubs = owned_clubs
+    clubs = Club.objects.filter(admins=request.user)
     output = []
     for club in clubs:
-        data = {
-            "name": club.name,
-            "slug": club.slug,
-            "url": club.nice_url,
-            "owned": True if only_yours or (club in owned_clubs) else False,
-        }
-        if not only_yours or data["owned"]:
-            output.append(data)
+        output.append(
+            {
+                "name": club.name,
+                "slug": club.slug,
+                "url": club.nice_url,
+            }
+        )
     return Response(output)
 
 
@@ -628,9 +614,9 @@ def event_detail(request, event_id):
         return Response(res)
 
     if request.method == "DELETE":
-        is_event_admin = False
-        if request.user.is_authenticated:
-            is_event_admin = event.club.admins.filter(id=request.user.id).exists()
+        if not request.user.is_authenticated:
+            raise NotAuthenticated()
+        is_event_admin = event.club.admins.filter(id=request.user.id).exists()
         if not is_event_admin:
             raise PermissionDenied()
         event.delete()
