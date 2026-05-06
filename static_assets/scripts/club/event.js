@@ -1112,9 +1112,10 @@ function RCEvent(infoURL, clockURL, locale) {
 					if (!isPreview) {
 						fetchCompetitorRoutes(() => {
 							u("#loading-event-modal").remove();
+							isPreview = true;
 							if (isLiveEvent) {
 								onSwitchToLive();
-							} else if (!isPreview) {
+							} else {
 								isLive = true;
 								onSwitchToReplay();
 							}
@@ -1467,9 +1468,11 @@ function RCEvent(infoURL, clockURL, locale) {
 			e.preventDefault();
 		}
 		eventStateControl.setPreview();
+
 		isPreview = true;
+		isLive = false;
+
 		u(".if-live").addClass("d-none");
-		u("#bottom-div").addClass("d-none");
 		u("#bottom-div").addClass("d-none");
 		u("#runners_show_button").addClass("d-none");
 		hideSidebar();
