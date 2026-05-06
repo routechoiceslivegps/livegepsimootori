@@ -1943,7 +1943,6 @@ def event_geojson_download(request, event_id):
             | Q(visibility=VISIBILITY_REPLAY, end_date__lt=now())
         ),
         aid=event_id,
-        start_date__lt=now(),
     )
     event.check_user_permission(request.user)
 
