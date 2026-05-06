@@ -3,7 +3,9 @@
 	"no-competitors": "Inga deltagare.",
 	"loading-text": "Läser in...",
 	"event-not-started-text": "Evenemanget har ännu inte börjat.",
+	"event-not-ended-text": "Evenemanget är ännu inte över.",
 	"event-start-date-text": "Börjar om",
+	"event-end-date-text": "Slutar om",
 	"hide-all": "Dölj alla",
 	"show-all": "Visa alla",
 	"select-color-for": "Välj ny färg för $1",
@@ -59,5 +61,6 @@
 	"too-many-runners": "Det finns fler än 200 deltagare, endast 1 visas nu.",
 	"units": "Enheter",
 	"unit-metric": "Metriska",
-	"unit-imperial": "Imperiala"
+	"unit-imperial": "Imperiala",
+	"preview": "Förhandsvisning"
 }

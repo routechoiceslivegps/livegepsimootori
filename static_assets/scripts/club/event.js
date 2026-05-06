@@ -4,6 +4,7 @@ function RCEvent(infoURL, clockURL, locale) {
 	setTimeout(clock.stopRefreshes, 1000);
 	let eventStart = null;
 	let eventEnd = null;
+	let eventVisibility = "live";
 	let map = null;
 	let coordsUsed = "wgs84";
 	let locateControl;
@@ -15,6 +16,7 @@ function RCEvent(infoURL, clockURL, locale) {
 	let scaleControl;
 	let runnerIconScale = 1;
 	let isLive = false;
+	let isPreview = false;
 	let isLiveEvent = false;
 	let shortcutURL = "";
 	let dataURL;
@@ -838,7 +840,8 @@ function RCEvent(infoURL, clockURL, locale) {
 	}
 
 	function CountDown() {
-		const duration = dayjs.duration(dayjs(eventStart).diff(dayjs()));
+		const targetTime = eventVisibility == "replay" ? eventEnd : eventStart;
+		const duration = dayjs.duration(dayjs(targetTime).diff(dayjs()));
 		let durationInSeconds = Math.max(Math.ceil(duration.asSeconds()), 0);
 		const days = Math.floor(durationInSeconds / (24 * 3600));
 		durationInSeconds -= days * (24 * 3600);
@@ -876,12 +879,10 @@ function RCEvent(infoURL, clockURL, locale) {
       <div class="ms-3"><span class="fs-3 cd-nb">${seconds}</span><br/>${secondsText}</div>
       </div>
       <div style="font-size:0.7em;color: var(--bs-secondary)">( ${capitalizeFirstLetter(
-				dayjs(eventStart).local().format("LLLL"),
+				dayjs(targetTime).local().format("LLLL"),
 			)} )</div>`;
 	}
-	function capitalizeFirstLetter(string) {
-		return string.charAt(0).toUpperCase() + string.slice(1);
-	}
+
 	(function initialize() {
 		window.addEventListener("resize", onAppResize);
 		window.addEventListener("fullscreenchange", () => {
@@ -940,16 +941,43 @@ function RCEvent(infoURL, clockURL, locale) {
 
 				const now = clock.now();
 				eventStart = new Date(response.event.start_date);
-
-				setInterval(() => {
-					u("#event-start-date-value").html(CountDown());
-				}, 1000);
-
-				u("#event-start-date-value").html(CountDown());
-
 				eventEnd = new Date(response.event.end_date);
-				if (eventStart > now) {
-					// show event not started modal
+				eventVisibility = response.event.visibility;
+
+				if (
+					(eventVisibility == "live" && eventStart > now) ||
+					(eventVisibility == "replay" && eventEnd > now)
+				) {
+					// show event yet not visible modal
+
+					if (eventVisibility === "replay") {
+						u("#event-start-date-text").text(
+							banana.i18n("event-end-date-text"),
+						);
+						u("#event-not-started-text").text(
+							banana.i18n("event-not-ended-text"),
+						);
+					} else {
+						u("#event-start-date-text").text(
+							banana.i18n("event-start-date-text"),
+						);
+						u("#event-not-started-text").text(
+							banana.i18n("event-not-started-text"),
+						);
+					}
+
+					setInterval(() => {
+						u("#event-start-date-value").html(CountDown());
+						if (
+							eventVisibility == "preview" ||
+							(eventVisibility == "live" && eventStart <= clock.now()) ||
+							(eventVisibility == "replay" && eventEnd <= clock.now())
+						) {
+							location.reload();
+						}
+					}, 1e3);
+					u("#event-start-date-value").html(CountDown());
+
 					try {
 						map.remove();
 					} catch {}
@@ -969,11 +997,6 @@ function RCEvent(infoURL, clockURL, locale) {
 							e.preventDefault();
 						});
 					preRaceModal.show();
-					window.setInterval(() => {
-						if (clock.now() >= eventStart) {
-							location.reload();
-						}
-					}, 1e3);
 				} else {
 					// event if started
 					u("#runners_show_button").on("click", toggleCompetitorList);
@@ -1022,7 +1045,12 @@ function RCEvent(infoURL, clockURL, locale) {
 						1,
 					);
 
-					if (eventEnd > now) {
+					if (eventStart > now) {
+						isPreview = true;
+						eventStateControl.setPreview();
+						u("#replay_button").parent().addClass("d-none");
+						u("#live_button").addClass("d-none");
+					} else if (eventEnd > now) {
 						// event is Live
 						isLiveEvent = true;
 						eventStateControl.setLive();
@@ -1081,16 +1109,22 @@ function RCEvent(infoURL, clockURL, locale) {
 						fitRasterMapLayerBounds(rasterMapLayer.options.bounds);
 					}
 
-					fetchCompetitorRoutes(() => {
+					if (!isPreview) {
+						fetchCompetitorRoutes(() => {
+							u("#loading-event-modal").remove();
+							if (isLiveEvent) {
+								onSwitchToLive();
+							} else if (!isPreview) {
+								isLive = true;
+								onSwitchToReplay();
+							}
+							onAppResize();
+						});
+					} else {
 						u("#loading-event-modal").remove();
-						if (isLiveEvent) {
-							onSwitchToLive();
-						} else {
-							isLive = true;
-							onSwitchToReplay();
-						}
+						onSwitchToPreview();
 						onAppResize();
-					});
+					}
 				}
 				setInterval(refreshData, 25_000);
 			})
@@ -1109,8 +1143,12 @@ function RCEvent(infoURL, clockURL, locale) {
 			return;
 		}
 		isLive = true;
+		isPreview = false;
 		isRealTime = true;
+
+		u("#bottom-div").removeClass("d-none");
 		u("#full_progress_bar").parent().addClass("d-none");
+		u("#runners_show_button").removeClass("d-none");
 
 		eventStateControl.setLive();
 
@@ -1329,21 +1367,22 @@ function RCEvent(infoURL, clockURL, locale) {
 					}
 					return;
 				}
+				const showCountDownBefore =
+					(eventVisibility == "live" && eventStart > clock.now()) ||
+					(eventVisibility == "replay" && eventEnd > clock.now());
+				const eventVisibilityBefore = eventVisibility;
+				eventVisibility = response.event.visibility;
 				eventEnd = new Date(response.event.end_date);
-
-				if (new Date(response.event.start_date) !== eventStart) {
-					const oldStart = eventStart;
-					eventStart = new Date(response.event.start_date);
-					// user changed the event start from past to in the future
-					if (oldStart < clock.now() && eventStart > clock.now()) {
-						window.location.reload();
-						return;
-					}
-					// user changed the event start from future to in the past
-					if (oldStart > clock.now() && eventStart < clock.now()) {
-						window.location.reload();
-						return;
-					}
+				eventStart = new Date(response.event.start_date);
+				const showCountDownAfter =
+					(eventVisibility == "live" && eventStart > clock.now()) ||
+					(eventVisibility == "replay" && eventEnd > clock.now());
+				const CountDownChanged =
+					showCountDownBefore !== showCountDownAfter ||
+					(showCountDownAfter && eventVisibilityBefore != eventVisibility);
+				if (CountDownChanged) {
+					window.location.reload();
+					return;
 				}
 				displayAnouncement(response.announcement);
 				displayMaps(response.maps);
@@ -1422,18 +1461,52 @@ function RCEvent(infoURL, clockURL, locale) {
 			}
 		}
 	}
+
+	function onSwitchToPreview(e) {
+		if (e !== undefined) {
+			e.preventDefault();
+		}
+		eventStateControl.setPreview();
+		isPreview = true;
+		u(".if-live").addClass("d-none");
+		u("#bottom-div").addClass("d-none");
+		u("#bottom-div").addClass("d-none");
+		u("#runners_show_button").addClass("d-none");
+		hideSidebar();
+		const onUpdate = () => {
+			const isNowLive = eventStart <= clock.now();
+			const isNowReplay = eventEnd <= clock.now();
+			if (isNowLive && eventVisibility != "replay") {
+				onSwitchToLive();
+				return;
+			}
+			if (isNowReplay) {
+				onSwitchToReplay();
+				return;
+			}
+
+			setTimeout(onUpdate, 1000);
+		};
+		onUpdate();
+	}
+
 	function onSwitchToReplay(e) {
 		if (e !== undefined) {
 			e.preventDefault();
 		}
-		if (!isLive) {
+		if (!isLive || !isPreview) {
 			return;
 		}
 
+		isLive = false;
+		isPreview = false;
+
 		u(".if-live").addClass("d-none");
+		u("#bottom-div").removeClass("d-none");
 		u("#full_progress_bar").parent().removeClass("d-none");
 		u("#real_time_button").addClass("active");
 		u("#mass_start_button").removeClass("active");
+		u("#runners_show_button").removeClass("d-none");
 
 		eventStateControl.setReplay();
 		u("#live_button")
@@ -1456,7 +1529,6 @@ function RCEvent(infoURL, clockURL, locale) {
 				1,
 			);
 		}
-		isLive = false;
 		playbackPaused = true;
 		prevDisplayRefresh = performance.now();
 		prevMeterDisplayRefresh = performance.now();
@@ -1587,7 +1659,7 @@ function RCEvent(infoURL, clockURL, locale) {
 			"--ctrl-height",
 			`${document.getElementById("ctrl-wrapper").clientHeight}px`,
 		);
-		doc.style.setProperty("--footer-size", "7px");
+		doc.style.setProperty("--footer-size", isPreview ? "0px" : "7px");
 		doc.style.setProperty(
 			"--navbar-size",
 			`${(document.fullscreenElement != null ? 0 : document.getElementById("event-navbar").clientHeight) + document.getElementById("django-messages").clientHeight}px`,
@@ -3290,13 +3362,11 @@ function RCEvent(infoURL, clockURL, locale) {
 	document.documentElement.setAttribute("lang", locale);
 	dayjs.locale(locale);
 	updateText(locale).then(() => {
-		u("#event-start-date-text").text(banana.i18n("event-start-date-text"));
 		u("#export-text").text(banana.i18n("export"));
 		u("#event-start-list-link").text(banana.i18n("start-list"));
 		u("#loading-text").text(banana.i18n("loading-text"));
 		u(".cancel-text").text(banana.i18n("cancel"));
 		u(".save-text").text(banana.i18n("save"));
-		u("#event-not-started-text").text(banana.i18n("event-not-started-text"));
 		u("#club-events-link-text").text(
 			banana.i18n("club-events-link-text", window.local.clubName),
 		);

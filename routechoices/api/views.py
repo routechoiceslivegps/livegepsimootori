@@ -43,6 +43,9 @@ from routechoices.core.models import (
     PRIVACY_SECRET,
     TOP_LEFT,
     TOP_RIGHT,
+    VISIBILITY_LIVE,
+    VISIBILITY_PREVIEW,
+    VISIBILITY_REPLAY,
     Club,
     Competitor,
     Device,
@@ -168,6 +171,7 @@ def event_set_creation(request):
                             "slug": "ksk",
                         },
                         "privacy": "public",
+                        "visibility": "live",
                         "backdrop": "blank",
                         "open_registration": False,
                         "acceptable_tags": [],
@@ -185,6 +189,7 @@ def event_set_creation(request):
                             "slug": "ksk",
                         },
                         "privacy": "public",
+                        "visibility": "live",
                         "open_registration": False,
                         "acceptable_tags": [],
                         "open_route_upload": False,
@@ -232,6 +237,12 @@ def event_set_creation(request):
                     "Privacy level (PUBLIC, SECRET or PRIVATE). Default to SECRET",
                 ),
             ),
+            "visibility": openapi.Schema(
+                type=openapi.TYPE_STRING,
+                description=(
+                    "Visibility setting (PREVIEW, LIVE or REPLAY). Default to LIVE",
+                ),
+            ),
             "backdrop": openapi.Schema(
                 type=openapi.TYPE_STRING,
                 description=(
@@ -276,6 +287,7 @@ def event_set_creation(request):
                         "slug": "ksk",
                     },
                     "privacy": "public",
+                    "visibility": "live",
                     "backdrop": "blank",
                     "open_registration": False,
                     "acceptable_tags": [],
@@ -343,6 +355,14 @@ def event_list(request):
         if privacy.lower() not in (PRIVACY_PUBLIC, PRIVACY_SECRET, PRIVACY_PRIVATE):
             raise ValidationError("Invalid privacy")
 
+        visibility = request.data.get("visibility", VISIBILITY_LIVE)
+        if visibility.lower() not in (
+            VISIBILITY_LIVE,
+            VISIBILITY_PREVIEW,
+            VISIBILITY_REPLAY,
+        ):
+            raise ValidationError("Invalid visibility")
+
         open_registration = False
         acceptable_tags = ""
         open_registration_raw = request.data.get("open_registration")
@@ -366,6 +386,7 @@ def event_list(request):
             start_date=start_date,
             end_date=end_date,
             privacy=privacy,
+            visibility=visibility,
             backdrop_map=backdrop_map,
             open_registration=open_registration,
             acceptable_tags=acceptable_tags,
@@ -448,6 +469,7 @@ def event_list(request):
                     "slug": event.club.slug.lower(),
                 },
                 "privacy": event.privacy,
+                "visibility": event.visibility,
                 "backdrop": event.backdrop_map,
                 "open_registration": event.open_registration,
                 "acceptable_tags": event.acceptable_categories,
@@ -533,6 +555,7 @@ def club_list_view(request):
                             "slug": "ksk",
                         },
                         "privacy": "public",
+                        "visibility": "live",
                         "open_registration": False,
                         "acceptable_tags": [],
                         "open_route_upload": False,
@@ -627,6 +650,7 @@ def event_detail(request, event_id):
                 "slug": event.club.slug.lower(),
             },
             "privacy": event.privacy,
+            "visibility": event.visibility,
             "open_registration": event.open_registration,
             "acceptable_tags": event.acceptable_categories,
             "open_route_upload": event.allow_route_upload,
@@ -643,9 +667,9 @@ def event_detail(request, event_id):
         "maps": [],
     }
 
-    if event.start_date < now():
-        output["announcement"] = event.notice.text if event.has_notice else ""
+    output["announcement"] = event.notice.text if event.has_notice else ""
 
+    if event.can_display_maps():
         if event.map:
             map_data = {
                 "title": event.map_title,
@@ -687,8 +711,8 @@ def event_detail(request, event_id):
             }
             output["maps"].append(map_data)
 
-    if event.geojson_layer:
-        output["geojson_url"] = event.get_geojson_url()
+        if event.geojson_layer:
+            output["geojson_url"] = event.get_geojson_url()
 
     headers = {"ETag": f'W/"{safe64encodedsha(json.dumps(output))}"'}
     if event.privacy == PRIVACY_PRIVATE:
@@ -1394,7 +1418,7 @@ def event_new_data(request, event_id, key):
 def event_zip(request, event_id):
     event = (
         Event.objects.select_related("club")
-        .filter(aid=event_id, start_date__lt=now())
+        .filter(aid=event_id)
         .select_related("map")
         .prefetch_related(
             Prefetch(
@@ -1417,16 +1441,20 @@ def event_zip(request, event_id):
                 filename = f"gpx/{competitor.name} [{competitor.aid}].gpx"
                 with fp.open(filename, "w") as gpx_file:
                     gpx_file.write(data.encode("utf-8"))
-        raster_maps = []
-        if event.map:
-            raster_maps.append((event.map, event.map_title or "Main map"))
-        for ass in event.map_assignations.all():
-            raster_maps.append((ass.map, ass.title))
-        for raster_map, title in raster_maps:
-            data = raster_map.kmz
-            filename = f"kmz/{title}.kmz"
-            with fp.open(filename, "w") as kmz_file:
-                kmz_file.write(data)
+
+        if event.can_display_maps():
+            raster_maps = []
+            if event.map:
+                raster_maps.append((event.map, event.map_title or "Main map"))
+            for ass in event.map_assignations.all():
+                raster_maps.append((ass.map, ass.title))
+
+            for raster_map, title in raster_maps:
+                data = raster_map.kmz
+                filename = f"kmz/{title}.kmz"
+                with fp.open(filename, "w") as kmz_file:
+                    kmz_file.write(data)
+
     response_data = archive.getvalue()
     headers = {"ETag": f'W/"{safe64encodedsha(response_data)}"'}
     if event.privacy == PRIVACY_PRIVATE:
@@ -1907,7 +1935,13 @@ def event_kmz_download(request, event_id, index="1"):
 @api_GET_HEAD_view
 def event_geojson_download(request, event_id):
     event = get_object_or_404(
-        Event.objects.exclude(geojson_layer="").exclude(geojson_layer__isnull=True),
+        Event.objects.exclude(geojson_layer="")
+        .exclude(geojson_layer__isnull=True)
+        .filter(
+            Q(visibility=VISIBILITY_PREVIEW)
+            | Q(visibility=VISIBILITY_LIVE, start_date__lt=now())
+            | Q(visibility=VISIBILITY_REPLAY, end_date__lt=now())
+        ),
         aid=event_id,
         start_date__lt=now(),
     )
@@ -2170,6 +2204,7 @@ def third_party_event(request, provider, uid):
                 "slug": provider,
             },
             "privacy": "secret",
+            "visibility": "live",
             "open_registration": False,
             "acceptable_tags": [],
             "open_route_upload": False,

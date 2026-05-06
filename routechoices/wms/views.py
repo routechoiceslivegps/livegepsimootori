@@ -1,4 +1,4 @@
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Q
 from django.http import HttpResponse
 from django.http.response import HttpResponseBadRequest
 from django.shortcuts import render
@@ -9,6 +9,9 @@ from rest_framework import status
 from routechoices.core.models import (
     PRIVACY_PRIVATE,
     PRIVACY_PUBLIC,
+    VISIBILITY_LIVE,
+    VISIBILITY_PREVIEW,
+    VISIBILITY_REPLAY,
     Event,
     MapAssignation,
 )
@@ -177,7 +180,11 @@ def wms_service(request):
                 privacy=PRIVACY_PUBLIC,
                 featured=True,
             )
-            .filter(start_date__lte=now())
+            .filter(
+                Q(visibility=VISIBILITY_PREVIEW)
+                | Q(visibility=VISIBILITY_LIVE, start_date__lt=now())
+                | Q(visibility=VISIBILITY_REPLAY, end_date__lt=now())
+            )
             .select_related("club", "map")
             .prefetch_related(
                 Prefetch(

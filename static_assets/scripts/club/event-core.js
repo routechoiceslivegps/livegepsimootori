@@ -27,6 +27,10 @@ const supportedLanguages = {
 	sv: "Svenska",
 };
 
+function capitalizeFirstLetter(string) {
+	return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 function escapeRegExp(string) {
 	return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& means the whole matched string
 }
@@ -215,6 +219,24 @@ L.Control.EventState = L.Control.extend({
 		</svg>
 	</span>
 	<span class="tail-length-display" style="text-transform: none;">${printTime(this.tl)}</span>
+</div>`;
+		u(this._div).css({
+			display: "block",
+			fontSize: "20px",
+			color: "#fff",
+			padding: "0",
+			fontWeight: "bold",
+			textTransform: "uppercase",
+			marginLeft: "0px",
+		});
+	},
+	setPreview() {
+		this.isLive = false;
+		this._div.innerHTML = `
+<div class="m-0 py-0 px-2">
+	<span class="px-1 rounded" style="background-color: #09f;color: white">
+		${banana.i18n("preview")}
+	</span>
 </div>`;
 		u(this._div).css({
 			display: "block",

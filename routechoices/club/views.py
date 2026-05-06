@@ -622,7 +622,7 @@ MINBEFORESTART:0
 NUMBEROFLOGOS:0
 LIVE:{1 if event.is_live else 0}
 """
-    if event.map:
+    if event.can_display_maps():
         width, height = event.map.quick_size
         tl = event.map.map_xy_to_wsg84((0, 0))
         tr = event.map.map_xy_to_wsg84((width, 0))

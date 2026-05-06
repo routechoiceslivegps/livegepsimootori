@@ -412,6 +412,7 @@ class EventForm(ModelForm):
             "acceptable_tags",
             "allow_route_upload",
             "privacy",
+            "visibility",
             "send_interval",
             "tail_length",
             "emergency_contacts",

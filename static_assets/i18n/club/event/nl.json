@@ -3,7 +3,9 @@
 	"no-competitors": "Geen concurenten...",
 	"loading-text": "Laden...",
 	"event-not-started-text": "Evenement nog niet gestart.",
+	"event-not-ended-text": "Evenement nog niet afgelopen.",
 	"event-start-date-text": "Start binnen",
+	"event-end-date-text": "Eindigt over",
 	"hide-all": "Verberg alles",
 	"show-all": "Toon alles",
 	"select-color-for": "Selecteer nieuwe kleur voor $1",
@@ -59,5 +61,6 @@
 	"too-many-runners": "Er zijn meer dan 200 deelnemers, er wordt er nu maar 1 weergegeven.",
 	"units": "Eenheden",
 	"unit-metric": "Metrisch",
-	"unit-imperial": "Imperiaal"
+	"unit-imperial": "Imperiaal",
+	"preview": "Voorbeeld"
 }

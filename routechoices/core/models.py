@@ -1300,6 +1300,15 @@ PRIVACY_CHOICES = (
     (PRIVACY_PRIVATE, "Private"),
 )
 
+VISIBILITY_PREVIEW = "preview"
+VISIBILITY_LIVE = "live"
+VISIBILITY_REPLAY = "replay"
+VISIBILITY_CHOICES = (
+    (VISIBILITY_PREVIEW, "Pre-Event"),
+    (VISIBILITY_LIVE, "Live"),
+    (VISIBILITY_REPLAY, "Replay"),
+)
+
 
 MAP_BLANK = "blank"
 MAP_OSM = "osm"
@@ -1527,6 +1536,16 @@ class Event(models.Model, SomewhereOnEarth):
             "Private: Only a logged in admin of the club can access the page"
         ),
     )
+    visibility = models.CharField(
+        max_length=8,
+        choices=VISIBILITY_CHOICES,
+        default=VISIBILITY_LIVE,
+        help_text=(
+            "Pre-Event: Maps are visible from event creation date | "
+            "Live: Maps are visible from event start date | "
+            "Replay: Maps are visible from event end date"
+        ),
+    )
     featured = models.BooleanField(
         "Featured",
         default=False,
@@ -1675,6 +1694,18 @@ class Event(models.Model, SomewhereOnEarth):
         if qs.exists():
             raise ValidationError("An Event Set with this URL already exists.")
 
+    def can_display_maps(self, t=None):
+        if t is None:
+            t = now()
+        return bool(
+            self.map
+            and (
+                self.visibility == VISIBILITY_PREVIEW
+                or (self.visibility == VISIBILITY_LIVE and self.start_date < t)
+                or (self.visibility == VISIBILITY_REPLAY and self.end_date < t)
+            )
+        )
+
     def check_user_permission(self, user):
         if self.privacy == PRIVACY_PRIVATE and (
             not user.is_authenticated
@@ -1769,7 +1800,9 @@ class Event(models.Model, SomewhereOnEarth):
             cls.objects.all()
             .select_related("club")
             .filter(
-                start_date__lt=now(),
+                Q(visibility=VISIBILITY_PREVIEW)
+                | Q(visibility=VISIBILITY_LIVE, start_date__lt=now())
+                | Q(visibility=VISIBILITY_REPLAY, end_date__lt=now())
             )
         )
         if load_competitors:
@@ -2090,33 +2123,10 @@ class Event(models.Model, SomewhereOnEarth):
     def has_notice(self):
         return hasattr(self, "notice")
 
-    def thumbnail(self, display_logo, mime="image/jpeg"):
-        if self.start_date > now() or not self.earth_coords:
-            cache_key = (
-                f"map:{self.aid}:blank:thumbnail:{display_logo}"
-                f":{self.club.modification_date.timestamp()}:{mime}"
-            )
-            if cached := cache.get(cache_key):
-                return cached
-            img = Image.new("RGB", (1200, 630), "WHITE")
-        elif not self.map:
-            center = self.earth_coords
-            cache_key = (
-                f"map:{self.aid}:{center[0]}-{center[1]}:thumbnail:{display_logo}"
-                f":{self.club.modification_date.timestamp()}:{mime}"
-            )
-            if cached := cache.get(cache_key):
-                return cached
-            raster_map = StaticMap(1200, 630, 10)
-            marker = CircleMarker((center[1], center[0]), "#00000000", 10)
-            raster_map.add_marker(marker)
-            img = raster_map.render(zoom=13)
-        else:
+    def get_featured_image(self):
+        if self.can_display_maps():
             raster_map = self.map
-            cache_key = (
-                f"map:{self.aid}:{raster_map.hash}:thumbnail:{display_logo}"
-                f":{self.club.modification_date.timestamp()}:{mime}"
-            )
+            cache_key = f"event:{self.aid}:map:{raster_map.hash}"
             if cached := cache.get(cache_key):
                 return cached
             orig = raster_map.data
@@ -2150,6 +2160,39 @@ class Event(models.Model, SomewhereOnEarth):
                 Image.QUAD,
                 t,
             )
+            cache.set(cache_key, img, DURATION_ONE_MONTH)
+            return img
+
+        if center := self.earth_coords:
+            cache_key = f"coords_map:{center[0]}-{center[1]}"
+            if cached := cache.get(cache_key):
+                return cached
+            raster_map = StaticMap(1200, 630, 10)
+            marker = CircleMarker((center[1], center[0]), "#00000000", 10)
+            raster_map.add_marker(marker)
+            img = raster_map.render(zoom=13)
+            cache.set(cache_key, img, DURATION_ONE_MONTH)
+            return img
+
+        return Image.new("RGB", (1200, 630), "WHITE")
+
+    def thumbnail(self, display_logo, mime="image/jpeg"):
+        image_key = "blank"
+        if self.can_display_maps():
+            image_key = f"map:{self.map.hash}"
+        elif center := self.earth_coords:
+            image_key = f"coords:{center[0]}-{center[1]}"
+
+        logo_key = "without_logo"
+        if display_logo:
+            logo_key = f"logo:{self.club.modification_date.timestamp()}"
+
+        cache_key = f"event:{self.aid}:thumbnail:{image_key}:{logo_key}:{mime}"
+        if cached := cache.get(cache_key):
+            return cached
+
+        img = self.get_featured_image()
+
         if display_logo:
             logo = None
             if self.club.logo:
@@ -2167,8 +2210,10 @@ class Event(models.Model, SomewhereOnEarth):
             optimize=True,
             quality=(40 if mime in ("image/webp", "image/avif") else 80),
         )
+
         data_out = buffer.getvalue()
         cache.set(cache_key, data_out, DURATION_ONE_MONTH)
+
         return data_out
 
     @property

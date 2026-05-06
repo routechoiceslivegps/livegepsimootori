@@ -2,8 +2,10 @@
 	"club-events-link-text": "Zawody $1",
 	"no-competitors": "Brak uczestników.",
 	"loading-text": "Ładowanie...",
-	"event-not-started-text": "Zawody w przyszłości.",
+	"event-not-started-text": "Wydarzenie jeszcze się nie rozpoczęło.",
+	"event-not-ended-text": "Wydarzenie jeszcze się nie skończyło.",
 	"event-start-date-text": "Start za",
+	"event-end-date-text": "Kończy się za",
 	"hide-all": "Ukryj wszystkich",
 	"show-all": "Pokaż wszystkich",
 	"select-color-for": "Wybierz nowy kolor dla $1",
@@ -59,5 +61,6 @@
 	"too-many-runners": "Jest ponad 200 uczestników, teraz wyświetla się tylko 1.",
 	"units": "Jednostki",
 	"unit-metric": "Metryczne",
-	"unit-imperial": "Imperialne"
+	"unit-imperial": "Imperialne",
+	"preview": "Zapowiedź"
 }

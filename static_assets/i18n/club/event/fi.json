@@ -3,7 +3,9 @@
 	"no-competitors": "Ei osallistujia.",
 	"loading-text": "Ladataan...",
 	"event-not-started-text": "Tapahtuma ei ole vielä alkanut.",
+	"event-not-ended-text": "Tapahtuma ei ole vielä päättynyt.",
 	"event-start-date-text": "Alkaa",
+	"event-end-date-text": "Päättää",
 	"hide-all": "Piilota kaikki",
 	"show-all": "Näytä kaikki",
 	"select-color-for": "Valitse uusi väri kilpailijalle \"$1\"",
@@ -59,5 +61,6 @@
 	"too-many-runners": "Osallistujia on yli 200, mutta nyt näytetään vain yksi.",
 	"units": "Yksiköt",
 	"unit-metric": "Metrinen",
-	"unit-imperial": "Imperiaalinen"
+	"unit-imperial": "Imperiaalinen",
+	"preview": "Ennakkokatsaus"
 }

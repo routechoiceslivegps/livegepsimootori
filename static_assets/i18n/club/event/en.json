@@ -3,7 +3,9 @@
 	"no-competitors": "No competitors.",
 	"loading-text": "Loading...",
 	"event-not-started-text": "Event has not yet started.",
+	"event-not-ended-text": "Event is not over yet.",
 	"event-start-date-text": "Starting in",
+	"event-end-date-text": "Ends in",
 	"hide-all": "Hide all",
 	"show-all": "Show all",
 	"select-color-for": "Select new color for $1",
@@ -59,5 +61,6 @@
 	"too-many-runners": "There is more than 200 participants, only 1 is displayed now.",
 	"units": "Units",
 	"unit-metric": "Metric",
-	"unit-imperial": "Imperial"
+	"unit-imperial": "Imperial",
+	"preview": "Preview"
 }
