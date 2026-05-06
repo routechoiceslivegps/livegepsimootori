@@ -952,12 +952,12 @@ class RegisterForm(Form):
         super().__init__(*args, **kwargs)
 
 
-class CompetitorUploadGPXForm(Form):
+class CompetitorUploadGPSForm(Form):
     competitor_aid = ChoiceField(required=True, choices=[], label="Competitor")
     gpx_file = FileField(
         max_length=255,
         validators=[FileExtensionValidator(allowed_extensions=["gpx"])],
-        label="GPX File",
+        label="GPS File (GPX, TCX or FIT)",
     )
 
     def __init__(self, *args, **kwargs):

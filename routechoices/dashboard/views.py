@@ -48,7 +48,7 @@ from routechoices.dashboard.forms import (
     ClubDomainForm,
     ClubForm,
     CompetitorFormSet,
-    CompetitorUploadGPXForm,
+    CompetitorUploadGPSForm,
     DeviceForm,
     EventForm,
     EventSetForm,
@@ -1787,7 +1787,7 @@ def event_contribute_view(request, club_slug, slug):
 
     upload_form = None
     if can_upload:
-        upload_form = CompetitorUploadGPXForm(event=event)
+        upload_form = CompetitorUploadGPSForm(event=event)
 
     return render(
         request,
