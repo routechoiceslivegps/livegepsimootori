@@ -33,7 +33,7 @@
                                                 class="me-1 mb-1 btn btn-secondary edit-info-btn">Edit info</button>
                                         {% if p.event.allow_route_upload %}
                                             <button data-competitor-id="{{ p.aid }}"
-                                                    class="me-1 mb-1 btn btn-secondary open-upload-btn">Upload GPS</button>
+                                                    class="me-1 mb-1 btn btn-secondary open-upload-btn">Upload Route</button>
                                         {% endif %}
                                             <button data-competitor-id="{{ p.aid }}" data-event-name="{{ p.event.name }}"
                                                     class="mb-1 btn btn-danger confirm-withdraw-btn">Withdraw</button>
@@ -107,7 +107,7 @@
             <div class="modal-content">
                 <form id="upload-form" method="post">
                     <div class="modal-header">
-                        <h5 class="modal-title">Upload GPX</h5>
+                        <h5 class="modal-title">Upload Route</h5>
                         <button aria-label="Close"
                                 class="btn-close"
                                 data-bs-dismiss="modal"
@@ -116,7 +116,7 @@
                     <div class="modal-body">
                         <input type="hidden" id="id_competitor_aid" name="competitor_aid" />
                         <div class="mb-3">
-                            <label class="form-label fw-bold" for="id_gpx_file">GPX File</label>
+                            <label class="form-label fw-bold" for="id_gpx_file">GPS File (GPX, TCX or FIT)</label>
                             <input class="form-control"
                                    id="id_gpx_file"
                                    name="gpx_file"

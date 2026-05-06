@@ -518,7 +518,6 @@ class TestDashboard(EssentialDashboardBase):
                 "geojson_layer": geojson,
             },
         )
-        print(res)
         self.assertEqual(res.status_code, status.HTTP_302_FOUND)
         self.assertTrue(Event.objects.filter(slug="myevent").exists())
         event = Event.objects.get(slug="myevent")
