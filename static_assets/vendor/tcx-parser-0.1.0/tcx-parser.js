@@ -1,3 +1,4 @@
+// Requires sax
 const parseTCXString = function (xmlstr, cb) {
     var parser = sax.parser(true);
 
