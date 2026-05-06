@@ -248,7 +248,7 @@ function parseGpx(xmlstr) {
 	const uploadModal = new bootstrap.Modal(
 		document.getElementById("uploadRouteModal"),
 	);
-	u("#id_gpx_file").attr("accept", ".gpx");
+	u("#id_gpx_file").attr("accept", ".gpx,.tcx,.fit");
 	u("#id_gpx_file").on("change", function (e) {
 		if (this.files.length > 0) {
 			const gpsFile = this.files[0];
