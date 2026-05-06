@@ -753,7 +753,8 @@ class Map(models.Model, SomewhereOnEarth):
 
     @property
     def earth_coords(self):
-        return self.center
+        center_coords = self.center
+        return [self.center.latitude, self.center.longitude]
 
     @cached_property
     def area(self):
