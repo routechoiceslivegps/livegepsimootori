@@ -109,19 +109,31 @@ urlpatterns = [
                                 name="event_detail",
                             ),
                             path(
-                                "data",
-                                views.event_data,
-                                name="event_data",
-                            ),
-                            re_path(
-                                r"^data/(?P<key>\d+)$",
-                                views.event_new_data,
-                                name="event_new_data",
+                                "geojson",
+                                views.event_geojson_download,
+                                name="event_geojson_download",
                             ),
                             path(
                                 "zip",
                                 views.event_zip,
                                 name="event_zip",
+                            ),
+                            path(
+                                "data/",
+                                include(
+                                    [
+                                        path(
+                                            "",
+                                            views.event_data,
+                                            name="event_data",
+                                        ),
+                                        re_path(
+                                            r"^(?P<previous_key>\d+)$",
+                                            views.event_data_delta,
+                                            name="event_data_delta",
+                                        ),
+                                    ]
+                                ),
                             ),
                             path(
                                 "maps/",
@@ -168,11 +180,6 @@ urlpatterns = [
                                         ),
                                     ]
                                 ),
-                            ),
-                            path(
-                                "geojson",
-                                views.event_geojson_download,
-                                name="event_geojson_download",
                             ),
                         ]
                     ),

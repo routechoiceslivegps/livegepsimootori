@@ -120,7 +120,7 @@ def serialize_map(event, index, raster_map, title):
         view = "event_main_map_download_with_format"
     kwargs["extension"] = raster_map.mime_type.split("/")[1]
     if index > 0:
-        kwargs["index"] = index
+        kwargs["index"] = index + 1
     url = reverse(view, host="api", kwargs=kwargs)
     return {
         "title": title,
@@ -574,7 +574,7 @@ def club_list_view(request):
                         "tail_length": 60,
                     },
                     "data_url": (
-                        "https://www.routechoices.com/api/events/PlCG3xFS-f4/data"
+                        "https://www.routechoices.com/api/events/PlCG3xFS-f4/data/"
                     ),
                     "announcement": "",
                     "maps": [
@@ -1194,8 +1194,6 @@ def competitor_route_upload(request, competitor_id):
                         }
                     ],
                     "nb_points": 0,
-                    "duration": 0.009621381759643555,
-                    "timestamp": 1615986763.638066,
                     "key": 123456,
                 }
             },
@@ -1204,7 +1202,6 @@ def competitor_route_upload(request, competitor_id):
 )
 @api_GET_view
 def event_data(request, event_id):
-    t0_perf = time.perf_counter()
     t0 = time.time()
 
     tag = request.GET.get("category")
@@ -1217,13 +1214,12 @@ def event_data(request, event_id):
         }
         return Response(data, headers=headers)
 
-    event = (
-        Event.objects.select_related("club")
-        .filter(aid=event_id, start_date__lt=now())
-        .first()
-    )
+    event = Event.objects.select_related("club").filter(aid=event_id).first()
     if not event:
         raise Http404()
+
+    if event.start_date > now() or not event.could_display_maps():
+        return Response(status=status.HTTP_425_TOO_EARLY)
 
     if not event.is_live:
         cache_ts = int(t0 // EVENT_CACHE_INTERVAL_ARCHIVED)
@@ -1265,10 +1261,9 @@ def event_data(request, event_id):
     response = {
         "competitors": competitors_data,
         "nb_points": total_nb_pts,
-        "duration": (time.perf_counter() - t0_perf),
-        "timestamp": time.time(),
-        "key": cache_ts,
     }
+    if event.is_live:
+        response["key"] = cache_ts
 
     cache_duration = DURATION_ONE_MINUTE + (
         EVENT_CACHE_INTERVAL_LIVE if event.is_live else EVENT_CACHE_INTERVAL_ARCHIVED
@@ -1284,40 +1279,65 @@ def event_data(request, event_id):
 
 @swagger_auto_schema(
     method="get",
-    auto_schema=None,
+    operation_id="event_data_delta",
+    operation_description="Return new data from competitors of an event since the previous key. You need to be identified as event organiser admin to list private events data.",
+    tags=["Events"],
+    responses={
+        "200": openapi.Response(
+            description="Success response",
+            examples={
+                "application/json": {
+                    "competitors": [
+                        {
+                            "id": "pwaCro4TErI",
+                            "encoded_data": "<encoded data>",
+                            "name": "Olav Lundanes (Halden SK)",
+                            "short_name": "Halden SK",
+                            "start_time": "2019-06-15T20:00:00Z",
+                            "battery_level": 84,
+                            "color": "#ff0000",
+                            "categories": ["Black", "HE"],
+                        }
+                    ],
+                    "nb_points": 0,
+                    "key": 123456,
+                    "partial": 1,
+                }
+            },
+        ),
+        "404": openapi.Response(description="Failed to fetch previous key data"),
+    },
 )
 @api_GET_view
-def event_new_data(request, event_id, key):
-    t0_perf = time.perf_counter()
+def event_data_delta(request, event_id, previous_key):
     t0 = time.time()
 
-    tag = request.GET.get("category")
-
     cache_ts = int(t0 // EVENT_CACHE_INTERVAL_LIVE)
-    cache_key = f"event:{event_id}:tag:{tag or ""}:data-diff:{key}:{cache_ts}"
 
-    if cache_ts == key:
+    # If previous key is same as current key, diff is empty
+    if cache_ts == previous_key:
         response = {
             "competitors": [],
-            "duration": (time.perf_counter() - t0_perf),
-            "timestamp": time.time(),
             "key": cache_ts,
             "partial": 1,
         }
         headers = {"ETag": f'W/"{safe64encodedsha(json.dumps(response))}"'}
         return Response(response, headers=headers)
 
+    tag = request.GET.get("category")
+
+    # Retrieve straight from cache if possible
+    cache_key = f"event:{event_id}:tag:{tag or ""}:data-diff:{previous_key}:{cache_ts}"
     if cached_resp := cache.get(cache_key):
         return Response(cached_resp, headers={"X-Cache-Hit": 1})
 
-    src_cache_key = f"event:{event_id}:tag:{tag or ""}:data:{key}:live"
+    # Retrieve previous state
+    src_cache_key = f"event:{event_id}:tag:{tag or ""}:data:{previous_key}:live"
     prev_data = cache.get(src_cache_key)
     if not prev_data:
-        return Response(
-            "Previous version is not cached anymore",
-            status=status.HTTP_410_GONE,
-        )
+        raise Http404()
 
+    # Retrieve current state
     req = HttpRequest()
     req.method = "GET"
     req.user = request.user
@@ -1325,11 +1345,11 @@ def event_new_data(request, event_id, key):
     if tag:
         req.GET.update({"category": tag})
     current_resp = event_data(req, event_id)
-    if not current_resp.data or current_resp.data.get("error"):
-        raise Http404()
-
+    if not current_resp.status_code // 100 == 2:
+        return Response(status=current_resp.status_code)
     current_data = current_resp.data
 
+    # Do the diff
     prev_competitors = {}
     for competitor in prev_data.get("competitors", []):
         prev_competitors[competitor["id"]] = competitor
@@ -1363,10 +1383,10 @@ def event_new_data(request, event_id, key):
             competitors_data.append(diff)
         else:
             competitors_data.append(competitor)
+
+    # Return the response
     response = {
         "competitors": competitors_data,
-        "duration": (time.perf_counter() - t0_perf),
-        "timestamp": time.time(),
         "key": current_data.get("key"),
         "partial": 1,
     }
@@ -1810,17 +1830,28 @@ def device_registrations(request, device_id):
     methods=["patch", "delete"],
     auto_schema=None,
 )
-@api_view(["PATCH", "DELETE"])
+@api_view(["GET", "PATCH", "DELETE"])
 @permission_classes([IsAuthenticated])
 def device_ownership_api_view(request, club_slug, device_id):
-    club = get_object_or_404(
-        Club.objects.filter(admins=request.user), slug__iexact=club_slug
-    )
+    club = get_object_or_404(Club, slug__iexact=club_slug)
+
+    is_club_admin = club.admins.filter(id=request.user.id).exists()
+    if not is_club_admin:
+        raise PermissionDenied()
+
     device = get_object_or_404(Device, aid=device_id, virtual=False)
 
     ownership, created = DeviceClubOwnership.objects.get_or_create(
         device=device, club=club
     )
+
+    info = {
+        "nickname": ownership.nickname,
+    }
+
+    if device.gpsseuranta_relay_until:
+        info["gpsseuranta_until"] = device.gpsseuranta_relay_until
+
     if request.method == "PATCH":
         nick = request.data.get("nickname")
         if nick and len(nick) > 12:
@@ -1834,25 +1865,24 @@ def device_ownership_api_view(request, club_slug, device_id):
             if not device.gpsseuranta_known:
                 raise ValidationError("Device is not known by GPSSeuranta.net")
 
-        response = {}
         if activate_gpsseuranta:
             device.gpsseuranta_relay_until = now() + timedelta(hours=24)
             device.save()
-            response["gpsseuranta_until"] = device.gpsseuranta_relay_until
+            info["gpsseuranta_until"] = device.gpsseuranta_relay_until
         elif deactivate_gpsseuranta:
             device.gpsseuranta_relay_until = now()
             device.save()
-            response["gpsseuranta_until"] = device.gpsseuranta_relay_until
+            info["gpsseuranta_until"] = device.gpsseuranta_relay_until
         if nick:
             ownership.nickname = nick
             ownership.save()
-            response["nickname"] = nick
-
-        return Response(response)
+            info["nickname"] = nick
 
     if request.method == "DELETE":
         ownership.delete()
         return HttpResponse(status=status.HTTP_204_NO_CONTENT)
+
+    return Response(info)
 
 
 @swagger_auto_schema(
@@ -1885,6 +1915,10 @@ def event_map_list(request, event_id):
     event.check_user_permission(request.user)
 
     if request.method == "POST":
+        is_event_admin = event.club.admins.filter(id=request.user.id).exists()
+        if not is_event_admin:
+            raise PermissionDenied()
+
         if not isinstance(request.data, dict):
             raise ValidationError("Invalid data type")
 
@@ -1913,11 +1947,17 @@ def event_map_list(request, event_id):
             raise ValidationError("Invalid url value")
 
         if not isinstance(title_input, str):
-            raise ValidationError("Invalid title value")
+            raise ValidationError("Invalid title value (Should be a string)")
         if len(title_input) > 255:
             raise ValidationError("Invalid title value (Too long)")
 
-        raster_map.name = title_input
+        other_titles = set([title for _, title in event.enumerate_maps()])
+        if title_input in other_titles:
+            raise ValidationError(
+                "Invalid title value (Event can not include 2 maps with same title)"
+            )
+
+        raster_map.name = f"{event.name} - {title_input}"
         raster_map.save()
 
         index = 0
@@ -1933,10 +1973,13 @@ def event_map_list(request, event_id):
         map_data = serialize_map(event, index, raster_map, title_input)
         return Response(map_data, status=status.HTTP_201_CREATED)
 
+    if not event.could_display_maps(request.user):
+        return Response(status=status.HTTP_425_TOO_EARLY)
+
     maps = []
-    if event.could_display_maps(request.user):
-        for i, (raster_map, title) in enumerate(event.enumerate_maps()):
-            maps.append(serialize_map(event, i, raster_map, title))
+    for i, (raster_map, title) in enumerate(event.enumerate_maps()):
+        maps.append(serialize_map(event, i, raster_map, title))
+
     return Response(maps)
 
 
@@ -1962,6 +2005,9 @@ def event_map_detail(request, event_id, index="1", **kwargs):
     )
 
     if request.method == "DELETE":
+        is_event_admin = event.club.admins.filter(id=request.user.id).exists()
+        if not is_event_admin:
+            raise PermissionDenied()
         # We actually just unassign the map from the event
         # We must re-assign the main map of event if there is many maps
         if event.map_id in raster_map.id:
@@ -1976,6 +2022,9 @@ def event_map_detail(request, event_id, index="1", **kwargs):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     if request.method == "PATCH":
+        is_event_admin = event.club.admins.filter(id=request.user.id).exists()
+        if not is_event_admin:
+            raise PermissionDenied()
         coordinates_input = request.data.get("coordinates")
         image_input = request.data.get("url")
         title_input = request.data.get("title")
@@ -2002,16 +2051,30 @@ def event_map_detail(request, event_id, index="1", **kwargs):
             if len(title_input) > 255:
                 raise ValidationError("Invalid title value (Too long)")
 
+            all_titles = [title for _, title in event.enumerate_maps()]
+            all_titles.pop(int(index) - 1)
+            other_titles = set(all_titles)
+            if title_input in other_titles:
+                raise ValidationError(
+                    "Invalid title value (Event can not include 2 maps with same title)"
+                )
+
         if image_input or coordinates_input:
             raster_map.save()
 
         if title_input:
             if assignation:
-                assignation.title = title_input
-                assignation.save()
+                current_title = assignation.title
             else:
-                event.map_title = title_input
-                event.save()
+                current_title = event.map_title
+
+            if title_input != current_title:
+                if assignation:
+                    assignation.title = title_input
+                    assignation.save()
+                else:
+                    event.map_title = title_input
+                    event.save()
 
     map_data = serialize_map(
         event,

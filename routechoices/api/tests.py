@@ -598,25 +598,25 @@ class EventApiTestCase(EssentialApiBase):
         )
         url_data_a = self.reverse_and_check(
             "event_data",
-            f"/events/{event_a.aid}/data",
+            f"/events/{event_a.aid}/data/",
             "api",
             {"event_id": event_a.aid},
         )
         url_data_b = self.reverse_and_check(
             "event_data",
-            f"/events/{event_b.aid}/data",
+            f"/events/{event_b.aid}/data/",
             "api",
             {"event_id": event_b.aid},
         )
         url_data_c = self.reverse_and_check(
             "event_data",
-            f"/events/{event_c.aid}/data",
+            f"/events/{event_c.aid}/data/",
             "api",
             {"event_id": event_c.aid},
         )
         url_data_d = self.reverse_and_check(
             "event_data",
-            f"/events/{event_d.aid}/data",
+            f"/events/{event_d.aid}/data/",
             "api",
             {"event_id": event_d.aid},
         )
@@ -832,7 +832,7 @@ class EventApiTestCase(EssentialApiBase):
             end_date=arrow.get().shift(hours=1).datetime,
         )
         url = self.reverse_and_check(
-            "event_data", f"/events/{event.aid}/data", "api", {"event_id": event.aid}
+            "event_data", f"/events/{event.aid}/data/", "api", {"event_id": event.aid}
         )
 
         device = Device.objects.create()
