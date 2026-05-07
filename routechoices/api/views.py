@@ -2240,7 +2240,7 @@ def two_d_rerun_race_status(request):
         "racename": event.name,
         "racestarttime": event.start_date,
         "raceendtime": event.end_date,
-        "mapurl": f"{map_url}?.jpg",
+        "mapurl": f"https:{map_url}?.jpg",
         "caltype": "3point",
         "mapw": raster_map.width,
         "maph": raster_map.height,
