@@ -2149,7 +2149,7 @@ def event_geojson_download(request, event_id):
 
     event.check_user_permission(request.user)
     is_event_admin = event.club.is_admin(request.user)
-    if not event.could_display_map(request.user):
+    if not event.could_display_maps(request.user):
         raise Response(status=status.HTTP_425_TOO_EARLY)
 
     headers = {}
@@ -2181,7 +2181,7 @@ def competitor_gpx_download(request, competitor_id):
 
     event.check_user_permission(request.user)
     is_event_admin = event.club.is_admin(request.user)
-    if competitor.start_time > now() or not event.could_display_map(request.user):
+    if competitor.start_time > now() or not event.could_display_maps(request.user):
         raise Response(status=status.HTTP_425_TOO_EARLY)
     
     gpx_data = competitor.gpx
@@ -2222,7 +2222,7 @@ def two_d_rerun_race_status(request):
 
     event.check_user_permission(request.user)
     
-    if event.start_date > now() or not event.could_display_map():
+    if event.start_date > now() or not event.could_display_maps():
         return Response(status=status.HTTP_425_TOO_EARLY)
 
     map_url = reverse(
@@ -2320,7 +2320,7 @@ def two_d_rerun_race_data(request):
 
     event.check_user_permission(request.user)
     
-    if event.start_date > now() or not event.could_display_map():
+    if event.start_date > now() or not event.could_display_maps():
         return Response(status=status.HTTP_425_TOO_EARLY)
 
     total_nb_pts = 0
