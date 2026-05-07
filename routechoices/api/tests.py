@@ -860,7 +860,7 @@ class EventApiTestCase(EssentialApiBase):
         device.add_location(arrow.get().timestamp(), 12.34568, 123.45677)
 
         time.sleep((time.time() // 5 + 1) * 5 - time.time() + 0.1)
-        res = self.client.get(f"{url}/{key}")
+        res = self.client.get(f"{url}{key}")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertIsNone(res.headers.get("X-Cache-Hit"))
         self.assertNotEqual(res.data["competitors"][0]["encoded_data"], "")
