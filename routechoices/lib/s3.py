@@ -92,6 +92,7 @@ def serve_image_from_s3(
     mime=None,
     default_mime="image/png",
     img_mode=None,
+    headers=None
 ):
     if not mime:
         mime = get_best_image_mime(request, default_mime)
@@ -101,7 +102,9 @@ def serve_image_from_s3(
 
     cache_key = f"s3:image:{image_field.name}:{mime}"
 
-    headers = {}
+    if headers is None:
+        headers = {}
+
     image = None
     if image := cache.get(cache_key):
         headers["X-Cache-Hit"] = 1
