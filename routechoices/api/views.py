@@ -1985,7 +1985,7 @@ def event_map_list(request, event_id):
         maps.append(serialize_map(event, i, raster_map, title))
     
     headers = {}
-    if is_event_admin or event.privacy == PRIVACY_PRIVATE
+    if is_event_admin or event.privacy == PRIVACY_PRIVATE:
         headers["Cache-Control"] = "Private"
 
     return Response(maps, headers=headers)
@@ -2148,11 +2148,12 @@ def event_geojson_download(request, event_id):
     )
 
     event.check_user_permission(request.user)
+    is_event_admin = event.club.is_admin(request.user)
     if not event.could_display_map(request.user):
         raise Response(status=status.HTTP_425_TOO_EARLY)
 
     headers = {}
-    if event.privacy == PRIVACY_PRIVATE:
+    if is_event_admin or event.privacy == PRIVACY_PRIVATE:
         headers["Cache-Control"] = "Private"
 
     filename = f"{event.name}.geojson"
@@ -2179,14 +2180,14 @@ def competitor_gpx_download(request, competitor_id):
     event = competitor.event
 
     event.check_user_permission(request.user)
-    
-    if competitor.start_time > now():
+    is_event_admin = event.club.is_admin(request.user)
+    if competitor.start_time > now() or not event.could_display_map(request.user):
         raise Response(status=status.HTTP_425_TOO_EARLY)
     
     gpx_data = competitor.gpx
 
     headers = {}
-    if event.privacy == PRIVACY_PRIVATE:
+    if is_event_admin or event.privacy == PRIVACY_PRIVATE:
         headers["Cache-Control"] = "Private"
 
     response = StreamingHttpRangeResponse(
