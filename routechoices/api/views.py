@@ -2226,7 +2226,7 @@ def two_d_rerun_race_status(request):
         return Response(status=status.HTTP_425_TOO_EARLY)
 
     map_url = reverse(
-        "event_map_download_with_format"
+        "event_map_download_with_format",
         host="api",
         kwargs={
             "event_id": event.id,
