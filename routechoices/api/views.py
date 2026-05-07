@@ -2207,7 +2207,7 @@ def competitor_gpx_download(request, competitor_id):
 )
 @api_GET_view
 def two_d_rerun_race_status(request):
-    args = request.GET.get("eventid")
+    args = request.GET.get("eventid", "")
     args_match = re.match(
         r"^(?P<event_id>[^\/]+)(\/(?P<map_idx>[1-9][\d]*))?(\/(?P<category>.+))?$", args
     )
@@ -2296,7 +2296,7 @@ def two_d_rerun_race_status(request):
 )
 @api_GET_view
 def two_d_rerun_race_data(request):
-    args = request.GET.get("eventid")
+    args = request.GET.get("eventid", "")
     args_match = re.match(
         r"^(?P<event_id>[^\/]+)(\/(?P<map_idx>[1-9][\d]*))?(\/(?P<category>.+))?$", args
     )
