@@ -2229,7 +2229,7 @@ def two_d_rerun_race_status(request):
         "event_map_download_with_format",
         host="api",
         kwargs={
-            "event_id": event.id,
+            "event_id": event.aid,
             "index": map_idx,
             "extension": "webp",
         },
