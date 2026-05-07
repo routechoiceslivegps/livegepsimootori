@@ -1275,34 +1275,7 @@ def event_data(request, event_id):
 
 @swagger_auto_schema(
     method="get",
-    operation_id="event_data_delta",
-    operation_description="Return new data from competitors of an event since the previous key. You need to be identified as event organiser admin to list private events data.",
-    tags=["Events"],
-    responses={
-        "200": openapi.Response(
-            description="Success response",
-            examples={
-                "application/json": {
-                    "competitors": [
-                        {
-                            "id": "pwaCro4TErI",
-                            "encoded_data": "<encoded data>",
-                            "name": "Olav Lundanes (Halden SK)",
-                            "short_name": "Halden SK",
-                            "start_time": "2019-06-15T20:00:00Z",
-                            "battery_level": 84,
-                            "color": "#ff0000",
-                            "categories": ["Black", "HE"],
-                        }
-                    ],
-                    "nb_points": 0,
-                    "key": 123456,
-                    "partial": 1,
-                }
-            },
-        ),
-        "404": openapi.Response(description="Failed to fetch previous key data"),
-    },
+    auto_schema=None,
 )
 @api_GET_view
 def event_data_delta(request, event_id, previous_key):
