@@ -341,6 +341,9 @@ Follow our events live or replay them later.
                 self.analytics_site = analytics_site
         super().save(*args, **kwargs)
 
+    def is_admin(self, user):
+         return user.is_authenticated and self.admins.filter(id=user.id).exists()
+
     @property
     def free_trial_end(self):
         return self.creation_date + timedelta(days=10)
