@@ -1872,6 +1872,14 @@ def device_ownership_api_view(request, club_slug, device_id):
     method="get",
     auto_schema=None,
 )
+@swagger_auto_schema(
+    method="patch",
+    auto_schema=None,
+)
+@swagger_auto_schema(
+    method="delete",
+    auto_schema=None,
+)
 @api_view(["GET", "HEAD", "PATCH", "DELETE"])
 def event_map_detail(request, event_id, index="1", **kwargs):
     event, raster_map, title, assignation = Event.get_map_at_index(
