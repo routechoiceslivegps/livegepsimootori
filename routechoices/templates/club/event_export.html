@@ -163,7 +163,7 @@
                                         <a href="{{ competitor.get_absolute_gpx_url }}"
                                            class="btn btn-sm btn-primary mb-1 me-1"><i class="fa-solid fa-download"></i> GPX</a>
                                         {% if event.map and event.privacy != "private" %}
-                                            <a href="https://mapdump.com/new#title={{ event.name|urlencode }}%20-%20{{ competitor.name|urlencode }}&kmz=https:{% host_url 'event_main_kmz_download' event_id=event.aid host 'api' %}&gpx=https:{% host_url 'competitor_gpx_download' competitor_id=competitor.aid host 'api' %}"
+                                            <a href="https://mapdump.com/new#title={{ event.name|urlencode }}%20-%20{{ competitor.name|urlencode }}&kmz=https:{% host_url 'event_main_map_download_with_format' event_id=event.aid extension='kmz' host 'api' %}&gpx=https:{% host_url 'competitor_gpx_download' competitor_id=competitor.aid host 'api' %}"
                                                class="btn btn-sm btn-primary mb-1"
                                                target="_blank"
                                                rel="noopener noreferrer"><i class="fa-solid fa-arrow-up-right-from-square"></i> MapDump.com</a>
