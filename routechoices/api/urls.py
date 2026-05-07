@@ -128,6 +128,11 @@ urlpatterns = [
                                 include(
                                     [
                                         path(
+                                            "",
+                                            views.event_map_list,
+                                            name="event_map_list",
+                                        ),
+                                        path(
                                             "default",
                                             include(
                                                 [

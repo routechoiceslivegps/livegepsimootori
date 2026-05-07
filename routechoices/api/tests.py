@@ -819,8 +819,7 @@ class EventApiTestCase(EssentialApiBase):
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
 
         res = self.client.delete(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data.get("error"), "No event matches this ID")
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_live_event_data(self):
         cache.clear()

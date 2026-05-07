@@ -53,6 +53,7 @@ from routechoices.core.models import (
     Event,
     EventSet,
     ImeiDevice,
+    Map,
     MapAssignation,
 )
 from routechoices.lib import cache
@@ -110,6 +111,29 @@ event_param = openapi.Parameter(
     description="Filter by this event slug or url",
     type=openapi.TYPE_STRING,
 )
+
+
+def serialize_map(event, index, raster_map, title):
+    kwargs = {"event_id": event.aid}
+    view = "event_map_download_with_format"
+    if index == 0:
+        view = "event_main_map_download_with_format"
+    kwargs["extension"] = raster_map.mime_type.split("/")[1]
+    if index > 0:
+        kwargs["index"] = index
+    url = reverse(view, host="api", kwargs=kwargs)
+    return {
+        "title": title,
+        "coordinates": raster_map.bound_api,
+        "rotation": raster_map.north_declination,
+        "hash": raster_map.hash,
+        "max_zoom": raster_map.max_zoom,
+        "modification_date": raster_map.modification_date,
+        "default": index == 0,
+        "id": raster_map.aid,
+        "url": url,
+        "wms": True,
+    }
 
 
 @swagger_auto_schema(
@@ -593,8 +617,12 @@ def club_list_view(request):
         ),
     },
 )
-@api_view(["DELETE", "GET"])  # TODO: Implement patch method
+@api_view(["GET", "DELETE"])
 def event_detail(request, event_id):
+    # TODO: Implement PATCH method
+    if request.method == "DELETE" and not request.user.is_authenticated:
+        raise NotAuthenticated()
+
     event = (
         Event.objects.select_related("club", "notice", "map")
         .prefetch_related(
@@ -606,21 +634,17 @@ def event_detail(request, event_id):
         .filter(aid=event_id)
         .first()
     )
-
     if not event:
-        res = {"error": "No event matches this ID"}
-        return Response(res)
+        raise Http404()
+
+    event.check_user_permission(request.user)
 
     if request.method == "DELETE":
-        if not request.user.is_authenticated:
-            raise NotAuthenticated()
         is_event_admin = event.club.admins.filter(id=request.user.id).exists()
         if not is_event_admin:
             raise PermissionDenied()
         event.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-    event.check_user_permission(request.user)
 
     output = {
         "event": {
@@ -647,63 +671,19 @@ def event_detail(request, event_id):
         "data_url": request.build_absolute_uri(
             reverse("event_data", host="api", kwargs={"event_id": event.aid})
         ),
-        "announcement": "",
-        "maps": [],
     }
 
     output["announcement"] = event.notice.text if event.has_notice else ""
 
-    if event.could_display_maps():
-        if event.map:
-            map_data = {
-                "title": event.map_title,
-                "coordinates": event.map.bound_api,
-                "rotation": event.map.north_declination,
-                "hash": event.map.hash,
-                "max_zoom": event.map.max_zoom,
-                "modification_date": event.map.modification_date,
-                "default": True,
-                "id": event.map.aid,
-                "url": request.build_absolute_uri(
-                    reverse(
-                        "event_main_map_download_with_format",
-                        host="api",
-                        kwargs={
-                            "event_id": event.aid,
-                            "extension": event.map.mime_type.split("/")[1],
-                        },
-                    )
-                ),
-                "wms": True,
-            }
-            output["maps"].append(map_data)
-        for i, m in enumerate(event.map_assignations.all()):
-            map_data = {
-                "title": m.title,
-                "coordinates": m.map.bound_api,
-                "rotation": m.map.north_declination,
-                "hash": m.map.hash,
-                "max_zoom": m.map.max_zoom,
-                "modification_date": m.map.modification_date,
-                "default": False,
-                "id": m.map.aid,
-                "url": request.build_absolute_uri(
-                    reverse(
-                        "event_map_download_with_format",
-                        host="api",
-                        kwargs={
-                            "event_id": event.aid,
-                            "index": (i + 2),
-                            "extension": event.map.mime_type.split("/")[1],
-                        },
-                    )
-                ),
-                "wms": True,
-            }
-            output["maps"].append(map_data)
+    maps = []
+    if event.could_display_maps(request.user):
+        for i, (raster_map, title) in enumerate(event.enumerate_maps()):
+            maps.append(serialize_map(event, i, raster_map, title))
 
         if event.geojson_layer:
             output["geojson_url"] = event.get_geojson_url()
+
+    output["maps"] = maps
 
     headers = {"ETag": f'W/"{safe64encodedsha(json.dumps(output))}"'}
     if event.privacy == PRIVACY_PRIVATE:
@@ -1243,8 +1223,7 @@ def event_data(request, event_id):
         .first()
     )
     if not event:
-        response = {"error": "No event matches this ID"}
-        return Response(response)
+        raise Http404()
 
     if not event.is_live:
         cache_ts = int(t0 // EVENT_CACHE_INTERVAL_ARCHIVED)
@@ -1420,31 +1399,39 @@ def event_zip(request, event_id):
         .first()
     )
     if not event:
-        response = {"error": "No event matches this ID"}
-        return Response(response)
+        raise Http404()
+
     event.check_user_permission(request.user)
 
     archive = BytesIO()
     with ZipFile(archive, "w") as fp:
-        for competitor, from_date, end_date in event.iterate_competitors():
+        for i, (competitor, from_date, end_date) in enumerate(
+            event.iterate_competitors()
+        ):
             if competitor.device_id:
                 data = competitor.device.gpx(from_date, end_date)
-                filename = f"gpx/{competitor.name} [{competitor.aid}].gpx"
+                filename = (
+                    f"gpx/[{i + 1}] {competitor.name} - {competitor.short_name}.gpx"
+                )
                 with fp.open(filename, "w") as gpx_file:
                     gpx_file.write(data.encode("utf-8"))
 
-        if event.can_display_maps():
+        if event.could_display_maps(request.user):
             raster_maps = []
             if event.map:
                 raster_maps.append((event.map, event.map_title or "Main map"))
-            for ass in event.map_assignations.all():
-                raster_maps.append((ass.map, ass.title))
-
+                for ass in event.map_assignations.all():
+                    raster_maps.append((ass.map, ass.title))
             for raster_map, title in raster_maps:
                 data = raster_map.kmz
                 filename = f"kmz/{title}.kmz"
                 with fp.open(filename, "w") as kmz_file:
                     kmz_file.write(data)
+            if event.geojson_layer:
+                filename = f"{event.name}.geojson"
+                data = event.geojson_layer.file.read()
+                with fp.open(filename, "w") as geojson_file:
+                    geojson_file.write(data)
 
     response_data = archive.getvalue()
     headers = {"ETag": f'W/"{safe64encodedsha(response_data)}"'}
@@ -1873,6 +1860,91 @@ def device_ownership_api_view(request, club_slug, device_id):
     auto_schema=None,
 )
 @swagger_auto_schema(
+    method="post",
+    auto_schema=None,
+)
+@api_GET_POST_view
+def event_map_list(request, event_id):
+    if request.method == "POST" and not request.user.is_authenticated:
+        raise NotAuthenticated()
+
+    event = (
+        Event.objects.select_related("club", "notice", "map")
+        .prefetch_related(
+            Prefetch(
+                "map_assignations",
+                queryset=MapAssignation.objects.select_related("map"),
+            )
+        )
+        .filter(aid=event_id)
+        .first()
+    )
+    if not event:
+        raise Http404()
+
+    event.check_user_permission(request.user)
+
+    if request.method == "POST":
+        if not isinstance(request.data, dict):
+            raise ValidationError("Invalid data type")
+
+        coordinates_input = request.data.get("coordinates")
+        image_input = request.data.get("url")
+        title_input = request.data.get("title")
+
+        if not coordinates_input:
+            raise ValidationError("Missing coordinates value")
+        if not title_input:
+            raise ValidationError("Missing title value")
+        if not image_input:
+            raise ValidationError("Missing url value")
+
+        raster_map = Map(club_id=event.club_id)
+        try:
+            raster_map.bound_api = coordinates_input
+        except Exception:
+            raise ValidationError("Invalid coordinates value")
+
+        try:
+            raster_map.data_uri = image_input
+        except Exception:
+            if not image_input.startswith("data:"):
+                raise ValidationError("Invalid url value (Only data URI are accepted)")
+            raise ValidationError("Invalid url value")
+
+        if not isinstance(title_input, str):
+            raise ValidationError("Invalid title value")
+        if len(title_input) > 255:
+            raise ValidationError("Invalid title value (Too long)")
+
+        raster_map.name = title_input
+        raster_map.save()
+
+        index = 0
+        if not event.map:
+            event.map = raster_map
+            event.map_title = title_input
+            event.save()
+        else:
+            index = len(event.map_assignations.all()) + 1
+            MapAssignation.objects.create(
+                event=event, map=raster_map, title=title_input
+            )
+        map_data = serialize_map(event, index, raster_map, title_input)
+        return Response(map_data, status=status.HTTP_201_CREATED)
+
+    maps = []
+    if event.could_display_maps(request.user):
+        for i, (raster_map, title) in enumerate(event.enumerate_maps()):
+            maps.append(serialize_map(event, i, raster_map, title))
+    return Response(maps)
+
+
+@swagger_auto_schema(
+    method="get",
+    auto_schema=None,
+)
+@swagger_auto_schema(
     method="patch",
     auto_schema=None,
 )
@@ -1882,11 +1954,12 @@ def device_ownership_api_view(request, club_slug, device_id):
 )
 @api_view(["GET", "HEAD", "PATCH", "DELETE"])
 def event_map_detail(request, event_id, index="1", **kwargs):
+    if request.method in ("PATCH", "DELETE") and not request.user.is_authenticated:
+        raise NotAuthenticated()
+
     event, raster_map, title, assignation = Event.get_map_at_index(
         request.user, event_id, index
     )
-    if request.method in ("PATCH", "DELETE") and not request.user.is_authenticated:
-        raise NotAuthenticated()
 
     if request.method == "DELETE":
         # We actually just unassign the map from the event
@@ -1917,7 +1990,7 @@ def event_map_detail(request, event_id, index="1", **kwargs):
             try:
                 raster_map.data_uri = image_input
             except Exception:
-                if image_input.startswith("http"):
+                if not image_input.startswith("data:"):
                     raise ValidationError(
                         "Invalid url value (Only data URI are accepted)"
                     )
@@ -1940,36 +2013,12 @@ def event_map_detail(request, event_id, index="1", **kwargs):
                 event.map_title = title_input
                 event.save()
 
-    reverse_url_kwargs = {
-        "event_id": event.aid,
-        "extension": raster_map.mime_type.split("/")[1],
-    }
-    if index != "1":
-        reverse_url_kwargs["index"] = index
-
-    map_data = {
-        "title": event.map_title if not assignation else assignation.title,
-        "coordinates": raster_map.bound_api,
-        "rotation": raster_map.north_declination,
-        "hash": raster_map.hash,
-        "max_zoom": raster_map.max_zoom,
-        "modification_date": raster_map.modification_date,
-        "default": True,
-        "id": raster_map.aid,
-        "url": request.build_absolute_uri(
-            reverse(
-                (
-                    "event_main_map_download_with_format"
-                    if index == "1"
-                    else "event_map_download_with_format"
-                ),
-                host="api",
-                kwargs=reverse_url_kwargs,
-            )
-        ),
-        "wms": True,
-    }
-
+    map_data = serialize_map(
+        event,
+        int(index) - 1,
+        raster_map,
+        event.map_title if not assignation else assignation.title,
+    )
     return Response(map_data)
 
 
@@ -2015,16 +2064,22 @@ def event_map_download(request, event_id, index="1", **kwargs):
 )
 @api_GET_view
 def event_geojson_download(request, event_id):
+    # TODO: Allow POST to set geojson AND DELETE to remove the geojson
+    extra_query = (
+        Q(visibility=VISIBILITY_PREVIEW)
+        | Q(visibility=VISIBILITY_LIVE, start_date__lt=now())
+        | Q(visibility=VISIBILITY_REPLAY, end_date__lt=now())
+    )
+    if request.user.is_authenticated:
+        extra_query |= Q(club_in=request.user.club_set.all())
+
     event = get_object_or_404(
         Event.objects.exclude(geojson_layer="")
         .exclude(geojson_layer__isnull=True)
-        .filter(
-            Q(visibility=VISIBILITY_PREVIEW)
-            | Q(visibility=VISIBILITY_LIVE, start_date__lt=now())
-            | Q(visibility=VISIBILITY_REPLAY, end_date__lt=now())
-        ),
+        .filter(extra_query),
         aid=event_id,
     )
+
     event.check_user_permission(request.user)
 
     headers = {}

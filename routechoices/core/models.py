@@ -785,8 +785,8 @@ class Map(models.Model, SomewhereOnEarth):
 
     @property
     def earth_coords(self):
-        center_coords = self.center
-        return [self.center.latitude, self.center.longitude]
+        center = self.center
+        return [center.latitude, center.longitude]
 
     @cached_property
     def area(self):
@@ -1727,10 +1727,15 @@ class Event(models.Model, SomewhereOnEarth):
         if qs.exists():
             raise ValidationError("An Event Set with this URL already exists.")
 
-    def could_display_maps(self):
+    def could_display_maps(self, user=None):
         t = now()
         return bool(
-            self.visibility == VISIBILITY_PREVIEW
+            (
+                user
+                and user.is_authenticated
+                and self.club.admins.filter(id=user.id).exists()
+            )
+            or self.visibility == VISIBILITY_PREVIEW
             or (self.visibility == VISIBILITY_LIVE and self.start_date < t)
             or (self.visibility == VISIBILITY_REPLAY and self.end_date < t)
         )
@@ -1750,6 +1755,12 @@ class Event(models.Model, SomewhereOnEarth):
         if not self.acceptable_tags:
             return []
         return self.acceptable_tags.split(" ")
+
+    def enumerate_maps(self):
+        if self.map:
+            yield (self.map, self.map_title)
+            for i, other_map in enumerate(self.map_assignations.all()):
+                yield (other_map.map, other_map.title)
 
     @cached_property
     def categories(self):
