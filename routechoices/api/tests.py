@@ -865,7 +865,7 @@ class EventApiTestCase(EssentialApiBase):
         self.assertIsNone(res.headers.get("X-Cache-Hit"))
         self.assertNotEqual(res.data["competitors"][0]["encoded_data"], "")
         self.assertEqual(res.data["partial"], True)
-        res = self.client.get(f"{url}/{key}")
+        res = self.client.get(f"{url}{key}")
         self.assertEqual(res.headers.get("X-Cache-Hit"), "1")
 
         event.save()
