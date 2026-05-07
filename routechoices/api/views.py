@@ -2091,7 +2091,7 @@ def event_map_detail(request, event_id, index="1", **kwargs):
     )
     
     headers = {}
-    if is_event_admin or event.privacy == PRIVACY_PRIVATE
+    if is_event_admin or event.privacy == PRIVACY_PRIVATE:
         headers["Cache-Control"] = "Private"
     return Response(map_data, headers=headers)
 
