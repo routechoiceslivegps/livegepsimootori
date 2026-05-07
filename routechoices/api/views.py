@@ -2142,13 +2142,11 @@ def event_map_download(request, event_id, index="1", **kwargs):
 @api_GET_view
 def event_geojson_download(request, event_id):
     # TODO: Implement POST to set geojson AND DELETE to remove the geojson
-    event = Event.objects.exclude(geojson_layer="")
-        .exclude(geojson_layer__isnull=True)
-        .filter(aid=event_id)
-        .first()
+    event = get_object_or_404(
+        Event.objects.exclude(geojson_layer="").exclude(geojson_layer__isnull=True),
+        aid=event_id
     )
-    if not event:
-        raise Http404()
+
     event.check_user_permission(request.user)
     if not event.could_display_map(request.user):
         raise Response(status=status.HTTP_425_TOO_EARLY)
