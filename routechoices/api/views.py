@@ -536,7 +536,7 @@ def club_list_view(request):
                 "url": club.nice_url,
             }
         )
-    return Response(output)
+    return Response(output, headers={"Cache-Control": "Private"})
 
 
 @swagger_auto_schema(
@@ -638,9 +638,9 @@ def event_detail(request, event_id):
         raise Http404()
 
     event.check_user_permission(request.user)
-
+    is_event_admin = event.club.admins.filter(id=request.user.id).exists()
+            
     if request.method == "DELETE":
-        is_event_admin = event.club.admins.filter(id=request.user.id).exists()
         if not is_event_admin:
             raise PermissionDenied()
         event.delete()
@@ -685,8 +685,8 @@ def event_detail(request, event_id):
 
     output["maps"] = maps
 
-    headers = {"ETag": f'W/"{safe64encodedsha(json.dumps(output))}"'}
-    if event.privacy == PRIVACY_PRIVATE:
+    headers = {}
+    if is_event_admin or event.privacy == PRIVACY_PRIVATE:
         headers["Cache-Control"] = "Private"
 
     return Response(output, headers=headers)
@@ -764,9 +764,7 @@ def create_competitor(request):
     if not event:
         raise ValidationError("No event matches this ID")
 
-    is_event_admin = False
-    if request.user.is_authenticated:
-        is_event_admin = event.club.admins.filter(id=request.user.id).exists()
+    is_event_admin = event.club.admins.filter(id=request.user.id).exists()
 
     errors = []
 
@@ -1095,7 +1093,7 @@ def competitor_route_upload(request, competitor_id):
         return Response(res)
     event = competitor.event
 
-    is_user_event_admin = request.user.is_authenticated and (
+    is_event_admin_or_user = request.user.is_authenticated and (
         event.club.admins.filter(id=request.user.id).exists()
         or request.user == competitor.user
     )
@@ -1103,7 +1101,7 @@ def competitor_route_upload(request, competitor_id):
     if not event.allow_route_upload:
         raise PermissionDenied()
 
-    if not is_user_event_admin and competitor.locations:
+    if not is_event_admin_or_user and competitor.locations:
         raise ValidationError("Competitor already assigned a route")
 
     if event.start_date > now():
@@ -1209,7 +1207,6 @@ def event_data(request, event_id):
     cache_key = f"event:{event_id}:tag:{tag or ""}:data:{cache_ts}:live"
     if data := cache.get(cache_key):
         headers = {
-            "ETag": f'W/"{safe64encodedsha(json.dumps(data))}"',
             "X-Cache-Hit": 1,
         }
         return Response(data, headers=headers)
@@ -1226,7 +1223,6 @@ def event_data(request, event_id):
         cache_key = f"event:{event_id}:tag:{tag or ""}:data:{cache_ts}:archived"
         if data := cache.get(cache_key):
             headers = {
-                "ETag": f'W/"{safe64encodedsha(json.dumps(data))}"',
                 "X-Cache-Hit": 1,
             }
             return Response(data, headers=headers)
@@ -1270,7 +1266,7 @@ def event_data(request, event_id):
     )
     cache.set(cache_key, response, cache_duration)
 
-    headers = {"ETag": f'W/"{safe64encodedsha(json.dumps(response))}"'}
+    headers = {}
     if event.privacy == PRIVACY_PRIVATE:
         headers["Cache-Control"] = "Private"
 
@@ -1321,8 +1317,7 @@ def event_data_delta(request, event_id, previous_key):
             "key": cache_ts,
             "partial": 1,
         }
-        headers = {"ETag": f'W/"{safe64encodedsha(json.dumps(response))}"'}
-        return Response(response, headers=headers)
+        return Response(response)
 
     tag = request.GET.get("category")
 
@@ -1391,7 +1386,7 @@ def event_data_delta(request, event_id, previous_key):
         "partial": 1,
     }
 
-    headers = {"ETag": f'W/"{safe64encodedsha(json.dumps(response))}"'}
+    headers = {}
     if cache_control := current_resp.headers.get("Cache-Control"):
         headers["Cache-Control"] = cache_control
 
@@ -1422,6 +1417,7 @@ def event_zip(request, event_id):
         raise Http404()
 
     event.check_user_permission(request.user)
+    is_event_admin = event.club.admins.filter(id=request.user.id).exists()
 
     archive = BytesIO()
     with ZipFile(archive, "w") as fp:
@@ -1454,8 +1450,8 @@ def event_zip(request, event_id):
                     geojson_file.write(data)
 
     response_data = archive.getvalue()
-    headers = {"ETag": f'W/"{safe64encodedsha(response_data)}"'}
-    if event.privacy == PRIVACY_PRIVATE:
+    headers = {}
+    if is_event_admin or event.privacy == PRIVACY_PRIVATE:
         headers["Cache-Control"] = "Private"
     response = StreamingHttpRangeResponse(
         request, response_data, content_type="application/zip", headers=headers
@@ -1470,13 +1466,13 @@ def event_zip(request, event_id):
 )
 @api_GET_view
 def ip_latlon(request):
-    headers = {"Cache-Control": "Private"}
     try:
         g = GeoIP2()
         lat, lon = g.lat_lon(request.META["REMOTE_ADDR"])
+        response = {"status": "success", "lat": lat, "lon": lon}
     except Exception:
-        return Response({"status": "fail"}, headers=headers)
-    return Response({"status": "success", "lat": lat, "lon": lon}, headers=headers)
+        response = {"status": "fail"}
+    return Response(response, headers={"Cache-Control": "Private"})
 
 
 @swagger_auto_schema(
@@ -1743,6 +1739,7 @@ def get_time(request):
 @api_GET_view
 @permission_classes([IsAuthenticated])
 def user_search(request):
+    # TODO: Remove this endpoint
     users = []
     q = request.GET.get("q")
     if q and len(q) > 2:
@@ -1765,7 +1762,7 @@ def user_view(request):
         "username": user.username,
         "clubs": [{"name": c.name, "slug": c.slug} for c in clubs],
     }
-    return Response(output)
+    return Response(output, headers={"Cache-Control": "Private"})
 
 
 @swagger_auto_schema(
@@ -1792,6 +1789,7 @@ def device_search(request):
 )
 @api_GET_view
 def device_info(request, device_id):
+    # TODO: Remove this endpoint
     device = Device.objects.filter(aid=device_id, virtual=False).first()
     if not device:
         res = {"error": "No device matches this ID"}
@@ -1821,6 +1819,7 @@ def device_info(request, device_id):
 )
 @api_GET_view
 def device_registrations(request, device_id):
+    # TODO: Change to is_device_used
     device = get_object_or_404(Device, aid=device_id, virtual=False)
     competitors = device.competitor_set.filter(event__end_date__gte=now())
     return Response({"count": competitors.count()})
@@ -1881,8 +1880,12 @@ def device_ownership_api_view(request, club_slug, device_id):
     if request.method == "DELETE":
         ownership.delete()
         return HttpResponse(status=status.HTTP_204_NO_CONTENT)
-
-    return Response(info)
+    
+    headers = {}
+    if is_club_admin:
+        headers["Cache-Control"] = "Private"
+    
+    return Response(info, headers=headers)
 
 
 @swagger_auto_schema(
@@ -1913,9 +1916,9 @@ def event_map_list(request, event_id):
         raise Http404()
 
     event.check_user_permission(request.user)
-
+    is_event_admin = event.club.admins.filter(id=request.user.id).exists()
+    
     if request.method == "POST":
-        is_event_admin = event.club.admins.filter(id=request.user.id).exists()
         if not is_event_admin:
             raise PermissionDenied()
 
@@ -1979,8 +1982,12 @@ def event_map_list(request, event_id):
     maps = []
     for i, (raster_map, title) in enumerate(event.enumerate_maps()):
         maps.append(serialize_map(event, i, raster_map, title))
+    
+    headers = {}
+    if is_event_admin or event.privacy == PRIVACY_PRIVATE
+        headers["Cache-Control"] = "Private"
 
-    return Response(maps)
+    return Response(maps, headers=headers)
 
 
 @swagger_auto_schema(
@@ -2003,9 +2010,9 @@ def event_map_detail(request, event_id, index="1", **kwargs):
     event, raster_map, title, assignation = Event.get_map_at_index(
         request.user, event_id, index
     )
-
+    is_event_admin = event.club.admins.filter(id=request.user.id).exists()
+    
     if request.method == "DELETE":
-        is_event_admin = event.club.admins.filter(id=request.user.id).exists()
         if not is_event_admin:
             raise PermissionDenied()
         # We actually just unassign the map from the event
@@ -2022,7 +2029,6 @@ def event_map_detail(request, event_id, index="1", **kwargs):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     if request.method == "PATCH":
-        is_event_admin = event.club.admins.filter(id=request.user.id).exists()
         if not is_event_admin:
             raise PermissionDenied()
         coordinates_input = request.data.get("coordinates")
@@ -2082,7 +2088,11 @@ def event_map_detail(request, event_id, index="1", **kwargs):
         raster_map,
         event.map_title if not assignation else assignation.title,
     )
-    return Response(map_data)
+    
+    headers = {}
+    if is_event_admin or event.privacy == PRIVACY_PRIVATE
+        headers["Cache-Control"] = "Private"
+    return Response(map_data, headers=headers)
 
 
 @swagger_auto_schema(
@@ -2092,8 +2102,10 @@ def event_map_detail(request, event_id, index="1", **kwargs):
 @api_GET_view
 def event_map_download(request, event_id, index="1", **kwargs):
     event, raster_map, title, _ = Event.get_map_at_index(request.user, event_id, index)
+    is_event_admin = True
+    
     headers = {}
-    if event.privacy == PRIVACY_PRIVATE:
+    if is_event_admin or event.privacy == PRIVACY_PRIVATE:
         headers["Cache-Control"] = "Private"
 
     if kwargs.get("extension") == "kmz":
@@ -2106,7 +2118,6 @@ def event_map_download(request, event_id, index="1", **kwargs):
             content_type="application/vnd.google-earth.kmz",
             headers=headers,
         )
-        response["ETag"] = f'W/"{safe64encodedsha(kmz_data)}"'
         response["Content-Disposition"] = set_content_disposition(filename)
         return response
 
@@ -2118,6 +2129,7 @@ def event_map_download(request, event_id, index="1", **kwargs):
         (f"{event.name} - {title}_" f"{raster_map.get_calibration_string()}_"),
         mime=mime,
     )
+    # TODO: Include headers
     return resp
 
 
@@ -2128,22 +2140,16 @@ def event_map_download(request, event_id, index="1", **kwargs):
 @api_GET_view
 def event_geojson_download(request, event_id):
     # TODO: Allow POST to set geojson AND DELETE to remove the geojson
-    extra_query = (
-        Q(visibility=VISIBILITY_PREVIEW)
-        | Q(visibility=VISIBILITY_LIVE, start_date__lt=now())
-        | Q(visibility=VISIBILITY_REPLAY, end_date__lt=now())
-    )
-    if request.user.is_authenticated:
-        extra_query |= Q(club_in=request.user.club_set.all())
-
-    event = get_object_or_404(
-        Event.objects.exclude(geojson_layer="")
+    event = Event.objects.exclude(geojson_layer="")
         .exclude(geojson_layer__isnull=True)
-        .filter(extra_query),
-        aid=event_id,
+        .filter(aid=event_id)
+        .first()
     )
-
+    if not event:
+        raise Http404()
     event.check_user_permission(request.user)
+    if not event.could_display_map(request.user):
+        raise Response(status=status.HTTP_425_TOO_EARLY)
 
     headers = {}
     if event.privacy == PRIVACY_PRIVATE:
@@ -2166,15 +2172,17 @@ def event_geojson_download(request, event_id):
 )
 @api_GET_view
 def competitor_gpx_download(request, competitor_id):
-    competitor = get_object_or_404(
-        Competitor.objects.select_related("event", "event__club", "device"),
-        aid=competitor_id,
-        start_time__lt=now(),
-    )
+    competitor = Competitor.objects.select_related("event", "event__club", "device").filter(aid=competitor_id).first()
+    if not competitor:
+        return Http404()
+ 
     event = competitor.event
 
     event.check_user_permission(request.user)
-
+    
+    if competitor.start_time > now():
+        raise Response(status=status.HTTP_425_TOO_EARLY)
+    
     gpx_data = competitor.gpx
 
     headers = {}
@@ -2212,13 +2220,13 @@ def two_d_rerun_race_status(request):
     event, raster_map, _, _ = Event.get_map_at_index(request.user, event_id, map_idx)
 
     event.check_user_permission(request.user)
-
+    # TODO: check could display map and started > Too early if not
     response_json = {
         "status": "OK",
         "racename": event.name,
         "racestarttime": event.start_date,
         "raceendtime": event.end_date,
-        "mapurl": (f"{event.get_absolute_map_url()}-{map_idx}?.jpg"),
+        "mapurl": (f"{event.get_absolute_map_url()}-{map_idx}?.jpg"), # TODO: Broken, Use reverse here 
         "caltype": "3point",
         "mapw": raster_map.width,
         "maph": raster_map.height,
@@ -2298,7 +2306,7 @@ def two_d_rerun_race_data(request):
     )
 
     event.check_user_permission(request.user)
-
+    # TODO: check could display map + started > Too early if not
     total_nb_pts = 0
     results = []
     for competitor, from_date, end_date in event.iterate_competitors(tag):
