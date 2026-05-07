@@ -166,7 +166,7 @@ urlpatterns = [
                                             include(
                                                 [
                                                     path(
-                                                        "",
+                                                        "/",
                                                         views.event_map_detail,
                                                         name="event_map_detail",
                                                     ),
