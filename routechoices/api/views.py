@@ -638,7 +638,7 @@ def event_detail(request, event_id):
         raise Http404()
 
     event.check_user_permission(request.user)
-    is_event_admin = event.club.admins.filter(id=request.user.id).exists()
+    is_event_admin = event.club.is_admin(request.user)
             
     if request.method == "DELETE":
         if not is_event_admin:
@@ -764,7 +764,7 @@ def create_competitor(request):
     if not event:
         raise ValidationError("No event matches this ID")
 
-    is_event_admin = event.club.admins.filter(id=request.user.id).exists()
+    is_event_admin = event.club.is_admin(request.user)
 
     errors = []
 
@@ -1417,7 +1417,7 @@ def event_zip(request, event_id):
         raise Http404()
 
     event.check_user_permission(request.user)
-    is_event_admin = event.club.admins.filter(id=request.user.id).exists()
+    is_event_admin = event.club.is_admin(request.user)
 
     archive = BytesIO()
     with ZipFile(archive, "w") as fp:
@@ -1829,12 +1829,13 @@ def device_registrations(request, device_id):
     methods=["patch", "delete"],
     auto_schema=None,
 )
-@api_view(["GET", "PATCH", "DELETE"])
+@api_view(["PATCH", "DELETE"])
 @permission_classes([IsAuthenticated])
 def device_ownership_api_view(request, club_slug, device_id):
+    # TODO: Implement GET method, make sure it does not create then if ownership missing
     club = get_object_or_404(Club, slug__iexact=club_slug)
 
-    is_club_admin = club.admins.filter(id=request.user.id).exists()
+    is_club_admin = club.is_admin(request.user)
     if not is_club_admin:
         raise PermissionDenied()
 
@@ -1916,7 +1917,7 @@ def event_map_list(request, event_id):
         raise Http404()
 
     event.check_user_permission(request.user)
-    is_event_admin = event.club.admins.filter(id=request.user.id).exists()
+    is_event_admin = event.club.is_admin(request.user)
     
     if request.method == "POST":
         if not is_event_admin:
@@ -2010,7 +2011,7 @@ def event_map_detail(request, event_id, index="1", **kwargs):
     event, raster_map, title, assignation = Event.get_map_at_index(
         request.user, event_id, index
     )
-    is_event_admin = event.club.admins.filter(id=request.user.id).exists()
+    is_event_admin = event.club.is_admin(request.user)
     
     if request.method == "DELETE":
         if not is_event_admin:
@@ -2102,7 +2103,8 @@ def event_map_detail(request, event_id, index="1", **kwargs):
 @api_GET_view
 def event_map_download(request, event_id, index="1", **kwargs):
     event, raster_map, title, _ = Event.get_map_at_index(request.user, event_id, index)
-    is_event_admin = True
+    
+    is_event_admin = event.club.is_admin(request.user)
     
     headers = {}
     if is_event_admin or event.privacy == PRIVACY_PRIVATE:
@@ -2128,8 +2130,8 @@ def event_map_download(request, event_id, index="1", **kwargs):
         raster_map.image,
         (f"{event.name} - {title}_" f"{raster_map.get_calibration_string()}_"),
         mime=mime,
+        headers=headers
     )
-    # TODO: Include headers
     return resp
 
 
@@ -2139,7 +2141,7 @@ def event_map_download(request, event_id, index="1", **kwargs):
 )
 @api_GET_view
 def event_geojson_download(request, event_id):
-    # TODO: Allow POST to set geojson AND DELETE to remove the geojson
+    # TODO: Implement POST to set geojson AND DELETE to remove the geojson
     event = Event.objects.exclude(geojson_layer="")
         .exclude(geojson_layer__isnull=True)
         .filter(aid=event_id)
@@ -2220,13 +2222,26 @@ def two_d_rerun_race_status(request):
     event, raster_map, _, _ = Event.get_map_at_index(request.user, event_id, map_idx)
 
     event.check_user_permission(request.user)
-    # TODO: check could display map and started > Too early if not
+    
+    if event.start_date > now() or not event.could_display_map():
+        return Response(status=status.HTTP_425_TOO_EARLY)
+
+    map_url = reverse(
+        "event_map_download_with_format"
+        host="api",
+        kwargs={
+            "event_id": event.id,
+            "index": map_idx,
+            "extension": "webp",
+        },
+    )
+        
     response_json = {
         "status": "OK",
         "racename": event.name,
         "racestarttime": event.start_date,
         "raceendtime": event.end_date,
-        "mapurl": (f"{event.get_absolute_map_url()}-{map_idx}?.jpg"), # TODO: Broken, Use reverse here 
+        "mapurl": f"{map_url}?.jpg",
         "caltype": "3point",
         "mapw": raster_map.width,
         "maph": raster_map.height,
@@ -2302,11 +2317,13 @@ def two_d_rerun_race_data(request):
             )
         ),
         aid=event_id,
-        start_date__lt=now(),
     )
 
     event.check_user_permission(request.user)
-    # TODO: check could display map + started > Too early if not
+    
+    if event.start_date > now() or not event.could_display_map():
+        return Response(status=status.HTTP_425_TOO_EARLY)
+
     total_nb_pts = 0
     results = []
     for competitor, from_date, end_date in event.iterate_competitors(tag):
