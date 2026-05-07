@@ -45,11 +45,6 @@ urlpatterns = [
         ),
     ),
     re_path(r"^locations/?$", views.locations_api_gw, name="locations_api_gw"),
-    re_path(
-        r"^maps/(?P<map_id>[-0-9a-zA-Z_]+)/kmz$",
-        views.map_kmz_download,
-        name="map_kmz_download",
-    ),
     path("oauth2/", include((base_urlpatterns, app_name), namespace=app_name)),
     re_path(r"^time/?$", views.get_time, name="time_api"),
     re_path(r"^user/?$", views.user_view, name="user_view_api"),
@@ -119,7 +114,7 @@ urlpatterns = [
                                 name="event_data",
                             ),
                             re_path(
-                                r"data/(?P<key>\d+)$",
+                                r"^data/(?P<key>\d+)$",
                                 views.event_new_data,
                                 name="event_new_data",
                             ),
@@ -129,52 +124,42 @@ urlpatterns = [
                                 name="event_zip",
                             ),
                             path(
-                                "map",
+                                "maps/",
                                 include(
                                     [
                                         path(
-                                            "",
-                                            views.event_map_download,
-                                            name="event_main_map_download",
-                                        ),
-                                        re_path(
-                                            r"^\.(?P<extension>png|webp|avif|jpeg)$",
-                                            views.event_map_download,
-                                            name="event_main_map_download_with_format",
-                                        ),
-                                        re_path(
-                                            r"^-(?P<index>[1-9]\d*)$",
+                                            "default",
                                             include(
                                                 [
                                                     path(
                                                         "",
-                                                        views.event_map_download,
-                                                        name="event_map_download",
+                                                        views.event_map_detail,
+                                                        name="event_main_map_detail",
                                                     ),
                                                     re_path(
-                                                        r"^\.(?P<extension>png|webp|avif|jpeg)$",
+                                                        r"^\.(?P<extension>png|webp|avif|jpeg|kmz)$",
+                                                        views.event_map_download,
+                                                        name="event_main_map_download_with_format",
+                                                    ),
+                                                ]
+                                            ),
+                                        ),
+                                        re_path(
+                                            r"^(?P<index>[1-9]\d*)",
+                                            include(
+                                                [
+                                                    path(
+                                                        "",
+                                                        views.event_map_detail,
+                                                        name="event_map_detail",
+                                                    ),
+                                                    re_path(
+                                                        r"^\.(?P<extension>png|webp|avif|jpeg|kmz)$",
                                                         views.event_map_download,
                                                         name="event_map_download_with_format",
                                                     ),
                                                 ]
                                             ),
-                                        ),
-                                    ]
-                                ),
-                            ),
-                            path(
-                                "kmz",
-                                include(
-                                    [
-                                        path(
-                                            "",
-                                            views.event_kmz_download,
-                                            name="event_main_kmz_download",
-                                        ),
-                                        re_path(
-                                            r"^-(?P<index>[1-9]\d*)$",
-                                            views.event_kmz_download,
-                                            name="event_kmz_download",
                                         ),
                                     ]
                                 ),

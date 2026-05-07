@@ -53,7 +53,6 @@ from routechoices.core.models import (
     Event,
     EventSet,
     ImeiDevice,
-    Map,
     MapAssignation,
 )
 from routechoices.lib import cache
@@ -84,10 +83,9 @@ from routechoices.lib.validators import (
 
 logger = logging.getLogger(__name__)
 
-api_GET_view = api_view(["GET"])
-api_GET_HEAD_view = api_view(["GET", "HEAD"])
+api_GET_view = api_view(["GET", "HEAD"])
+api_GET_POST_view = api_view(["GET", "HEAD", "POST"])
 api_POST_view = api_view(["POST"])
-api_GET_POST_view = api_view(["GET", "POST"])
 
 
 class PostDataThrottle(AnonRateThrottle):
@@ -565,7 +563,7 @@ def club_list_view(request):
                             },
                             "rotation": 3.25,
                             "url": (
-                                "https://www.routechoices.com/api/events/PlCG3xFS-f4/map"
+                                "https://api.routechoices.com/events/PlCG3xFS-f4/map.webp"
                             ),
                             "title": "",
                             "hash": "u8cWoEiv",
@@ -668,9 +666,12 @@ def event_detail(request, event_id):
                 "id": event.map.aid,
                 "url": request.build_absolute_uri(
                     reverse(
-                        "event_main_map_download",
+                        "event_main_map_download_with_format",
                         host="api",
-                        kwargs={"event_id": event.aid},
+                        kwargs={
+                            "event_id": event.aid,
+                            "extension": event.map.mime_type.split("/")[1],
+                        },
                     )
                 ),
                 "wms": True,
@@ -688,9 +689,13 @@ def event_detail(request, event_id):
                 "id": m.map.aid,
                 "url": request.build_absolute_uri(
                     reverse(
-                        "event_map_download",
+                        "event_map_download_with_format",
                         host="api",
-                        kwargs={"event_id": event.aid, "index": (i + 2)},
+                        kwargs={
+                            "event_id": event.aid,
+                            "index": (i + 2),
+                            "extension": event.map.mime_type.split("/")[1],
+                        },
                     )
                 ),
                 "wms": True,
@@ -1867,14 +1872,123 @@ def device_ownership_api_view(request, club_slug, device_id):
     method="get",
     auto_schema=None,
 )
-@api_GET_HEAD_view
-def event_map_download(request, event_id, index="1", **kwargs):
-    event, raster_map, title = Event.get_public_map_at_index(
+@api_view(["GET", "HEAD", "PATCH", "DELETE"])
+def event_map_detail(request, event_id, index="1", **kwargs):
+    event, raster_map, title, assignation = Event.get_map_at_index(
         request.user, event_id, index
     )
+    if request.method in ("PATCH", "DELETE") and not request.user.is_authenticated:
+        raise NotAuthenticated()
+
+    if request.method == "DELETE":
+        # We actually just unassign the map from the event
+        # We must re-assign the main map of event if there is many maps
+        if event.map_id in raster_map.id:
+            event.map = None
+            event.map_title = ""
+            next_map_assigment = event.map_assignations.first()
+            if next_map_assigment:
+                event.map = next_map_assigment.map
+                event.map_title = next_map_assigment.title
+                next_map_assigment.delete()
+            event.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    if request.method == "PATCH":
+        coordinates_input = request.data.get("coordinates")
+        image_input = request.data.get("url")
+        title_input = request.data.get("title")
+
+        if coordinates_input:
+            try:
+                raster_map.bound_api = coordinates_input
+            except Exception:
+                raise ValidationError("Invalid coordinates value")
+
+        if image_input:
+            try:
+                raster_map.data_uri = image_input
+            except Exception:
+                if image_input.startswith("http"):
+                    raise ValidationError(
+                        "Invalid url value (Only data URI are accepted)"
+                    )
+                raise ValidationError("Invalid url value")
+
+        if title_input:
+            if not isinstance(title_input, str):
+                raise ValidationError("Invalid title value")
+            if len(title_input) > 255:
+                raise ValidationError("Invalid title value (Too long)")
+
+        if image_input or coordinates_input:
+            raster_map.save()
+
+        if title_input:
+            if assignation:
+                assignation.title = title_input
+                assignation.save()
+            else:
+                event.map_title = title_input
+                event.save()
+
+    reverse_url_kwargs = {
+        "event_id": event.aid,
+        "extension": raster_map.mime_type.split("/")[1],
+    }
+    if index != "1":
+        reverse_url_kwargs["index"] = index
+
+    map_data = {
+        "title": event.map_title if not assignation else assignation.title,
+        "coordinates": raster_map.bound_api,
+        "rotation": raster_map.north_declination,
+        "hash": raster_map.hash,
+        "max_zoom": raster_map.max_zoom,
+        "modification_date": raster_map.modification_date,
+        "default": True,
+        "id": raster_map.aid,
+        "url": request.build_absolute_uri(
+            reverse(
+                (
+                    "event_main_map_download_with_format"
+                    if index == "1"
+                    else "event_map_download_with_format"
+                ),
+                host="api",
+                kwargs=reverse_url_kwargs,
+            )
+        ),
+        "wms": True,
+    }
+
+    return Response(map_data)
+
+
+@swagger_auto_schema(
+    method="get",
+    auto_schema=None,
+)
+@api_GET_view
+def event_map_download(request, event_id, index="1", **kwargs):
+    event, raster_map, title, _ = Event.get_map_at_index(request.user, event_id, index)
     headers = {}
     if event.privacy == PRIVACY_PRIVATE:
         headers["Cache-Control"] = "Private"
+
+    if kwargs.get("extension") == "kmz":
+        kmz_data = raster_map.kmz
+
+        filename = f"{event.name} - {title}.kmz"
+        response = StreamingHttpRangeResponse(
+            request,
+            kmz_data,
+            content_type="application/vnd.google-earth.kmz",
+            headers=headers,
+        )
+        response["ETag"] = f'W/"{safe64encodedsha(kmz_data)}"'
+        response["Content-Disposition"] = set_content_disposition(filename)
+        return response
 
     mime = get_image_mime_from_request(kwargs.get("extension"), raster_map.mime_type)
 
@@ -1891,34 +2005,7 @@ def event_map_download(request, event_id, index="1", **kwargs):
     method="get",
     auto_schema=None,
 )
-@api_GET_HEAD_view
-def event_kmz_download(request, event_id, index="1"):
-    event, raster_map, title = Event.get_public_map_at_index(
-        request.user, event_id, index
-    )
-    kmz_data = raster_map.kmz
-
-    headers = {}
-    if event.privacy == PRIVACY_PRIVATE:
-        headers["Cache-Control"] = "Private"
-
-    filename = f"{event.name} - {title}.kmz"
-    response = StreamingHttpRangeResponse(
-        request,
-        kmz_data,
-        content_type="application/vnd.google-earth.kmz",
-        headers=headers,
-    )
-    response["ETag"] = f'W/"{safe64encodedsha(kmz_data)}"'
-    response["Content-Disposition"] = set_content_disposition(filename)
-    return response
-
-
-@swagger_auto_schema(
-    method="get",
-    auto_schema=None,
-)
-@api_GET_HEAD_view
+@api_GET_view
 def event_geojson_download(request, event_id):
     event = get_object_or_404(
         Event.objects.exclude(geojson_layer="")
@@ -1951,28 +2038,7 @@ def event_geojson_download(request, event_id):
     method="get",
     auto_schema=None,
 )
-@api_GET_HEAD_view
-@permission_classes([IsAuthenticated])
-def map_kmz_download(request, map_id, *args, **kwargs):
-    club_list = Club.objects.filter(admins=request.user)
-    raster_map = get_object_or_404(Map, aid=map_id, club__in=club_list)
-    kmz_data = raster_map.kmz
-    response = StreamingHttpRangeResponse(
-        request,
-        kmz_data,
-        content_type="application/vnd.google-earth.kmz",
-        headers={"Cache-Control": "Private"},
-    )
-    filename = f"{raster_map.name}.kmz"
-    response["Content-Disposition"] = set_content_disposition(filename)
-    return response
-
-
-@swagger_auto_schema(
-    method="get",
-    auto_schema=None,
-)
-@api_GET_HEAD_view
+@api_GET_view
 def competitor_gpx_download(request, competitor_id):
     competitor = get_object_or_404(
         Competitor.objects.select_related("event", "event__club", "device"),
@@ -2017,9 +2083,7 @@ def two_d_rerun_race_status(request):
     map_idx = int(args_match.group("map_idx") or 1)
     tag = args_match.group("category")
 
-    event, raster_map, _ = Event.get_public_map_at_index(
-        request.user, event_id, map_idx
-    )
+    event, raster_map, _, _ = Event.get_map_at_index(request.user, event_id, map_idx)
 
     event.check_user_permission(request.user)
 

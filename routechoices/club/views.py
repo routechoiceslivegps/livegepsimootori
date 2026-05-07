@@ -395,11 +395,8 @@ def event_map_view(request, slug, index="1", extension=None):
 
     event = (
         Event.objects.all()
-        .select_related("club")
-        .filter(
-            club__slug__iexact=club_slug,
-            slug__iexact=slug,
-        )
+        .select_related("club", "map")
+        .filter(club__slug__iexact=club_slug, slug__iexact=slug, map_id__isnull=False)
         .first()
     )
     if not event:
@@ -419,20 +416,20 @@ def event_map_view(request, slug, index="1", extension=None):
             f"{event.club.nice_url}{event.slug}/map{('-' + index) if index != '1' else ''}"
         )
 
-    redirect_view = "event_main_map_download"
+    redirect_view = "event_main_map_download_with_format"
     redirect_kwargs = {"event_id": event.aid}
+
     if index != "1":
-        redirect_view = "event_map_download"
+        redirect_view = "event_map_download_with_format"
         redirect_kwargs["index"] = index
 
     if extension is None and request.META.get("HTTP_USER_AGENT", "").startswith(
         "Java/"
     ):
         extension = "jpeg"
-    mime = get_image_mime_from_request(extension)
-    if mime:
-        redirect_view += "_with_format"
-        redirect_kwargs["extension"] = mime[6:]
+
+    mime = get_image_mime_from_request(extension, event.map.mime_type)
+    redirect_kwargs["extension"] = mime[6:]
 
     return redirect(
         reverse(
@@ -451,6 +448,7 @@ def event_kmz_view(request, slug, index="1"):
         .filter(
             club__slug__iexact=club_slug,
             slug__iexact=slug,
+            map_id__isnull=False,
         )
         .first()
     )
@@ -472,9 +470,9 @@ def event_kmz_view(request, slug, index="1"):
         )
     return redirect(
         reverse(
-            "event_kmz_download",
+            "event_map_download_with_format",
             host="api",
-            kwargs={"event_id": event.aid, "index": index},
+            kwargs={"event_id": event.aid, "index": index, "extension": "kmz"},
         )
     )
 

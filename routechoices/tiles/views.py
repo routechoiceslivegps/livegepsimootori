@@ -78,7 +78,7 @@ def common_tile(function):
         except Exception:
             return HttpResponseBadRequest("invalid parameters")
 
-        event, raster_map, _ = Event.get_public_map_at_index(
+        event, raster_map, _, _ = Event.get_map_at_index(
             request.user, event_id, map_index
         )
 

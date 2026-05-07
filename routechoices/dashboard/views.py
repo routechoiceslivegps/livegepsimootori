@@ -618,22 +618,18 @@ def map_delete_view(request, map_id):
     raster_map = get_object_or_404(Map, aid=map_id)
 
     if request.method == "POST":
-
         events_used_in = Event.objects.filter(map_id=raster_map.id).prefetch_related(
             "map_assignations"
         )
         for event in events_used_in:
             event.map = None
             event.map_title = ""
-
             next_map = event.map_assignations.first()
             if next_map:
                 event.map = next_map.map
                 event.map_title = next_map.title
                 next_map.delete()
-
             event.save()
-
         raster_map.delete()
         messages.success(request, "Map deleted")
         if link := request.GET.get("next"):

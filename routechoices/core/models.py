@@ -6,6 +6,7 @@ import os.path
 import re
 import socket
 import time
+import uuid
 from datetime import timedelta
 from io import BytesIO
 from operator import itemgetter
@@ -555,6 +556,8 @@ class Map(models.Model, SomewhereOnEarth):
 
     @property
     def data(self):
+        if not self.image:
+            return None
         cache_key = f"map:{self.image.name}:data"
         if cached := cache.get(cache_key):
             return cached
@@ -584,12 +587,16 @@ class Map(models.Model, SomewhereOnEarth):
 
     @property
     def data_uri(self):
-        data = self.data
-        mime_type = magic.from_buffer(data, mime=True)
-        return f"data:{mime_type};base64,{base64.b64encode(data).decode()}"
+        if data := self.data:
+            mime_type = magic.from_buffer(data, mime=True)
+            return f"data:{mime_type};base64,{base64.b64encode(data).decode()}"
+        return None
 
     @data_uri.setter
     def data_uri(self, value):
+        if self.data_uri == value:
+            return
+
         data_matched = re.match(
             r"^data:image/(?P<extension>jpeg|png|gif|webp);base64,"
             r"(?P<data_b64>(?:[A-Za-z0-9+/]{4})*"
@@ -597,13 +604,30 @@ class Map(models.Model, SomewhereOnEarth):
             value,
         )
         if not data_matched:
-            raise ValueError("Not a base64 encoded image data URI")
-        self.image.save(
-            "filename",
-            ContentFile(base64.b64decode(data_matched.group("data_b64"))),
-            save=False,
-        )
-        self.image.close()
+            raise ValueError(
+                "Not a valid base64 encoded image data URI (jpeg, png, gif or webp)"
+            )
+
+        file = ContentFile(base64.b64decode(data_matched.group("data_b64")))
+        with Image.open(file) as image:
+            rgba_img = image.convert("RGBA")
+            format = "WEBP"
+            if max(rgba_img.size[0], rgba_img.size[1]) > WEBP_MAX_SIZE:
+                format = "PNG"
+            out_buffer = BytesIO()
+            params = {
+                "dpi": (72, 72),
+            }
+            if format == "WEBP":
+                params["quality"] = 80
+            rgba_img.save(out_buffer, format, optimize=True, **params)
+            file_safe = File(out_buffer)
+            self.image.save(
+                f"{uuid.uuid4()}.{data_matched.group("extension")}",
+                file_safe,
+                save=False,
+            )
+            self.image.close()
 
     @property
     def cv2image(self):
@@ -649,6 +673,14 @@ class Map(models.Model, SomewhereOnEarth):
             "bottom_right": {"lat": coords[4], "lon": coords[5]},
             "bottom_left": {"lat": coords[6], "lon": coords[7]},
         }
+
+    @bound_api.setter
+    def bound_api(self, value):
+        wgs84_bound = [
+            Wgs84Coordinate(value[corner]["lat"], value[corner]["lon"])
+            for corner in ("top_left", "top_right", "bottom_right", "bottom_left")
+        ]
+        self.bound = wgs84_bound
 
     @property
     def size(self):
@@ -1698,9 +1730,9 @@ class Event(models.Model, SomewhereOnEarth):
     def could_display_maps(self):
         t = now()
         return bool(
-                self.visibility == VISIBILITY_PREVIEW
-                or (self.visibility == VISIBILITY_LIVE and self.start_date < t)
-                or (self.visibility == VISIBILITY_REPLAY and self.end_date < t)
+            self.visibility == VISIBILITY_PREVIEW
+            or (self.visibility == VISIBILITY_LIVE and self.start_date < t)
+            or (self.visibility == VISIBILITY_REPLAY and self.end_date < t)
         )
 
     def can_display_maps(self):
@@ -1794,17 +1826,20 @@ class Event(models.Model, SomewhereOnEarth):
             yield (competitor, from_date, end_date)
 
     @classmethod
-    def get_public_map_at_index(cls, user, event_id, map_index, load_competitors=False):
+    def get_map_at_index(cls, user, event_id, map_index, load_competitors=False):
         """map_index is 1 based"""
-        event_qs = (
-            cls.objects.all()
-            .select_related("club")
-            .filter(
-                Q(visibility=VISIBILITY_PREVIEW)
-                | Q(visibility=VISIBILITY_LIVE, start_date__lt=now())
-                | Q(visibility=VISIBILITY_REPLAY, end_date__lt=now())
-            )
+        event_qs = cls.objects.all().select_related("club")
+
+        extra_query = (
+            Q(visibility=VISIBILITY_PREVIEW)
+            | Q(visibility=VISIBILITY_LIVE, start_date__lt=now())
+            | Q(visibility=VISIBILITY_REPLAY, end_date__lt=now())
         )
+        if user and user.is_authenticated:
+            extra_query |= Q(club_in=user.club_set.all())
+
+        event_qs = event_qs.filter(extra_query)
+
         if load_competitors:
             event_qs = event_qs.prefetch_related(
                 "competitors",
@@ -1837,7 +1872,7 @@ class Event(models.Model, SomewhereOnEarth):
             raise Http404
 
         event.check_user_permission(user)
-
+        assignation = None
         if map_index == 0:
             raster_map = event.map
             title = event.map_title or "Main map"
@@ -1845,7 +1880,7 @@ class Event(models.Model, SomewhereOnEarth):
             assignation = event.map_assignations.all()[map_index - 1]
             raster_map = assignation.map
             title = assignation.title
-        return event, raster_map, title
+        return event, raster_map, title, assignation
 
     @classmethod
     def extract_event_lists(cls, request, club=None):

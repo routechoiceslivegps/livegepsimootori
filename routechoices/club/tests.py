@@ -246,8 +246,6 @@ class ClubViewsTestCase(EssentialApiBase):
             prefix="kiilat",
         )
         response = client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_302_FOUND)
-        response = self.client.get(response["Location"])
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
         event.map = raster_map
