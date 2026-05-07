@@ -2173,9 +2173,10 @@ def event_geojson_download(request, event_id):
 )
 @api_GET_view
 def competitor_gpx_download(request, competitor_id):
-    competitor = Competitor.objects.select_related("event", "event__club", "device").filter(aid=competitor_id).first()
-    if not competitor:
-        return Http404()
+    competitor = get_object_or_404(
+        Competitor.objects.select_related("event", "event__club", "device"),
+        aid=competitor_id,
+    )
  
     event = competitor.event
 
