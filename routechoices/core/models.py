@@ -1511,7 +1511,7 @@ class EventSet(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
     modification_date = models.DateTimeField(auto_now=True)
     club = models.ForeignKey(
-        Club, verbose_name="Club", related_name="event_sets", on_delete=models.CASCADE
+        Club, verbose_name="Club", related_name="event_sets", on_delete=models.CASCADE, editable=False
     )
     name = models.CharField(verbose_name="Name", max_length=255)
     create_page = models.BooleanField(
