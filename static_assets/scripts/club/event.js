@@ -1501,7 +1501,7 @@ function RCEvent(infoURL, clockURL, locale) {
 		if (e !== undefined) {
 			e.preventDefault();
 		}
-		if (!isLive || !isPreview) {
+		if (!(isLive || isPreview)) {
 			return;
 		}
 
