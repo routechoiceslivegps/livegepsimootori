@@ -30,7 +30,7 @@ from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.core.validators import MaxValueValidator, MinValueValidator, validate_slug
 from django.db import models
-from django.db.models import F, Max, Q
+from django.db.models import Case, F, Max, Prefetch, Q, When
 from django.db.models.functions import ExtractMonth, ExtractYear, Upper
 from django.db.models.signals import post_delete, pre_delete, pre_save
 from django.dispatch import receiver
@@ -116,9 +116,114 @@ BOTTOM_LEFT = 3
 GLOBAL_MERCATOR = GlobalMercator()
 
 
-class StringToArray(models.Func):
-    function = "string_to_array"
-    arity = 2
+def list_events_sets(qs, decreasing_order=True):
+    events_without_sets = qs.filter(event_set__isnull=True)
+    order = "-start_date" if decreasing_order else "start_date"
+    first_events_of_each_set = (
+        qs.filter(event_set__isnull=False)
+        .order_by("event_set_id", order)
+        .distinct("event_set_id")
+    )
+    return list(
+        events_without_sets.union(first_events_of_each_set)
+        .order_by(order)
+        .values_list("id", "event_set_id")
+    )
+
+
+def events_to_sets_for_type(
+    first_event_of_each_set,
+    type,
+    club=None,
+    selected_year=None,
+    selected_month=None,
+    search_text_query=None,
+):
+    event_ids = set([e[0] for e in first_event_of_each_set])
+    event_set_ids = set([e[1] for e in first_event_of_each_set])
+
+    event_list_by_set = {}
+    if event_set_ids:
+        all_events_with_set = (
+            Event.objects.filter(event_set_id__in=event_set_ids, privacy=PRIVACY_PUBLIC)
+            .select_related("event_set", "club", "map")
+            .prefetch_related(
+                Prefetch(
+                    "competitors",
+                    queryset=Competitor.objects.select_related("device").defer(
+                        "device__locations_encoded"
+                    ),
+                )
+            )
+        )
+        if not club:
+            all_events_with_set = all_events_with_set.filter(featured=True)
+
+        if type == "upcoming":
+            all_events_with_set = all_events_with_set.filter(
+                visibility_date__gt=now(),
+                visibility_date__lte=now() + timedelta(hours=24),
+            ).order_by("visibility_date", "name")
+
+        elif type == "live":
+            all_events_with_set = all_events_with_set.filter(
+                start_date__lte=now(), end_date__gte=now()
+            ).order_by("-start_date", "name")
+
+        elif type == "closed":
+            all_events_with_set = all_events_with_set.filter(end_date__lt=now())
+            if selected_year:
+                all_events_with_set = all_events_with_set.filter(
+                    start_date__year=selected_year
+                )
+                if selected_month:
+                    all_events_with_set = all_events_with_set.filter(
+                        start_date__month=selected_month
+                    )
+            if search_text_query:
+                all_events_with_set = all_events_with_set.filter(search_text_query)
+
+            all_events_with_set = all_events_with_set.order_by("-start_date", "name")
+
+        for event in all_events_with_set:
+            event_list_by_set.setdefault(event.event_set_id, [])
+            event_list_by_set[event.event_set_id].append(event)
+
+    sets = []
+    events = (
+        Event.objects.filter(id__in=event_ids)
+        .select_related("event_set", "event_set__club", "club", "map")
+        .prefetch_related(
+            Prefetch(
+                "competitors",
+                queryset=Competitor.objects.select_related("device").defer(
+                    "device__locations_encoded"
+                ),
+            )
+        )
+    )
+    for event in events:
+        event_set = event.event_set
+        if event.event_set is None:
+            sets.append(
+                {
+                    "name": event.name,
+                    "events": [
+                        event,
+                    ],
+                    "fake": True,
+                }
+            )
+        else:
+            sets.append(
+                {
+                    "name": event_set.name,
+                    "data": event_set,
+                    "events": event_list_by_set[event_set.id],
+                    "fake": False,
+                }
+            )
+    return sets
 
 
 class SomewhereOnEarth:
@@ -342,7 +447,7 @@ Follow our events live or replay them later.
         super().save(*args, **kwargs)
 
     def is_admin(self, user):
-         return user.is_authenticated and self.admins.filter(id=user.id).exists()
+        return user.is_authenticated and self.admins.filter(id=user.id).exists()
 
     @property
     def free_trial_end(self):
@@ -1469,56 +1574,66 @@ class EventSet(models.Model):
     def hide_secret_events(self):
         return not self.list_secret_events
 
+    def events_to_sets_for_type(self, events, event_type):
+        if event_type == "live":
+            events = events.filter(start_date__lte=now(), end_date__gte=now()).order_by(
+                "-start_date", "name"
+            )
+
+        elif event_type == "upcoming":
+            events = events.filter(start_date__gt=now()).order_by(
+                "visibility_date", "name"
+            )
+
+        elif event_type == "closed":
+            events = events.filter(end_date__lt=now()).order_by("-start_date", "name")
+
+        events = events.all()
+        if not events:
+            return []
+        sets = [
+            {
+                "name": self.name,
+                "events": events,
+                "fake": False,
+            }
+        ]
+        return sets
+
     def extract_event_lists(self, request):
-        event_qs = self.events.select_related("club", "event_set").prefetch_related(
-            "competitors"
+        events_in_set = self.events.select_related(
+            "event_set", "event_set__club", "club", "map"
+        ).prefetch_related(
+            Prefetch(
+                "competitors",
+                queryset=Competitor.objects.select_related("device").defer(
+                    "device__locations_encoded"
+                ),
+            )
         )
         if self.list_secret_events:
-            event_qs = event_qs.exclude(privacy=PRIVACY_PRIVATE)
+            event_in_set = events_in_set.exclude(privacy=PRIVACY_PRIVATE)
         else:
-            event_qs = event_qs.filter(privacy=PRIVACY_PUBLIC)
-        past_event_qs = event_qs.filter(end_date__lt=now())
-        live_events_qs = event_qs.filter(start_date__lte=now(), end_date__gte=now())
-        upcoming_events_qs = event_qs.filter(start_date__gt=now())
+            event_in_set = events_in_set.filter(privacy=PRIVACY_PUBLIC)
 
-        def events_to_sets(qs, type="past"):
-            all_events_w_set = event_qs.order_by("-start_date", "name")
-            if type == "live":
-                all_events_w_set = all_events_w_set.filter(
-                    start_date__lte=now(), end_date__gte=now()
-                )
-            elif type == "upcoming":
-                all_events_w_set = all_events_w_set.filter(
-                    start_date__gt=now()
-                ).order_by("start_date", "name")
-            else:
-                all_events_w_set = all_events_w_set.filter(end_date__lt=now())
-            all_events_w_set = list(all_events_w_set)
-            if not all_events_w_set:
-                return []
-            events = [
-                {
-                    "name": self.name,
-                    "events": all_events_w_set,
-                    "fake": False,
-                }
-            ]
-            return events
+        closed_events = event_in_set.filter(end_date__lt=now())
+        live_events = event_in_set.filter(start_date__lte=now(), end_date__gte=now())
+        upcoming_events = event_in_set.annotate(
+            visibility_date=Case(
+                When(visibility=VISIBILITY_REPLAY, then=F("end_date")),
+                default=F("start_date"),
+            )
+        ).filter(visibility_date__gt=now())
 
-        all_past_events = past_event_qs
-        past_events = events_to_sets(all_past_events)
-
-        all_live_events = live_events_qs
-        live_events = events_to_sets(all_live_events, type="live")
-
-        all_upcoming_events = upcoming_events_qs
-        upcoming_events = events_to_sets(all_upcoming_events, type="upcoming")
+        closed_events = self.events_to_sets_for_type(closed_events, "closed")
+        live_events = self.events_to_sets_for_type(live_events, "live")
+        upcoming_events = self.events_to_sets_for_type(upcoming_events, "upcoming")
 
         return {
             "event_set": self,
             "event_set_page": True,
             "club": self.club,
-            "events": past_events,
+            "events": closed_events,
             "live_events": live_events,
             "upcoming_events": upcoming_events,
             "years": [],
@@ -1903,28 +2018,22 @@ class Event(models.Model, SomewhereOnEarth):
         selected_month = request.GET.get("month")
         search_text_raw = request.GET.get("q", "").strip()
 
-        event_qs = (
-            cls.objects.filter(privacy=PRIVACY_PUBLIC)
-            .select_related("club", "event_set")
-            .prefetch_related("competitors")
-        )
+        event_qs = cls.objects.filter(privacy=PRIVACY_PUBLIC)
+
         if club is None:
             event_qs = event_qs.filter(featured=True)
         else:
             event_qs = event_qs.filter(club=club)
 
-        past_event_qs = event_qs.filter(end_date__lt=now())
-        live_events_qs = event_qs.filter(start_date__lte=now(), end_date__gte=now())
-        upcoming_events_qs = event_qs.filter(
-            start_date__gt=now(), start_date__lte=now() + timedelta(hours=24)
-        ).order_by("start_date", "name")
+        closed_events_qs = event_qs.filter(end_date__lt=now())
+
+        search_text_query = Q()
         if search_text_raw:
             search_text = search_text_raw
             quoted_terms = re.findall(r"\"(.+?)\"", search_text)
             if quoted_terms:
                 search_text = re.sub(r"\"(.+?)\"", "", search_text)
             search_terms = search_text.split(" ")
-            search_text_query = Q()
             for search_term in search_terms + quoted_terms:
                 key_name = "name__icontains"
                 key_club_name = "club__name__icontains"
@@ -1934,11 +2043,11 @@ class Event(models.Model, SomewhereOnEarth):
                     | Q(**{key_club_name: search_term})
                     | Q(**{key_set_name: search_term})
                 )
-            past_event_qs = past_event_qs.filter(search_text_query)
+            closed_events_qs = closed_events_qs.filter(search_text_query)
 
         months = None
         years = list(
-            past_event_qs.annotate(year=ExtractYear("start_date"))
+            closed_events_qs.annotate(year=ExtractYear("start_date"))
             .values_list("year", flat=True)
             .order_by("-year")
             .distinct()
@@ -1949,9 +2058,9 @@ class Event(models.Model, SomewhereOnEarth):
             except Exception:
                 raise BadRequest("Invalid year")
         if selected_year:
-            past_event_qs = past_event_qs.filter(start_date__year=selected_year)
+            closed_events_qs = closed_events_qs.filter(start_date__year=selected_year)
             months = list(
-                past_event_qs.annotate(month=ExtractMonth("start_date"))
+                closed_events_qs.annotate(month=ExtractMonth("start_date"))
                 .values_list("month", flat=True)
                 .order_by("-month")
                 .distinct()
@@ -1964,99 +2073,58 @@ class Event(models.Model, SomewhereOnEarth):
                 except Exception:
                     raise BadRequest("Invalid month")
             if selected_month:
-                past_event_qs = past_event_qs.filter(start_date__month=selected_month)
-
-        def list_events_sets(qs, decreasing_order=True):
-            events_without_sets = qs.filter(event_set__isnull=True)
-            order = "-start_date" if decreasing_order else "start_date"
-            first_events_of_each_set = (
-                qs.filter(event_set__isnull=False)
-                .order_by("event_set_id", order, "name")
-                .distinct("event_set_id")
-            )
-            return events_without_sets.union(first_events_of_each_set).order_by(
-                order, "name"
-            )
-
-        def events_to_sets(qs, type="past"):
-            events_set_ids = [e.event_set_id for e in qs if e.event_set_id]
-            events_by_set = {}
-            if events_set_ids:
-                all_events_w_set = (
-                    cls.objects.select_related("club")
-                    .prefetch_related("competitors")
-                    .filter(event_set_id__in=events_set_ids, privacy=PRIVACY_PUBLIC)
-                    .order_by("-start_date", "name")
+                closed_events_qs = closed_events_qs.filter(
+                    start_date__month=selected_month
                 )
-                if not club:
-                    all_events_w_set = all_events_w_set.filter(featured=True)
-                if type == "live":
-                    all_events_w_set = all_events_w_set.filter(
-                        start_date__lte=now(), end_date__gte=now()
-                    )
-                elif type == "upcoming":
-                    all_events_w_set = all_events_w_set.filter(
-                        start_date__gt=now(),
-                        start_date__lte=now() + timedelta(hours=24),
-                    ).order_by("start_date", "name")
-                else:
-                    all_events_w_set = all_events_w_set.filter(end_date__lt=now())
-                    if selected_year:
-                        all_events_w_set = all_events_w_set.filter(
-                            start_date__year=selected_year
-                        )
-                        if selected_month:
-                            all_events_w_set = all_events_w_set.filter(
-                                start_date__month=selected_month
-                            )
-                    if search_text_raw:
-                        all_events_w_set = all_events_w_set.filter(search_text_query)
-                for e in all_events_w_set:
-                    events_by_set.setdefault(e.event_set_id, [])
-                    events_by_set[e.event_set_id].append(e)
 
-            events = []
-            for event in qs:
-                event_set = event.event_set
-                if event_set is None:
-                    events.append(
-                        {
-                            "name": event.name,
-                            "events": [
-                                event,
-                            ],
-                            "fake": True,
-                        }
-                    )
-                else:
-                    events.append(
-                        {
-                            "name": event_set.name,
-                            "data": event_set,
-                            "events": events_by_set[event_set.id],
-                            "fake": False,
-                        }
-                    )
-            return events
+        all_closed_event_sets = list_events_sets(closed_events_qs)
+        paginator = Paginator(all_closed_event_sets, 25)
+        closed_events_page = paginator.get_page(page)
 
-        all_past_events = list_events_sets(past_event_qs)
-        paginator = Paginator(all_past_events, 25)
-        past_events_page = paginator.get_page(page)
-        past_events = events_to_sets(past_events_page)
+        closed_events_sets = events_to_sets_for_type(
+            closed_events_page.object_list,
+            club=club,
+            type="closed",
+            selected_year=selected_year,
+            selected_month=selected_month,
+            search_text_query=search_text_query,
+        )
 
-        if past_events_page.number == 1 and not selected_year and not search_text_raw:
+        if closed_events_page.number == 1 and not selected_year and not search_text_raw:
+            live_events_qs = event_qs.filter(
+                start_date__lte=now(), end_date__gte=now()
+            ).exclude(visibility=VISIBILITY_REPLAY)
+
+            upcoming_events_qs = (
+                event_qs.annotate(
+                    visibility_date=Case(
+                        When(visibility=VISIBILITY_REPLAY, then=F("end_date")),
+                        default=F("start_date"),
+                    )
+                )
+                .filter(
+                    visibility_date__gt=now(),
+                    visibility_date__lte=now() + timedelta(hours=24),
+                )
+                .order_by("visibility_date", "name")
+            )
+
             all_live_events = list_events_sets(live_events_qs)
-            live_events = events_to_sets(all_live_events, type="live")
+            live_events = events_to_sets_for_type(
+                all_live_events, type="live", club=club
+            )
 
             all_upcoming_events = list_events_sets(upcoming_events_qs, False)
-            upcoming_events = events_to_sets(all_upcoming_events, type="upcoming")
+            upcoming_events = events_to_sets_for_type(
+                all_upcoming_events, type="upcoming", club=club
+            )
         else:
             live_events = upcoming_events = cls.objects.none()
 
         return {
             "club": club,
-            "events": past_events,
-            "events_page": past_events_page,
+            "events": closed_events_sets,
+            "events_page": closed_events_page,
             "live_events": live_events,
             "upcoming_events": upcoming_events,
             "years": years,
@@ -2280,19 +2348,14 @@ class Event(models.Model, SomewhereOnEarth):
                     cache.set(cache_key, coords, DURATION_ONE_MONTH)
                     return coords
 
-        sample_competitors = (
-            self.competitors.select_related("device")
-            .filter(
-                device__isnull=False,
-                device__locations_encoded__isnull=False,
-            )
-            .exclude(
-                device__locations_encoded="",
-            )
-        )
+        sample_competitors = self.competitors.all()
         for competitor in sample_competitors:
-            if locs := competitor.locations:
-                return locs[0][1:]
+            if device := competitor.device:
+                if device._location_count != 0:
+                    return [
+                        device._last_location_latitude,
+                        device._last_location_longitude,
+                    ]
         return None
 
 

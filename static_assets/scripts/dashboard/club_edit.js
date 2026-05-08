@@ -50,7 +50,7 @@
 		u("#id_admins option[selected]").map((el) => {
 			const name = el.textContent;
 			const d = u(
-				'<div class="d-inline-block me-1 btn btn-sm btn-info admin-user-div">',
+				'<div class="d-inline-block me-1 mb-1 btn btn-sm btn-secondary admin-user-div">',
 			);
 			d.append(u('<i class="fa fa-user me-1"></i>'));
 			d.append(u("<span>").text(name));
@@ -95,7 +95,7 @@
 
 	const inviteBtn = u("#invite-btn").clone();
 	u("#invite-btn").remove();
-	if (inviteBtn) {
+	if (inviteBtn && u(".admin-user-div").nodes.length < 10) {
 		u("#id_admins").parent().after(inviteBtn);
 	}
 	const submitForm = u("#change_form");

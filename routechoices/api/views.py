@@ -64,7 +64,6 @@ from routechoices.lib.helpers import (
     git_master_hash,
     initial_of_name,
     random_device_id,
-    safe64encodedsha,
     set_content_disposition,
     short_random_key,
     short_random_slug,
@@ -114,17 +113,18 @@ event_param = openapi.Parameter(
 
 
 def serialize_map(event, index, raster_map, title):
-    kwargs = {"event_id": event.aid}
-    view = "event_map_download_with_format"
-    if index == 0:
-        view = "event_main_map_download_with_format"
     ext = raster_map.mime_type.split("/")[1]
     if ext not in ("jpeg", "png", "webp", "avif"):
         ext = "webp"
-    kwargs["extension"] = ext
-    if index > 0:
-        kwargs["index"] = index + 1
-    url = reverse(view, host="api", kwargs=kwargs)
+    url = reverse(
+        "event_map_download_with_format",
+        host="api",
+        kwargs={
+            "event_id": event.aid,
+            "index": index + 1,
+            "extension": ext,
+        },
+    )
     return {
         "title": title,
         "coordinates": raster_map.bound_api,
@@ -642,7 +642,7 @@ def event_detail(request, event_id):
 
     event.check_user_permission(request.user)
     is_event_admin = event.club.is_admin(request.user)
-            
+
     if request.method == "DELETE":
         if not is_event_admin:
             raise PermissionDenied()
@@ -1857,11 +1857,11 @@ def device_ownership_api_view(request, club_slug, device_id):
     if request.method == "DELETE":
         ownership.delete()
         return HttpResponse(status=status.HTTP_204_NO_CONTENT)
-    
+
     headers = {}
     if is_club_admin:
         headers["Cache-Control"] = "Private"
-    
+
     return Response(info, headers=headers)
 
 
@@ -1894,7 +1894,7 @@ def event_map_list(request, event_id):
 
     event.check_user_permission(request.user)
     is_event_admin = event.club.is_admin(request.user)
-    
+
     if request.method == "POST":
         if not is_event_admin:
             raise PermissionDenied()
@@ -1959,7 +1959,7 @@ def event_map_list(request, event_id):
     maps = []
     for i, (raster_map, title) in enumerate(event.enumerate_maps()):
         maps.append(serialize_map(event, i, raster_map, title))
-    
+
     headers = {}
     if is_event_admin or event.privacy == PRIVACY_PRIVATE:
         headers["Cache-Control"] = "Private"
@@ -1988,7 +1988,7 @@ def event_map_detail(request, event_id, index="1", **kwargs):
         request.user, event_id, index
     )
     is_event_admin = event.club.is_admin(request.user)
-    
+
     if request.method == "DELETE":
         if not is_event_admin:
             raise PermissionDenied()
@@ -2065,7 +2065,7 @@ def event_map_detail(request, event_id, index="1", **kwargs):
         raster_map,
         event.map_title if not assignation else assignation.title,
     )
-    
+
     headers = {}
     if is_event_admin or event.privacy == PRIVACY_PRIVATE:
         headers["Cache-Control"] = "Private"
@@ -2079,9 +2079,9 @@ def event_map_detail(request, event_id, index="1", **kwargs):
 @api_GET_view
 def event_map_download(request, event_id, index="1", **kwargs):
     event, raster_map, title, _ = Event.get_map_at_index(request.user, event_id, index)
-    
+
     is_event_admin = event.club.is_admin(request.user)
-    
+
     headers = {}
     if is_event_admin or event.privacy == PRIVACY_PRIVATE:
         headers["Cache-Control"] = "Private"
@@ -2106,7 +2106,7 @@ def event_map_download(request, event_id, index="1", **kwargs):
         raster_map.image,
         (f"{event.name} - {title}_" f"{raster_map.get_calibration_string()}_"),
         mime=mime,
-        headers=headers
+        headers=headers,
     )
     return resp
 
@@ -2120,7 +2120,7 @@ def event_geojson_download(request, event_id):
     # TODO: Implement POST to set geojson AND DELETE to remove the geojson
     event = get_object_or_404(
         Event.objects.exclude(geojson_layer="").exclude(geojson_layer__isnull=True),
-        aid=event_id
+        aid=event_id,
     )
 
     event.check_user_permission(request.user)
@@ -2153,14 +2153,14 @@ def competitor_gpx_download(request, competitor_id):
         Competitor.objects.select_related("event", "event__club", "device"),
         aid=competitor_id,
     )
- 
+
     event = competitor.event
 
     event.check_user_permission(request.user)
     is_event_admin = event.club.is_admin(request.user)
     if competitor.start_time > now() or not event.could_display_maps(request.user):
         raise Response(status=status.HTTP_425_TOO_EARLY)
-    
+
     gpx_data = competitor.gpx
 
     headers = {}
@@ -2198,7 +2198,7 @@ def two_d_rerun_race_status(request):
     event, raster_map, _, _ = Event.get_map_at_index(request.user, event_id, map_idx)
 
     event.check_user_permission(request.user)
-    
+
     if event.start_date > now() or not event.could_display_maps():
         return Response(status=status.HTTP_425_TOO_EARLY)
 
@@ -2211,7 +2211,7 @@ def two_d_rerun_race_status(request):
             "extension": "webp",
         },
     )
-        
+
     response_json = {
         "status": "OK",
         "racename": event.name,
@@ -2296,7 +2296,7 @@ def two_d_rerun_race_data(request):
     )
 
     event.check_user_permission(request.user)
-    
+
     if event.start_date > now() or not event.could_display_maps():
         return Response(status=status.HTTP_425_TOO_EARLY)
 

@@ -78,12 +78,19 @@ class AcceptInvite(SingleObjectMixin, View):
             if EmailAddress.objects.filter(
                 user=self.request.user, email=invitation.email
             ).exists():
-                # TODO: Check admins seats are not full
-                accept_invitation(
-                    invitation=invitation,
-                    request=self.request,
-                    signal_sender=self.__class__,
-                )
+                if invitation.club.admins.count() >= 10:
+                    get_invitations_adapter().add_message(
+                        self.request,
+                        messages.ERROR,
+                        "invitations/messages/seats_full.txt",
+                        {"email": invitation.email, "club": invitation.club},
+                    )
+                else:
+                    accept_invitation(
+                        invitation=invitation,
+                        request=self.request,
+                        signal_sender=self.__class__,
+                    )
                 return redirect("dashboard_club:select_view")
             get_invitations_adapter().stash_verified_email(
                 self.request, invitation.email

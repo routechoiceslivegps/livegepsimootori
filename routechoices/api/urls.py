@@ -144,23 +144,6 @@ urlpatterns = [
                                             views.event_map_list,
                                             name="event_map_list",
                                         ),
-                                        path(
-                                            "default",
-                                            include(
-                                                [
-                                                    path(
-                                                        "",
-                                                        views.event_map_detail,
-                                                        name="event_main_map_detail",
-                                                    ),
-                                                    re_path(
-                                                        r"^\.(?P<extension>png|webp|avif|jpeg|kmz)$",
-                                                        views.event_map_download,
-                                                        name="event_main_map_download_with_format",
-                                                    ),
-                                                ]
-                                            ),
-                                        ),
                                         re_path(
                                             r"^(?P<index>[1-9]\d*)",
                                             include(

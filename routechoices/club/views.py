@@ -416,13 +416,6 @@ def event_map_view(request, slug, index="1", extension=None):
             f"{event.club.nice_url}{event.slug}/map{('-' + index) if index != '1' else ''}"
         )
 
-    redirect_view = "event_main_map_download_with_format"
-    redirect_kwargs = {"event_id": event.aid}
-
-    if index != "1":
-        redirect_view = "event_map_download_with_format"
-        redirect_kwargs["index"] = index
-
     if extension is None and request.META.get("HTTP_USER_AGENT", "").startswith(
         "Java/"
     ):
@@ -432,14 +425,12 @@ def event_map_view(request, slug, index="1", extension=None):
     ext = mime.split("/")[1]
     if ext not in ("jpeg", "png", "avif", "webp"):
         ext = "webp"
-    
-    redirect_kwargs["extension"] = ext
 
     return redirect(
         reverse(
-            redirect_view,
+            "event_map_download_with_format",
             host="api",
-            kwargs=redirect_kwargs,
+            kwargs={"event_id": event.aid, "index": index, "extension": ext},
         )
     )
 

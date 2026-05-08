@@ -62,9 +62,14 @@ class InviteForm(forms.Form, CleanEmailMixin):
         initial="",
     )
 
-    def save(self, email, club):
+    def clean_email(self):
+        if self.club.admins.count() >= 10:
+            raise forms.ValidationError("No administrator spots available anymore.")
+        return self.cleaned_data["email"]
+
+    def save(self):
         self.clean()
-        return Invitation.create(email=email, club=club)
+        return Invitation.create(email=self.cleaned_data["email"], club=self.club)
 
 
 class InvitationAdminAddForm(forms.ModelForm, CleanEmailMixin):

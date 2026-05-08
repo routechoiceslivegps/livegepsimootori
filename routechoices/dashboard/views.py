@@ -27,11 +27,11 @@ from django.utils.timezone import now
 from django.views.decorators.cache import cache_page
 from django_hosts.resolvers import reverse
 from hijack.views import ReleaseUserView
-from invitations.forms import InviteForm
 from kagi.views.backup_codes import BackupCodesView
 from oauth2_provider.models import AccessToken
 from user_sessions.views import SessionDeleteOtherView
 
+from invitations.forms import InviteForm
 from routechoices.core.models import (
     PRIVACY_SECRET,
     Club,
@@ -87,8 +87,14 @@ def requires_club_in_session(function):
         club = get_object_or_404(
             Club,
             slug__iexact=club_slug,
-            admins=request.user,
         )
+
+        if not club.is_admin(request.user):
+            return render(
+                request,
+                "403.html",
+                {"message": "You are not administrator of this club"},
+            )
 
         obj = None
         if obj_aid := kwargs.get("event_id"):
@@ -141,19 +147,17 @@ def home_view(request):
 def club_invite_add_view(request):
     club = request.club
     email = request.GET.get("email")
-
+    form = InviteForm(initial={"email": email})
     if request.method == "POST":
         form = InviteForm(request.POST, club=club)
         if form.is_valid():
             email = form.cleaned_data["email"]
-            invite = form.save(email, club)
+            invite = form.save()
             invite.inviter = request.user
             invite.save()
             invite.send_invitation(request)
             messages.success(request, "Invite sent successfully")
             return redirect("dashboard_club:edit_view", club_slug=request.club.slug)
-    else:
-        form = InviteForm(initial={"email": email})
     return render(
         request,
         "dashboard/invite_add.html",

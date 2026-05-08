@@ -27,6 +27,7 @@ urlpatterns = [
         "admin/",
         admin.site.urls,
     ),
+    path(r"contact/", site_views.contact, name="contact_view"),
     path(
         "participations",
         views.participations_view,

@@ -116,7 +116,9 @@ class RequestInviteForm(Form):
     club = ModelChoiceField(
         label="Club",
         help_text="Enter the club you want to be added as administrator",
-        queryset=Club.objects.filter(forbid_invite_request=False),
+        queryset=Club.objects.filter(
+            forbid_invite_request=False, upgraded=True
+        ).exclude(subscription_paused_at__isnull=False),
     )
 
     def clean_club(self):
@@ -125,7 +127,7 @@ class RequestInviteForm(Form):
         if self.user in admins:
             self.add_error("club", "You are already an admin of this club.")
         if len(admins) >= 10:
-            self.add_error("club", "This club has no administrator seats available")
+            self.add_error("club", "No administrator spots available for this club.")
         return club
 
 
@@ -146,7 +148,9 @@ class ClubForm(ModelForm):
     def clean_admins(self):
         admins = self.cleaned_data["admins"]
         if len(admins) > 10:
-            raise ValidationError("You have reach the maximum amount of 10 administrators")
+            raise ValidationError(
+                "You have reach the maximum amount of 10 administrators"
+            )
         return admins
 
     def clean_slug(self):

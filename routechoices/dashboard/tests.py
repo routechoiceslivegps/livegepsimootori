@@ -1182,7 +1182,7 @@ class TestDashboard(EssentialDashboardBase):
 class TestInviteFlow(APITestCase):
     def setUp(self):
         self.client = APIClient(HTTP_HOST="dashboard.routechoices.dev")
-        self.club = Club.objects.create(name="My Club", slug="myclub")
+        self.club = Club.objects.create(name="My Club", slug="myclub", upgraded=True)
         self.user = User.objects.create_user(
             "alice", f"alice{random.randrange(1000)}@example.com", "pa$$word123"
         )
