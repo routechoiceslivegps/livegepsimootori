@@ -2223,7 +2223,7 @@ function RCEvent(infoURL, clockURL, locale) {
 		isCurrentlyFetchingRoutes = true;
 		let targetURL = dataURL;
 		if (isLive && liveDataLastKey) {
-			targetURL += `/${liveDataLastKey}`;
+			targetURL += liveDataLastKey;
 		}
 		targetURL += fetchDataUrlSuffix;
 		fetch(targetURL, {
