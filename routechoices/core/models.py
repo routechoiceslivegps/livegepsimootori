@@ -1974,7 +1974,7 @@ class Event(models.Model, SomewhereOnEarth):
             | Q(visibility=VISIBILITY_REPLAY, end_date__lt=now())
         )
         if user and user.is_authenticated:
-            extra_query |= Q(club_in=user.club_set.all())
+            extra_query |= Q(club__in=user.club_set.all())
 
         event_qs = event_qs.filter(extra_query)
 
