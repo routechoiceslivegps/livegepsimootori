@@ -118,7 +118,10 @@ def serialize_map(event, index, raster_map, title):
     view = "event_map_download_with_format"
     if index == 0:
         view = "event_main_map_download_with_format"
-    kwargs["extension"] = raster_map.mime_type.split("/")[1]
+    ext = raster_map.mime_type.split("/")[1]
+    if ext not in ("jpeg", "png", "webp", "avif"):
+        ext = "webp"
+    kwargs["extension"] = ext
     if index > 0:
         kwargs["index"] = index + 1
     url = reverse(view, host="api", kwargs=kwargs)
