@@ -379,19 +379,19 @@ function showLocalTime(el) {
 	const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 	console.log(`User timezone: ${userTimezone}`);
 	const timezoneInput = document.getElementById("id_timezone");
-	u(timezoneInput).parent().hide();
+	u(timezoneInput).parent().addClass("d-none");
 	if (timezoneInput && timezoneInput.value !== userTimezone) {
 		timezoneInput.value = userTimezone;
-		u(".datetimepicker").map((el) => {
-			const val = el.value;
-			if (val) {
-				const date = new Date(
-					`${val.substring(0, 10)}T${val.substring(11, 19)}Z`,
-				);
-				el.value = date.toLocaleString("sv");
-			}
-		});
 	}
+	u(".datetimepicker").each((el) => {
+		const val = el.value;
+		if (val) {
+			const date = new Date(
+				`${val.substring(0, 10)}T${val.substring(11, 19)}Z`,
+			);
+			el.value = date.toLocaleString("sv");
+		}
+	});
 
 	const slugPrefix = u(
 		`<br/><span id="id_slug-prefix" class="pe-2" style="color: #999">${window.local.clubUrl}</span>`,
@@ -513,7 +513,7 @@ function showLocalTime(el) {
 	});
 
 	// next line must come after formset initialization
-	u(".datetimepicker").map((el) => {
+	u(".datetimepicker").each((el) => {
 		makeTimeFieldClearable(el);
 		makeFieldNowable(el);
 		new tempusDominus.TempusDominus(el);
@@ -542,7 +542,7 @@ function showLocalTime(el) {
 			competitorsStartTimeElsWithSameStartAsEvents = u(
 				competitorsStartTimeElsWithSameStartAsEvents,
 			).filter((el) => {
-				el.id !== ev.target.id;
+				return el.id !== ev.target.id;
 			}).nodes;
 		},
 	);

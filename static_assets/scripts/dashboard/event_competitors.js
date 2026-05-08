@@ -55,18 +55,18 @@ function showLocalTime(el) {
 	const timezoneInput = document.getElementById("id_timezone");
 	if (timezoneInput && timezoneInput.value !== userTimezone) {
 		timezoneInput.value = userTimezone;
-		u(".datetimepicker").map((el) => {
-			const val = el.value;
-			if (val) {
-				const date = new Date(
-					`${val.substring(0, 10)}T${val.substring(11, 19)}Z`,
-				);
-				el.value = date.toLocaleString("sv");
-			}
-		});
 	}
+	u(".datetimepicker").each((el) => {
+		const val = el.value;
+		if (val) {
+			const date = new Date(
+				`${val.substring(0, 10)}T${val.substring(11, 19)}Z`,
+			);
+			el.value = date.toLocaleString("sv");
+		}
+	});
 
-	u(".datetimepicker").map((el) => {
+	u(".datetimepicker").each((el) => {
 		makeTimeFieldClearable(el);
 		makeFieldNowable(el);
 		el.autocomplete = "off";
