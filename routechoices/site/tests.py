@@ -101,7 +101,7 @@ class SiteViewsTestCase(EssentialApiBase):
         )
         client = APIClient(HTTP_HOST="dashboard.routechoices.dev")
         client.force_login(self.user)
-        url = self.reverse_and_check("contact_view", "/contact", host="dashboard")
+        url = self.reverse_and_check("contact_view", "/contact/", host="dashboard")
         response = client.post(
             url, {"subject": "Hello, can I ask a question?", "message": "Does it work?"}
         )
