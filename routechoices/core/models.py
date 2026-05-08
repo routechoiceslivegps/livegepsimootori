@@ -1670,6 +1670,7 @@ class Event(models.Model, SomewhereOnEarth):
         verbose_name="Club",
         related_name="events",
         on_delete=models.CASCADE,
+        editable=False,
     )
     name = models.CharField(verbose_name="Name", max_length=255)
     slug = models.CharField(
