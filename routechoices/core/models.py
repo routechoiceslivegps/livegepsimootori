@@ -1516,7 +1516,7 @@ class EventSet(models.Model):
     name = models.CharField(verbose_name="Name", max_length=255)
     create_page = models.BooleanField(
         default=False,
-        help_text="Whether a page with all the events of the set will be generated",
+        help_text="Whether a page with all the events of the bundle will be available",
     )
     slug = models.CharField(
         verbose_name="Slug",
@@ -1532,13 +1532,13 @@ class EventSet(models.Model):
     )
     list_secret_events = models.BooleanField(
         default=False,
-        help_text="Whether the page lists the secret events of the set",
+        help_text="Whether the page lists the secret events",
     )
     description = models.TextField(
         blank=True,
         default="",
         help_text=(
-            "This text will be displayed on the set page, "
+            "This text will be displayed on the bundle page, "
             "use markdown formatting"
         ),
     )
@@ -1737,25 +1737,25 @@ class Event(models.Model, SomewhereOnEarth):
     )
     open_registration = models.BooleanField(
         default=False,
-        help_text="Participants can register themselves to the event.",
+        help_text="Allow anyone to register thenselves as participants of this event.",
     )
     acceptable_tags = models.CharField(
-        verbose_name="Registration accepted categories",
+        verbose_name="Participants accepted categories upon registration",
         max_length=256,
         blank=True,
         default="",
     )
     allow_route_upload = models.BooleanField(
         default=False,
-        help_text="Participants can add their GPS trace from a file after the event.",
+        help_text="Allows the registered participants to upload their GPS file.",
     )
     send_interval = models.PositiveIntegerField(
-        "Send interval (seconds)",
+        "Live upload interval (seconds)",
         default=5,
         help_text=(
-            "If using dedicated trackers, enter here the sending "
-            "interval set for the devices to, if using the "
-            "official smartphone app leave the value at 5 seconds"
+            "If using live GPS trackers, enter here the upload "
+            "interval setting of your devices, when using one of the "
+            "official app, leave the value at 5 seconds"
         ),
         validators=[MinValueValidator(1)],
     )
@@ -1763,21 +1763,19 @@ class Event(models.Model, SomewhereOnEarth):
         "Tail length (seconds)",
         default=60,
         help_text=(
-            "Default tail length when a user opens the event. "
-            "Can be overridden by the viewers in the event page settings tab."
+            "Set the length of the tails displayed on the map when user open the event page."
         ),
     )
-    # TODO: rename to set
     event_set = models.ForeignKey(
         EventSet,
+        verbose_name="bundle",
         null=True,
         blank=True,
-        verbose_name="set",
         related_name="events",
         on_delete=models.SET_NULL,
         help_text=(
-            "Events within the same set are listed together "
-            "on the listing page."
+            "Event Bundle this belongs to. Event within the same bundle are listed together "
+            "on the our pages."
         ),
     )
     emergency_contacts = models.TextField(
@@ -1853,7 +1851,7 @@ class Event(models.Model, SomewhereOnEarth):
         super().validate_unique(exclude)
         qs = EventSet.objects.filter(club_id=self.club_id, slug__iexact=self.slug)
         if qs.exists():
-            raise ValidationError("An Event Set with this URL already exists.")
+            raise ValidationError("An Event Bundle with this URL already exists.")
 
     def could_display_maps(self, user=None):
         t = now()
