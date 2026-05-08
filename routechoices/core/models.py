@@ -1445,9 +1445,9 @@ PRIVACY_PUBLIC = "public"
 PRIVACY_SECRET = "secret"
 PRIVACY_PRIVATE = "private"
 PRIVACY_CHOICES = (
-    (PRIVACY_PUBLIC, "Public"),
+    (PRIVACY_PUBLIC, "Published"),
     (PRIVACY_SECRET, "Secret"),
-    (PRIVACY_PRIVATE, "Staff"),
+    (PRIVACY_PRIVATE, "Staff Only"),
 )
 
 
@@ -1691,10 +1691,9 @@ class Event(models.Model, SomewhereOnEarth):
         max_length=8,
         choices=PRIVACY_CHOICES,
         default=PRIVACY_PUBLIC,
+        verbose="Visibility",
         help_text=(
-            "Public: A link is shown on your club page | "
-            "Secret: The URL is kept secret from the public, feel free to share | "
-            "Staff: Only accessible by the club administrators"
+            "Control weither we publish your event on our pages, or weither you prefer we keep it a secret although it stays accessible to all with the hidden URL, or weither we keep accessible only for your authenticated club staff members."
         ),
     )
     visibility = models.CharField(
