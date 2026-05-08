@@ -446,8 +446,8 @@ class VirtualDeviceFilter(admin.SimpleListFilter):
 
 
 class DeviceBrandFilter(admin.SimpleListFilter):
-    title = "tracker brand"
-    parameter_name = "tracker_brand"
+    title = "brand"
+    parameter_name = "brand"
 
     def lookups(self, request, model_admin):
         return [
