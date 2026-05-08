@@ -1455,9 +1455,9 @@ VISIBILITY_LIVE = "live"
 VISIBILITY_PREVIEW = "preview"
 VISIBILITY_REPLAY = "replay"
 VISIBILITY_CHOICES = (
-    (VISIBILITY_LIVE, "When it Starts"),
-    (VISIBILITY_PREVIEW, "Before it Starts"),
-    (VISIBILITY_REPLAY, "When it Finishes"),
+    (VISIBILITY_LIVE, "From start date"),
+    (VISIBILITY_REPLAY, "After completion"),
+    (VISIBILITY_PREVIEW, "Always available"),
 )
 
 
@@ -1691,17 +1691,18 @@ class Event(models.Model, SomewhereOnEarth):
         max_length=8,
         choices=PRIVACY_CHOICES,
         default=PRIVACY_PUBLIC,
-        verbose_name="Visibility",
+        verbose_name="Publication",
         help_text=(
-            "Control weither we publish your event on our pages, or weither you prefer we keep it a secret although it stays accessible to all with the hidden URL, or weither we keep accessible only for your authenticated club staff members."
+            "Controls how we publish your event, weither we list your event on our pages, or weither you prefer we keep it a secret although it stays accessible to all with the link, or weither we keep accessible only for your authenticated club staff members."
         ),
     )
     visibility = models.CharField(
         max_length=8,
+        verbose_name="Availability",
         choices=VISIBILITY_CHOICES,
         default=VISIBILITY_LIVE,
         help_text=(
-            "Set when your audience can start seeing your event"
+            "Controls when this event becomes visible to users.
         ),
     )
     featured = models.BooleanField(
