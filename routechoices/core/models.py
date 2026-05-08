@@ -2294,7 +2294,7 @@ class Event(models.Model, SomewhereOnEarth):
             if cached := cache.get(cache_key):
                 return cached
             raster_map = StaticMap(1200, 630, 10)
-            marker = CircleMarker((center[1], center[0]), "#00000000", 10)
+            marker = CircleMarker((float(center[1]), float(center[0])), "#00000000", 10)
             raster_map.add_marker(marker)
             img = raster_map.render(zoom=13)
             cache.set(cache_key, img, DURATION_ONE_MONTH)
