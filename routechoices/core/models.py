@@ -160,10 +160,19 @@ def events_to_sets_for_type(
             all_events_with_set = all_events_with_set.filter(featured=True)
 
         if type == "upcoming":
-            all_events_with_set = all_events_with_set.filter(
-                visibility_date__gt=now(),
-                visibility_date__lte=now() + timedelta(hours=24),
-            ).order_by("visibility_date", "name")
+            all_events_with_set = (
+                all_events_with_set.annotate(
+                    visibility_date=Case(
+                        When(visibility=VISIBILITY_REPLAY, then=F("end_date")),
+                        default=F("start_date"),
+                    )
+                )
+                .filter(
+                    visibility_date__gt=now(),
+                    visibility_date__lte=now() + timedelta(hours=24),
+                )
+                .order_by("visibility_date", "name")
+            )
 
         elif type == "live":
             all_events_with_set = all_events_with_set.filter(
