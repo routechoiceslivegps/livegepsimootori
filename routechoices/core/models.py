@@ -1516,7 +1516,7 @@ class EventSet(models.Model):
     name = models.CharField(verbose_name="Name", max_length=255)
     create_page = models.BooleanField(
         default=False,
-        help_text="Whether a page with all the events of the bundle will be available",
+        help_text="Creates a page with all the events of the bundle listed",
     )
     slug = models.CharField(
         verbose_name="Slug",
@@ -1532,13 +1532,13 @@ class EventSet(models.Model):
     )
     list_secret_events = models.BooleanField(
         default=False,
-        help_text="Whether the page lists the secret events",
+        help_text="Controls if the page lists the secret events",
     )
     description = models.TextField(
         blank=True,
         default="",
         help_text=(
-            "This text will be displayed on the bundle page, "
+            "Text displayed on the page, "
             "use markdown formatting"
         ),
     )
@@ -1695,7 +1695,7 @@ class Event(models.Model, SomewhereOnEarth):
         default=PRIVACY_PUBLIC,
         verbose_name="Visibility",
         help_text=(
-            "Controls how we publish your event, weither we list your event on our pages, or weither you prefer we keep it a secret although it stays accessible to all with the link, or weither we keep accessible only for your authenticated club staff members."
+            "Controls how we publish your event, if we list your event on our pages, or if you prefer we keep it a secret while it stays accessible to all with the link, or if we keep accessible only for your authenticated club staff members."
         ),
     )
     visibility = models.CharField(
