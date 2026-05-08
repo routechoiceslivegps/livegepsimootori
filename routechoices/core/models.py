@@ -2434,8 +2434,8 @@ class Device(models.Model, SomewhereOnEarth):
 
     class Meta:
         ordering = ["aid"]
-        verbose_name = "device"
-        verbose_name_plural = "devices"
+        verbose_name = "GPS device"
+        verbose_name_plural = "GPS devices"
 
     def __str__(self):
         return self.aid
