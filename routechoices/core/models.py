@@ -637,7 +637,9 @@ class Map(models.Model, SomewhereOnEarth):
     )
     creation_date = models.DateTimeField(auto_now_add=True)
     modification_date = models.DateTimeField(auto_now=True)
-    club = models.ForeignKey(Club, related_name="maps", on_delete=models.CASCADE, editable=False)
+    club = models.ForeignKey(
+        Club, related_name="maps", on_delete=models.CASCADE, editable=False
+    )
     name = models.CharField(max_length=255)
     image = models.ImageField(
         upload_to=map_upload_path,
@@ -1512,7 +1514,11 @@ class EventSet(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
     modification_date = models.DateTimeField(auto_now=True)
     club = models.ForeignKey(
-        Club, verbose_name="Club", related_name="event_sets", on_delete=models.CASCADE, editable=False
+        Club,
+        verbose_name="Club",
+        related_name="event_sets",
+        on_delete=models.CASCADE,
+        editable=False,
     )
     name = models.CharField(verbose_name="Name", max_length=255)
     create_page = models.BooleanField(
@@ -1538,10 +1544,7 @@ class EventSet(models.Model):
     description = models.TextField(
         blank=True,
         default="",
-        help_text=(
-            "Text displayed on the page, "
-            "use markdown formatting"
-        ),
+        help_text=("Text displayed on the page, " "use markdown formatting"),
     )
 
     def save(self, *args, **kwargs):
@@ -1557,7 +1560,7 @@ class EventSet(models.Model):
                 name="event_set_name_club_uc", fields=("name", "club")
             )
         ]
-        verbose_name="Event bundle"
+        verbose_name = "Event bundle"
 
     def __str__(self):
         return self.name
@@ -1704,9 +1707,7 @@ class Event(models.Model, SomewhereOnEarth):
         verbose_name="Availability",
         choices=VISIBILITY_CHOICES,
         default=VISIBILITY_LIVE,
-        help_text=(
-            "Controls when this event becomes visible to users."
-        ),
+        help_text=("Controls when this event becomes visible to users."),
     )
     featured = models.BooleanField(
         "Featured",

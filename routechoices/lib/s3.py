@@ -92,7 +92,7 @@ def serve_image_from_s3(
     mime=None,
     default_mime="image/png",
     img_mode=None,
-    headers=None
+    headers=None,
 ):
     if not mime:
         mime = get_best_image_mime(request, default_mime)
