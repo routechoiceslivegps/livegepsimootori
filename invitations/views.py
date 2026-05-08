@@ -74,11 +74,11 @@ class AcceptInvite(SingleObjectMixin, View):
             )
             # Redirect to sign-up since they might be able to register anyway.
             return redirect(self.get_signup_redirect())
-
         if self.request.user.is_authenticated:
             if EmailAddress.objects.filter(
                 user=self.request.user, email=invitation.email
             ).exists():
+                # TODO: Check admins seats are not full
                 accept_invitation(
                     invitation=invitation,
                     request=self.request,
