@@ -115,14 +115,17 @@ class RequestInviteForm(Form):
 
     club = ModelChoiceField(
         label="Club",
-        help_text="Enter the club you want to be added as admin",
+        help_text="Enter the club you want to be added as administrator",
         queryset=Club.objects.filter(forbid_invite_request=False),
     )
 
     def clean_club(self):
         club = self.cleaned_data["club"]
-        if self.user in club.admins.all():
+        admins = club.admins.all()
+        if self.user in admins:
             self.add_error("club", "You are already an admin of this club.")
+        if len(admins) >= 10:
+            self.add_error("club", "This club has no administrator seats available")
         return club
 
 
