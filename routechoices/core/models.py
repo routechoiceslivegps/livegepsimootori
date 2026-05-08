@@ -1696,7 +1696,7 @@ class Event(models.Model, SomewhereOnEarth):
         default=PRIVACY_PUBLIC,
         verbose_name="Visibility",
         help_text=(
-            "Controls how we publish your event, if we list your event on our pages, or if you prefer we keep it a secret while it stays accessible to all with the link, or if we keep accessible only for your authenticated club staff members."
+            "Controls how we show the event, if it is published on our pages, or if it is kept secret while accessible to all, or if it is accessible only for its authenticated club staff members."
         ),
     )
     visibility = models.CharField(
