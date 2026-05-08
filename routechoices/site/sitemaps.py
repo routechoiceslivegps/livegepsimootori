@@ -18,7 +18,6 @@ class StaticViewSitemap(Sitemap):
             "site:landing_page",
             "site:trackers_view",
             "site:pricing_view",
-            "site:contact_view",
             "site:privacy_policy_view",
             "site:tos_view",
         ]

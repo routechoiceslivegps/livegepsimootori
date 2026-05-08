@@ -153,7 +153,7 @@ def contact(request):
             )
             msg.send()
             messages.success(request, "Message sent successfully")
-            return redirect(reverse("site:contact_view", host="www"))
+            return redirect(reverse("contact_view", host="dashboard"))
     else:
         form = ContactForm()
     return render(request, "site/contact.html", {"form": form})

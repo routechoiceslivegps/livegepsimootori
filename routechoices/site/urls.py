@@ -38,7 +38,6 @@ urlpatterns = [
                         ),
                         name="account_signup",
                     ),
-                    re_path(r"^contact/?$", views.contact, name="contact_view"),
                     re_path(
                         r"^events/?$", views.events_view, name="public_events_view"
                     ),

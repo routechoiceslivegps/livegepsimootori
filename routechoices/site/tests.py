@@ -88,10 +88,6 @@ class SiteViewsTestCase(EssentialApiBase):
         response = client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        url = self.reverse_and_check("site:contact_view", "/contact", host="www")
-        response = client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
         url = self.reverse_and_check("site:pricing_view", "/pricing", host="www")
         response = client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -103,9 +99,9 @@ class SiteViewsTestCase(EssentialApiBase):
         EmailAddress.objects.create(
             user=self.user, email=self.user.email, primary=True, verified=True
         )
-        client = APIClient(HTTP_HOST="www.routechoices.dev")
+        client = APIClient(HTTP_HOST="dashboard.routechoices.dev")
         client.force_login(self.user)
-        url = self.reverse_and_check("site:contact_view", "/contact", host="www")
+        url = self.reverse_and_check("contact_view", "/contact", host="dashboard")
         response = client.post(
             url, {"subject": "Hello, can I ask a question?", "message": "Does it work?"}
         )
