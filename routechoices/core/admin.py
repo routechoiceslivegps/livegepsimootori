@@ -259,13 +259,13 @@ class HasLocationFilter(admin.SimpleListFilter):
 
 
 class HasDeviceFilter(admin.SimpleListFilter):
-    title = "whether it has devices"
-    parameter_name = "has_devices"
+    title = "whether it has GPS Trackers"
+    parameter_name = "has_trackers"
 
     def lookups(self, request, model_admin):
         return [
-            ("true", "With devices"),
-            ("false", "Without devices"),
+            ("true", "With GPS Trackers"),
+            ("false", "Without GPS Trackers"),
         ]
 
     def queryset(self, request, queryset):
@@ -414,14 +414,14 @@ class HasClubsFilter(admin.SimpleListFilter):
 
 
 class VirtualDeviceFilter(admin.SimpleListFilter):
-    title = "whether it is an actual device"
+    title = "whether it is a GPS Tracker or a GPS File"
     parameter_name = "device_type"
 
     def lookups(self, request, model_admin):
         return [
             ("all", "All"),
-            (None, "Real Devices"),
-            ("virtual", "Virtual Devices"),
+            (None, "GPS Trackers"),
+            ("files", "GPS Files"),
         ]
 
     def choices(self, cl):
@@ -438,7 +438,7 @@ class VirtualDeviceFilter(admin.SimpleListFilter):
             }
 
     def queryset(self, request, queryset):
-        if self.value() == "virtual":
+        if self.value() == "files":
             return queryset.filter(virtual=True)
         if self.value():
             return queryset.all()
@@ -446,8 +446,8 @@ class VirtualDeviceFilter(admin.SimpleListFilter):
 
 
 class DeviceBrandFilter(admin.SimpleListFilter):
-    title = "device brand"
-    parameter_name = "device_brand"
+    title = "tracker brand"
+    parameter_name = "tracker_brand"
 
     def lookups(self, request, model_admin):
         return [
@@ -511,7 +511,7 @@ class ClubDeviceOwnershipInline(admin.TabularInline):
             obj.device.aid,
         )
 
-    device_link.short_description = "Device"
+    device_link.short_description = "GPS Tracker"
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related("device", "club")
@@ -686,6 +686,7 @@ class ClubAdmin(admin.ModelAdmin):
     map_count.admin_order_field = "map_count"
     geojson_count.admin_order_field = "geojson_count"
     device_count.admin_order_field = "device_count"
+    device_count.short_description = "GPS Tracker Count"
 
 
 class ExtraMapInline(admin.TabularInline):
@@ -888,7 +889,7 @@ class DeviceAdmin(admin.ModelAdmin):
 
     list_display = (
         "aid",
-        "device_name",
+        "brand",
         "creation_date",
         "modification_date",
         "last_location_datetime",
@@ -944,7 +945,7 @@ class DeviceAdmin(admin.ModelAdmin):
             original.aid,
         )
 
-    original_link.short_description = "Original Device"
+    original_link.short_description = "GPS Tracker"
 
     def download_gpx(self, obj):
         return format_html(
@@ -1034,7 +1035,7 @@ class DeviceAdmin(admin.ModelAdmin):
     archive_count.admin_order_field = "archive_count"
     last_location_datetime.admin_order_field = "_last_location_datetime"
 
-    def device_name(self, obj):
+    def brand(self, obj):
         return get_device_name(obj.user_agent) or obj.user_agent
 
 
@@ -1056,6 +1057,8 @@ class ImeiDeviceAdmin(admin.ModelAdmin):
         return format_html(
             '<a href="/admin/core/device/{}/change">{}</a>', obj.device_id, obj.device
         )
+
+    device_link.short_description = "GPS Tracker"
 
     def clubs(self, obj):
         return mark_safe(
