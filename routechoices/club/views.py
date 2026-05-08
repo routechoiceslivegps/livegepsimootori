@@ -429,7 +429,11 @@ def event_map_view(request, slug, index="1", extension=None):
         extension = "jpeg"
 
     mime = get_image_mime_from_request(extension, event.map.mime_type)
-    redirect_kwargs["extension"] = mime[6:]
+    ext = mime.split("/")[1]
+    if ext not in ("jpeg", "png", "avif", "webp"):
+        ext = "webp"
+    
+    redirect_kwargs["extension"] = ext
 
     return redirect(
         reverse(
