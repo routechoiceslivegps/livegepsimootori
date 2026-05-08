@@ -2407,7 +2407,7 @@ class Device(models.Model, SomewhereOnEarth):
         ],
     )
     user_agent = models.CharField(max_length=200, blank=True)
-    virtual = models.BooleanField(default=False)
+    virtual = models.BooleanField(default=False, editable=False)
     owners = models.ManyToManyField(
         Club,
         through="DeviceClubOwnership",
