@@ -1447,16 +1447,17 @@ PRIVACY_PRIVATE = "private"
 PRIVACY_CHOICES = (
     (PRIVACY_PUBLIC, "Public"),
     (PRIVACY_SECRET, "Secret"),
-    (PRIVACY_PRIVATE, "Private"),
+    (PRIVACY_PRIVATE, "Staff"),
 )
 
-VISIBILITY_PREVIEW = "preview"
+
 VISIBILITY_LIVE = "live"
+VISIBILITY_PREVIEW = "preview"
 VISIBILITY_REPLAY = "replay"
 VISIBILITY_CHOICES = (
-    (VISIBILITY_PREVIEW, "Pre-Event"),
-    (VISIBILITY_LIVE, "Live"),
-    (VISIBILITY_REPLAY, "Replay"),
+    (VISIBILITY_LIVE, "When it Starts"),
+    (VISIBILITY_PREVIEW, "Before it Starts"),
+    (VISIBILITY_REPLAY, "When it Finishes"),
 )
 
 
@@ -1691,9 +1692,9 @@ class Event(models.Model, SomewhereOnEarth):
         choices=PRIVACY_CHOICES,
         default=PRIVACY_PUBLIC,
         help_text=(
-            "Public: Listed on your club's front page | "
-            "Secret: Can be opened with a link, however not listed on frontpage | "
-            "Private: Only a logged in admin of the club can access the page"
+            "Public: A link is shown on your club page | "
+            "Secret: The URL is kept secret from the public, feel free to share | "
+            "Staff: Only accessible by the club administrators"
         ),
     )
     visibility = models.CharField(
@@ -1701,9 +1702,7 @@ class Event(models.Model, SomewhereOnEarth):
         choices=VISIBILITY_CHOICES,
         default=VISIBILITY_LIVE,
         help_text=(
-            "Pre-Event: Maps are visible from event creation date | "
-            "Live: Maps are visible from event start date | "
-            "Replay: Maps are visible from event end date"
+            "Set when your audience can start seeing your event"
         ),
     )
     featured = models.BooleanField(
