@@ -1691,7 +1691,7 @@ class Event(models.Model, SomewhereOnEarth):
         max_length=8,
         choices=PRIVACY_CHOICES,
         default=PRIVACY_PUBLIC,
-        verbose="Visibility",
+        verbose_name="Visibility",
         help_text=(
             "Control weither we publish your event on our pages, or weither you prefer we keep it a secret although it stays accessible to all with the hidden URL, or weither we keep accessible only for your authenticated club staff members."
         ),
