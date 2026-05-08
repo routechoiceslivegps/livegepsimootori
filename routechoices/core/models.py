@@ -1531,13 +1531,13 @@ class EventSet(models.Model):
     )
     list_secret_events = models.BooleanField(
         default=False,
-        help_text="Whether the page lists the secret events of the event set",
+        help_text="Whether the page lists the secret events of the set",
     )
     description = models.TextField(
         blank=True,
         default="",
         help_text=(
-            "This text will be displayed on the event set page, "
+            "This text will be displayed on the set page, "
             "use markdown formatting"
         ),
     )
@@ -1767,16 +1767,17 @@ class Event(models.Model, SomewhereOnEarth):
             "Can be overridden by the viewers in the event page settings tab."
         ),
     )
+    # TODO: rename to set
     event_set = models.ForeignKey(
         EventSet,
         null=True,
         blank=True,
-        verbose_name="Event Set",
+        verbose_name="set",
         related_name="events",
         on_delete=models.SET_NULL,
         help_text=(
-            "Events within the same event set will be grouped together "
-            "on the event listing page."
+            "Events within the same set are listed together "
+            "on the listing page."
         ),
     )
     emergency_contacts = models.TextField(
