@@ -140,6 +140,12 @@ class ClubForm(ModelForm):
             "description",
         ]
 
+    def clean_admins(self):
+        admins = self.clean_data["admins"]
+        if len(admins) > 10:
+            raise ValidationError("You have reach the maximum amount of administrators")
+        return admins
+
     def clean_slug(self):
         slug = self.cleaned_data["slug"].lower()
 
