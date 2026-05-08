@@ -1556,6 +1556,7 @@ class EventSet(models.Model):
                 name="event_set_name_club_uc", fields=("name", "club")
             )
         ]
+        verbose_name="Event bundle"
 
     def __str__(self):
         return self.name
@@ -1774,7 +1775,7 @@ class Event(models.Model, SomewhereOnEarth):
         related_name="events",
         on_delete=models.SET_NULL,
         help_text=(
-            "Event Bundle this belongs to. Event within the same bundle are listed together "
+            "Event bundle this belongs to. Event within the same bundle are listed together "
             "on the our pages."
         ),
     )
@@ -1851,7 +1852,7 @@ class Event(models.Model, SomewhereOnEarth):
         super().validate_unique(exclude)
         qs = EventSet.objects.filter(club_id=self.club_id, slug__iexact=self.slug)
         if qs.exists():
-            raise ValidationError("An Event Bundle with this URL already exists.")
+            raise ValidationError("An Event bundle with this URL already exists.")
 
     def could_display_maps(self, user=None):
         t = now()
