@@ -636,7 +636,7 @@ class Map(models.Model, SomewhereOnEarth):
     )
     creation_date = models.DateTimeField(auto_now_add=True)
     modification_date = models.DateTimeField(auto_now=True)
-    club = models.ForeignKey(Club, related_name="maps", on_delete=models.CASCADE)
+    club = models.ForeignKey(Club, related_name="maps", on_delete=models.CASCADE, editable=False)
     name = models.CharField(max_length=255)
     image = models.ImageField(
         upload_to=map_upload_path,
