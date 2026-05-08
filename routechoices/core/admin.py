@@ -838,7 +838,7 @@ class EventAdmin(admin.ModelAdmin):
         link = f"/admin/core/eventset/{obj.event_set_id}/change/"
         return format_html('<a href="{}">{}</a>', link, obj.event_set)
     
-    event_set_link.short_description = "Set"
+    event_set_link.short_description = "Bundle"
     club_link.short_description = "Club"
 
 
