@@ -1,0 +1,33 @@
+{% extends "dashboard/home.html" %}
+{% load compress static %}
+{% block sub_content %}
+    <div class="row">
+        <div class="col-12">
+            <h1>
+                <i class="fa-solid fa-triangle-exclamation"></i> Delete tracker {{ device.device.aid }}?
+            </h1>
+            <p>This will not actually remove the tracker and it device but just remove it from your tracker list.</p>
+            <p>You can re-add it to your tracker list later.</p>
+            <form action="" method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="type-confirmation" class="form-label">Type "DELETE" to confirm</label>
+                    <input name="type-confirmation"
+                           type="text"
+                           class="form-control"
+                           autocomplete="off">
+                </div>
+                <button type="submit" class="btn btn-danger mb-1" id="submit-btn" disabled>
+                    <i class="fa-solid fa-trash-can"></i> Delete!
+                </button>
+            </form>
+        </div>
+    </div>
+{% endblock sub_content %}
+
+{% block extra_body %}
+    {% compress js %}
+        <script src="{% static 'vendor/umbrella-3.3.3/umbrella.min.js' %}"></script>
+        <script src="{% static 'scripts/submit-form-commons.js' %}"></script>
+    {% endcompress %}
+{% endblock extra_body %}

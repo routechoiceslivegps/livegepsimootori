@@ -623,7 +623,23 @@ def device_edit_view(request, device_id):
 @login_required
 @requires_club_in_session
 def device_delete_view(request, map_id):
-    pass
+    club = request.club
+    device = request.object
+
+    if request.method == "POST":
+        device.delete()
+        messages.success(request, "Tracker deleted")
+        if link := request.GET.get("next"):
+            return redirect(link)
+        return redirect("dashboard_club:device:list_view", club_slug=request.club.slug)
+    return render(
+        request,
+        "dashboard/device_delete.html",
+        {
+            "club": club,
+            "device": device,
+        },
+    )
 
 
 @login_required
