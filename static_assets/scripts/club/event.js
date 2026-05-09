@@ -2296,7 +2296,7 @@ function RCEvent(infoURL, clockURL, locale) {
 				displayCompetitorList();
 				routesLastFetched = performance.now();
 				if (zoomOnRunners && runnerPoints.length) {
-					map.fitBounds(L.bounds(runnerPoints).pad(0.1), { maxZoom: 15 });
+					map.fitBounds((L.bounds(runnerPoints)).pad(0.1), { maxZoom: 15 });
 					zoomOnRunners = false;
 				}
 				computeSplitTimes();
