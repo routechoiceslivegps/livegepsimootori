@@ -1045,7 +1045,7 @@ class TestDashboard(EssentialDashboardBase):
         # List event set
         url = self.reverse_and_check(
             "dashboard_club:event_set:list_view",
-            "/clubs/myclub/event-sets/",
+            "/clubs/myclub/bundles/",
             extra_kwargs={"club_slug": self.club.slug},
         )
         res = self.client.get(url)
@@ -1056,14 +1056,14 @@ class TestDashboard(EssentialDashboardBase):
         es = EventSet.objects.first()
         url = self.reverse_and_check(
             "dashboard_club:event_set:edit_view",
-            f"/clubs/myclub/event-sets/{es.aid}/",
+            f"/clubs/myclub/bundles/{es.aid}/",
             extra_kwargs={"event_set_id": es.aid, "club_slug": self.club.slug},
         )
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         res = self.client.post(url, {"name": "Easy Competition"})
         self.assertEqual(res.status_code, status.HTTP_302_FOUND)
-        res = self.client.get("/clubs/myclub/event-sets/")
+        res = self.client.get("/clubs/myclub/bundles/")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertNotContains(res, "Tough Competition")
         self.assertContains(res, "Easy Competition")
@@ -1119,14 +1119,14 @@ class TestDashboard(EssentialDashboardBase):
         # Delete event set
         url = self.reverse_and_check(
             "dashboard_club:event_set:delete_view",
-            f"/clubs/myclub/event-sets/{es.aid}/delete",
+            f"/clubs/myclub/bundles/{es.aid}/delete",
             extra_kwargs={"event_set_id": es.aid, "club_slug": self.club.slug},
         )
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         res = self.client.post(url)
         self.assertEqual(res.status_code, status.HTTP_302_FOUND)
-        res = self.client.get("/clubs/myclub/event-sets/")
+        res = self.client.get("/clubs/myclub/bundles/")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertNotContains(res, "Tough Competition")
         self.assertNotContains(res, "Easy Competition")
