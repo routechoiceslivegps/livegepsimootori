@@ -16,7 +16,7 @@
                         <div class="row">
                             <div class="col-12">
                                 <h1>
-                                    Hello {{ request.user.username }}! 🙂
+                                    Hello <i>{{ request.user.username }}</i>! <i class="fa-solid fa-hand"></i>
                                 </h1>
                                 <div>
                                     <a href="{% host_url 'account_logout' host 'dashboard' %}"
