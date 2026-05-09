@@ -31,7 +31,7 @@ th {
 		/* Behave  like a "row" */
 		border: none;
 		position: relative;
-		padding-left: 130px;
+		padding-left: 100px;
 	}
 
 	td:before {
