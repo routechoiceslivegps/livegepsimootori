@@ -1776,8 +1776,8 @@ class Event(models.Model, SomewhereOnEarth):
         related_name="events",
         on_delete=models.SET_NULL,
         help_text=(
-            "Event bundle this belongs to. Event within the same bundle are listed together "
-            "on the our pages."
+            "Event within the same bundle are listed together "
+            "on our pages."
         ),
     )
     emergency_contacts = models.TextField(
