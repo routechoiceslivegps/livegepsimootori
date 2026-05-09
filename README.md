@@ -4,7 +4,7 @@
 Livegepsimootori
 ================
 
-Mono-repo for the server elements of the Live GPS Tracking platform "Routechoices".
+Mono-repo for the server engine of the Live GPS Tracking platform "Routechoices".
 
 It includes:
 
