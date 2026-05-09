@@ -6,9 +6,8 @@ Livegepsimootori
 
 Mono-repo for the server engine code of the Live GPS Tracking platform "Routechoices".
 
-It includes:
+It help serving:
 
-  - The site static content.
   - A frontend server for listing and displaying GPS tracking event pages.
   - A dashboard for users to manage their events, maps, devices...
   - A REST API and its documentation.
@@ -16,6 +15,7 @@ It includes:
   - A WMS server for serving events maps.
   - A Tile server for serving background layers tiles.
   - An admin interface for the staff.
+  - Some static content.
 
 This project heavily relies on the Django and Tornado Web Python frameworks.
 
