@@ -53,22 +53,6 @@
                 <ul class="nav navbar-nav me-auto mb-2 mb-lg-0">
                 </ul>
                 <ul class="nav navbar-nav d-flex flex-nowrap">
-                    {% if event.privacy != "private" %}
-                    <li class="nav-item">
-                        <a class="nav-link text-nowrap"
-                           href="{{ club.get_absolute_url }}"
-                           {% if is_event_page %}target="_blank"{% endif %}
-                           rel="noopener noreferrer"><i class="fa-solid fa-compass"></i> <span id="club-events-link-text">Events by {{ club.name }}</span></a>
-                    </li>
-                    {% if is_event_page and event.id %}
-                        <li class="nav-item" id="export-nav-item">
-                            <a class="nav-link text-nowrap"
-                               href="{{ club.get_absolute_url }}{{ event.slug }}/export"
-                               target="_blank"
-                               rel="noopener noreferrer"><i class="fa-solid fa-arrow-up-right-from-square"></i> <span id="export-text">Export</span></a>
-                        </li>
-                    {% endif %}
-                    {% endif %}
                     <li class="nav-item">
                         <button class="theme-selector" type="button" data-bs-toggle="tooltip">
                             <svg aria-hidden="true" class="theme-selector-icon">
