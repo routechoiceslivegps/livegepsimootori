@@ -27,8 +27,11 @@
                 <table class="table mb-3">
                     <thead>
                         <tr>
-                            <th>Event</th>
-                            <th>Bundle</th>
+                            <th>
+                                Event
+                                <br/>
+                                <small class="text-muted">Bundle</small>
+                            </th>
                             <th class="text-nowrap">
                                 Start Date
                                 <br />
@@ -45,20 +48,21 @@
                     <tbody>
                         {% for event in events %}
                             <tr class="collapsable">
-                                <td>
+                                <td class="{% if not event.event_set %}no-bundle{% endif %}">
                                     <a class="btn btn-primary dashboard-link" href="{{ event.get_absolute_url }}" target="_blank">
                                         <i class="fa-solid fa-trophy"></i> <span class="flags-polyfill" title="{{ event.country_name }}"></span> <span>{{ event.name }}</span>
                                     </a>
-                                </td>
-                                <td class="{% if not event.event_set %}no-data{% endif %}">
                                     {% if event.event_set %}
-                                        <a class="btn btn-secondary dashboard-link" href="{% url 'dashboard_club:event_set:edit_view' event_set_id=event.event_set.aid club_slug=request.club.slug %}"><i class="fa-solid fa-folder-open"></i> <span>{{ event.event_set.name }}</span></a>
-                                    {% else %}
-                                        &nbsp;
+                                    <br />
+                                        {% if event.event_set.create_page %}
+                                        <a class="btn btn-primary dashboard-link btn-sm" href="{{ event.event_set.url }}" ><i class="fa-solid fa-folder-open"></i> <span>{{ event.event_set.name }}</span></a>
+                                        {% else %}
+                                        <button type="button" disabled class="btn btn-primary dashboard-link btn-sm"><i class="fa-solid fa-folder-open"></i> <span>{{ event.event_set.name }}</span></button>
+                                        {% endif %}
                                     {% endif %}
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-info dashboard-link" disabled>
+                                    <button type="button" class="btn btn-sm btn-info dashboard-link" disabled>
                                         <i class="fa-solid fa-clock"></i> <span class="date-utc text-nowrap"
                                             data-date="{{ event.start_date|date:'c' }}"
                                             style="font-variant-numeric: tabular-nums">{{ event.start_date|date:'Y-m-d H:i:s' }} UTC</span>
@@ -71,7 +75,7 @@
                                     </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-info dashboard-link" disabled>
+                                    <button type="button" class="btn btn-sm btn-info dashboard-link" disabled>
                                         <i class="fa-solid fa-{% if event.privacy == 'public' %}users{% elif event.privacy == 'secret' %}user-secret{% else %}ban{% endif %}"></i> <span>{{ event.get_privacy_display }}</span>
                                     </button>
                                     <br />

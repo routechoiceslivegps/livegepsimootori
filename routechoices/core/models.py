@@ -38,7 +38,6 @@ from django.http.response import Http404
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.utils.functional import cached_property
-from django.utils.html import format_html
 from django.utils.timezone import now
 from django_hosts.resolvers import reverse
 from PIL import Image, ImageDraw, ImageFile
@@ -1568,18 +1567,6 @@ class EventSet(models.Model):
         if self.create_page:
             return f"{self.club.nice_url}{self.slug}"
         return ""
-
-    def display(self):
-        if self.create_page:
-            return format_html(
-                '<a class="btn btn-primary dashboard-link" href="{}" ><i class="fa-solid fa-folder-open"></i> <span>{}</span></a>',
-                self.url,
-                str(self),
-            )
-        return format_html(
-            '<button type="button" disabled class="btn btn-primary dashboard-link"><i class="fa-solid fa-folder-open"></i> <span>{}</span></button>',
-            str(self),
-        )
 
     @property
     def shortcut(self):

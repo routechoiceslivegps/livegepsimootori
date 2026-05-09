@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-12">
             <h1>
-                <i class="fa-solid fa-triangle-exclamation"></i> Delete tracker {{ device.device.aid }}?
+                <i class="fa-solid fa-triangle-exclamation"></i> Delete tracker <i>{{ device.nickname }}</i>?
             </h1>
             <p>This will not actually remove the tracker and it device but just remove it from your tracker list.</p>
             <p>You can re-add it to your tracker list later.</p>
@@ -18,7 +18,7 @@
                            autocomplete="off">
                 </div>
                 <button type="submit" class="btn btn-danger mb-1" id="submit-btn" disabled>
-                    <i class="fa-solid fa-trash-can"></i> Delete!
+                    <i class="fa-solid fa-trash"></i> Delete!
                 </button>
             </form>
         </div>

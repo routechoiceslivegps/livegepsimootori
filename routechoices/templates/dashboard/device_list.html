@@ -44,7 +44,7 @@
                                 </td>
                                 <td class="{% if not device_ownership.nickname %}no-data{% endif %}" >
                                     {% if device_ownership.nickname %}
-                                        <button class="btn btn-info dashboard-link" href="#"><span>{{ device_ownership.nickname }}</span></button>
+                                        <button class="btn btn-info dashboard-link" type="button" disabled><i class="fa-solid fa-at"></i> <span>{{ device_ownership.nickname }}</span></button>
                                     {% endif %}
                                 </td>
                                 <td>
@@ -79,7 +79,7 @@
                                     <a class="btn btn-secondary dashboard-link" href="{% url 'dashboard_club:device:edit_view' device_id=device.aid club_slug=request.club.slug club_slug=request.club.slug %}">
                                         <i class="fa-solid fa-pen-to-square"></i> <span>Edit</span>
                                     </a>
-                                    <a class="btn btn-danger dashboard-link" href="#">
+                                    <a class="btn btn-danger dashboard-link" href="{% url 'dashboard_club:device:delete_view' device_id=device.aid club_slug=request.club.slug %}">
                                         <i class="fa-solid fa-trash"></i> <span>Delete</span>
                                     </a>
                                 </div>

@@ -23,7 +23,7 @@
             {% endif %}
             <h2>
                 {% if context == 'edit' %}
-                    Edit Tracker {{ device.device.aid }}
+                    Edit Tracker <i>{{ device.nickname }}</i>
                 {% endif %}
             </h2>
             <form action="" method="post">
@@ -34,36 +34,22 @@
                 </button>
                 {% if context == 'edit' %}
                     <a href="{% url 'dashboard_club:device:delete_view' device_id=device.device.aid club_slug=request.club.slug %}"
-                       class="btn btn-danger mb-1 float-end"><i class="fa-solid fa-trash-can"></i> Delete</a>
+                       class="btn btn-danger mb-1 float-end"><i class="fa-solid fa-trash"></i> Delete</a>
                 {% endif %}
             </form>
         </div>
     </div>
-    {% if event_set %}
-        <hr />
-        {% if event_set.events.all %}
-            <h4>Contains following events</h4>
-            <ul>
-                {% for event in event_set.events.all %}
-                    <li>
-                        <a href="{% url 'dashboard_club:event:edit_view' event_id=event.aid club_slug=request.club.slug %}">{{ event.name }}</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <h4>Not used in any events</h4>
-        {% endif %}
-    {% endif %}
 {% endblock sub_sub_content %}
 
 {% block extra_body %}
-    <script src="{% static 'scripts/load-local-variables.js' %}?v=2023112700"
-            data-club-url="{{ club.nice_url }}"></script>
+    <script src="{% static 'scripts/load-local-variables.js' %}?v=2023112700" data-api-base-url="{% host_url 'api_doc' host 'api' %}" data-club-slug="{{ club.slug }}" data-csrf-token="{{ csrf_token }}">
+    </script>
     {% compress js %}
         <script src="{% static 'vendor/umbrella-3.3.3/umbrella.min.js' %}"></script>
-        <script src="{% static 'vendor/slugify-1.6.5/slugify.js' %}"></script>
-        <script src="{% static 'scripts/dashboard/common.js' %}"></script>
-        <script src="{% static 'scripts/dashboard/event_set_edit.js' %}"></script>
+        <script src="{% static 'vendor/tom-select-2.0.1/tom-select.custom.js' %}"></script>
+        <script src="{% static 'vendor/reqwest-2.0.5/reqwest.min.js' %}"></script>
+        <script src="{% static 'vendor/papaparse-5.3.2/papaparse.min.js' %}"></script>
+        <script src="{% static 'scripts/dashboard/device_add.js' %}"></script>
         <script src="{% static 'scripts/submit-form-commons.js' %}"></script>
     {% endcompress %}
 {% endblock extra_body %}

@@ -335,8 +335,10 @@ def device_list_view(request):
     ordering_timestamp_blank_last = Case(
         When(device___last_location_datetime=None, then=Value(1)), default=Value(0)
     )
-    ordering_timestamp_blank_last = Case(
-        When(device___last_location_datetime=None, then=Value(1)), default=Value(0)
+    ordering_battery_blank_last = Case(
+        When(device___last_location_datetime=None, then=Value(1)),
+        When(Q(device__battery_level__isnull=True), then=Value(0)),
+        default=Value(-1),
     )
 
     ordering_query = request.GET.get("sort_by")
@@ -353,9 +355,9 @@ def device_list_view(request):
     elif ordering_query == "seen_dsc":
         ordering = [ordering_timestamp_blank_last, "-device___last_location_datetime"]
     elif ordering_query == "battery_asc":
-        ordering = ["device__battery_level"]
+        ordering = [ordering_battery_blank_last, "device__battery_level"]
     elif ordering_query == "battery_dsc":
-        ordering = ["-device__battery_level"]
+        ordering = [ordering_battery_blank_last, "-device__battery_level"]
     else:
         ordering = [ordering_nickname_blank_last, "nickname", "device__aid"]
 
@@ -622,7 +624,7 @@ def device_edit_view(request, device_id):
 
 @login_required
 @requires_club_in_session
-def device_delete_view(request, map_id):
+def device_delete_view(request, device_id):
     club = request.club
     device = request.object
 
@@ -891,17 +893,18 @@ def event_set_edit_view(request, event_set_id):
 
 @login_required
 @requires_club_in_session
-def event_set_delete_view(request, event_set_id):
-    event_set = get_object_or_404(EventSet, aid=event_set_id)
+def event_set_delete_view(request, *args):
     if request.method == "POST":
-        event_set.delete()
+        request.object.delete()
         messages.success(request, "Bundle deleted")
-        return redirect("dashboard_club:event:list_view", club_slug=request.club.slug)
+        return redirect(
+            "dashboard_club:event_set:list_view", club_slug=request.club.slug
+        )
     return render(
         request,
         "dashboard/event_set_delete.html",
         {
-            "event_set": event_set,
+            "event_set": request.object,
         },
     )
 
