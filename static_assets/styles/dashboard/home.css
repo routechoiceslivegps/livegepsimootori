@@ -28,6 +28,9 @@
 .dashboard-link {
 	margin-bottom: 0.25rem !important;
 	white-space: nowrap;
+	max-width:100%;
+	}
+	.dashboard-link span {
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
