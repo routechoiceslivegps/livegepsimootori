@@ -1094,7 +1094,7 @@ function RCEvent(infoURL, clockURL, locale) {
 								if (
 									!(Array.isArray(response.maps) && response.maps.length > 0)
 								) {
-									map.fitBounds(geojsonLayer.getBounds().pad(0.1), {
+									map.fitBounds(L.bounds(geojsonLayer.getBounds()).pad(0.1), {
 										maxZoom: 15,
 										padding: [25, 25],
 									});
@@ -2296,7 +2296,7 @@ function RCEvent(infoURL, clockURL, locale) {
 				displayCompetitorList();
 				routesLastFetched = performance.now();
 				if (zoomOnRunners && runnerPoints.length) {
-					map.fitBounds(runnerPoints.pad(0.1), { maxZoom: 15 });
+					map.fitBounds(L.bounds(runnerPoints).pad(0.1), { maxZoom: 15 });
 					zoomOnRunners = false;
 				}
 				computeSplitTimes();
