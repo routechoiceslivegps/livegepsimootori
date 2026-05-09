@@ -1701,7 +1701,7 @@ class Event(models.Model, SomewhereOnEarth):
         db_index=True,
     )
     end_date = models.DateTimeField(
-        verbose_name="End Date",
+        verbose_name="Closing Date",
     )
     privacy = models.CharField(
         max_length=8,

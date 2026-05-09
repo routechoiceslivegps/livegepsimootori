@@ -482,7 +482,7 @@ class EventForm(ModelForm):
         start_date = self.cleaned_data.get("start_date")
         end_date = self.cleaned_data.get("end_date")
         if start_date and end_date and end_date < start_date:
-            self.add_error("end_date", "End Date must be after the Start Date.")
+            self.add_error("end_date", "Closing Date must be after the Start Date.")
 
         # Check events by trial users is within trial period
         if club.is_on_free_trial and end_date > club.free_trial_end:
