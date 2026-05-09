@@ -1094,7 +1094,7 @@ function RCEvent(infoURL, clockURL, locale) {
 								if (
 									!(Array.isArray(response.maps) && response.maps.length > 0)
 								) {
-									map.fitBounds(geojsonLayer.getBounds(), {
+									map.fitBounds(geojsonLayer.getBounds().pad(0.1), {
 										maxZoom: 15,
 										padding: [25, 25],
 									});
