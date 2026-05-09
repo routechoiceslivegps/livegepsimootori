@@ -151,9 +151,21 @@ urlpatterns = [
                                                     name="add_view",
                                                 ),
                                                 re_path(
-                                                    r"^(?P<device_id>[^/]+)/?$",
-                                                    api_views.device_ownership_api_view,
-                                                    name="device_ownership_api_view",
+                                                    r"^(?P<device_id>[^/]+)/",
+                                                    include(
+                                                        [
+                                                            path(
+                                                                "",
+                                                                views.device_edit_view,
+                                                                name="edit_view",
+                                                            ),
+                                                            path(
+                                                                "delete",
+                                                                views.device_delete_view,
+                                                                name="delete_view",
+                                                            ),
+                                                        ]
+                                                    ),
                                                 ),
                                             ],
                                             "dashboard_club_device",
@@ -293,7 +305,7 @@ urlpatterns = [
                                     ),
                                 ),
                                 path(
-                                    "event-sets/",
+                                    "bundles/",
                                     include(
                                         (
                                             [

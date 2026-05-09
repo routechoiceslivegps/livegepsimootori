@@ -15,25 +15,25 @@
                 <table class="table table-striped mb-3">
                     <thead>
                         <tr>
-                            <th>Name</th>
+                            <th>Bundle</th>
                             <th>Event Count</th>
-                            <th>Link</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for event_set in event_sets %}
                             <tr>
                                 <td>
-                                    <a href="{% url 'dashboard_club:event_set:edit_view' event_set_id=event_set.aid club_slug=request.club.slug %}">{{ event_set.name }}</a>
+                                    {{ event_set.display }}
                                 </td>
-                                <td>{{ event_set.events.all.count }}</td>
+                                <td><button type="button" class="btn btn-info dashboard" disabled><span>{{ event_set.events.all.count }}</span> <i class="fa-solid fa-trophy"></i></button></td>
                                 <td>
-                                    {% if event_set.url %}
-                                        <a href="{{ event_set.url }}"
-                                           target="_blank"
-                                           class="btn btn-primary btn-sm"
-                                           role="button"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open</a>
-                                    {% endif %}
+                                    <a class="btn btn-secondary dashboard-link"href="{% url 'dashboard_club:event_set:edit_view' event_set_id=event_set.aid club_slug=request.club.slug %}">
+                                        <i class="fa-solid fa-arrow-up-right-from-square"></i> <span>Edit</span>
+                                    </a>
+                                    <a class="btn btn-danger dashboard-link" href="{% url 'dashboard_club:event_set:delete_view' event_set_id=event_set.aid club_slug=request.club.slug %}">
+                                        <i class="fa-solid fa-trash"></i> <span>Delete</span>
+                                    </a>
                                 </td>
                             </tr>
                         {% endfor %}

@@ -9,16 +9,15 @@
 {% endblock extra_head %}
 
 {% block sub_sub_content %}
-    <div class="row">
-        <div class="mb3">
+<div class="row">
+    <div class="col-12">
+        <div class="mb-3">
             {% if not devices %}<p>You haven't added any devices.</p>{% endif %}
             <a href="{% url 'dashboard_club:device:add_view' club_slug=request.club.slug %}"
-               class="btn btn-primary mb-1"><i class="fa-solid fa-circle-plus"></i> Add new device</a>
+               class="btn btn-primary mb-1 me-1 mb-1"><i class="fa-solid fa-circle-plus"></i> Add new device</a>
             {% if devices %}
-                <br>
-                <br>
                 <a href="{% url 'dashboard_club:device:list_download' club_slug=request.club.slug %}"
-                   class="btn btn-info mb-1"><i class="fa-solid fa-download"></i> Download device list</a>
+                   class="btn btn-secondary mb-1 me-1 mb-1"><i class="fa-solid fa-download"></i> Download device list</a>
             {% endif %}
         </div>
         {% if devices %}
@@ -28,12 +27,10 @@
             <table class="table table-striped mb-3" style="vertical-align: middle;">
                 <thead>
                     <tr>
-                        <th data-sort-name="device-id">Device ID</th>
-                        <th data-sort-name="nickname">Nickname</th>
-                        <th data-sort-name="seen">Last Seen*</th>
-                        <th data-sort-name="battery">Battery&nbsp;%</th>
-                        <th>Last Used By*</th>
-                        <th></th>
+                        <th><a data-sort-name="device-id">Tracker</a></th>
+                        <th><a data-sort-name="nickname">Nickname</a></th>
+                        <th><a data-sort-name="seen">Last Seen</a> & <a data-sort-name="battery">Battery Level</a></th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -41,52 +38,28 @@
                         {% with device=device_ownership.device %}
                             <tr class="collapsable">
                                 <td>
-                                    <button class="btn btn-sm copy-btn btn-dark text-nowrap"
-                                            data-value="{{ device.aid }}"
-                                            type="button">
-                                        {{ device.aid }} <i class="fa-regular fa-copy"></i>
+                                    <button type="button" class="btn copy-btn btn-primary dashboard-link" data-value="{{ device.aid }}">
+                                        <i class="fa-solid fa-mobile"></i> <span>{{ device.aid }}</span>
                                     </button>
                                 </td>
-                                <td>
-                                    <button class="btn btn-sm edit-nick-btn float-end"
-                                            style="margin-top: -4px"
-                                            data-nick="{{ device_ownership.nickname }}"
-                                            data-dev-id="{{ device.aid }}"
-                                            type="button">
-                                        <i class="fa-solid fa-pen-to-square"></i>
-                                    </button>
+                                <td class="{% if not device_ownership.nickname %}no-data{% endif %}" >
                                     {% if device_ownership.nickname %}
-                                        {{ device_ownership.nickname }}
-                                    {% else %}
-                                        -
+                                        <button class="btn btn-info dashboard-link" href="#"><span>{{ device_ownership.nickname }}</span></button>
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if device.last_location %}
-                                        <button class="btn btn-sm text-nowrap border border-0" disabled type="button">
+                                        <button type="button" class="btn btn-info dashboard-link" disabled >
                                             <i class="fa-solid fa-stopwatch"></i> <span class="date-utc text-nowrap" data-date="{{ device.last_location_datetime|date:'c' }}">{{ device.last_location_datetime|date:'Y-m-d H:i:s' }} UTC</span>
                                         </button>
-                                        <br />
-                                        <a class="btn btn-sm btn-success text-nowrap"
-                                           target="_blank"
-                                           rel="noopener noreferrer"
-                                           href="https://map.routechoices.com/?latlon={{ device.last_location.1 }},{{ device.last_location.2 }}"><i class="fa-solid fa-map-location-dot"></i> {{ device.last_location.1 }}, {{ device.last_location.2 }}</a>
+                                        <a class="btn btn-success dashboard-link" target="_blank" rel="noopener noreferrer" href="https://map.routechoices.com/?latlon={{ device.last_location.1 }},{{ device.last_location.2 }}">
+                                            <i class="fa-solid fa-map-location-dot"></i> <span>{{ device.last_location.1 }}, {{ device.last_location.2 }}</span>
+                                        </a>
+                                        {% if device.battery_level != None and device.battery_level != '' %}
+                                            <button type="button" class="btn btn-info dashboard-link" disabled>{{ device.battery_level }}% <i class="fa-solid fa-battery-{{ device.battery_level_text }}"></i></button>
+                                        {% endif %}
                                     {% else %}
-                                        -
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if device.battery_level != None and device.battery_level != '' %}
-                                        {{ device.battery_level }}% <i class="fa-solid fa-battery-{{ device.battery_level_text }}"></i>
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if last_usage|hash:device.id %}
-                                        {{ last_usage|hash:device.id }}
-                                    {% else %}
-                                        -
+                                        <button type="button" class="btn btn-muted dashboard-link" disabled><i class="fa-solid fa-ear-deaf"></i> <span>Not seen in last 2 weeks</span></button>
                                     {% endif %}
                                 </td>
                                 <td>
@@ -103,11 +76,12 @@
 
                                     </div>
                                     {% endif %}
-                                    <button class="btn btn-danger remove-btn mb-1"
-                                            data-dev-id="{{ device.aid }}"
-                                            type="button">
-                                        <i class="fa-solid fa-xmark"></i> Delete
-                                    </button>
+                                    <a class="btn btn-secondary dashboard-link" href="{% url 'dashboard_club:device:edit_view' device_id=device.aid club_slug=request.club.slug club_slug=request.club.slug %}">
+                                        <i class="fa-solid fa-arrow-up-right-from-square"></i> <span>Edit</span>
+                                    </a>
+                                    <a class="btn btn-danger dashboard-link" href="#">
+                                        <i class="fa-solid fa-trash"></i> <span>Delete</span>
+                                    </a>
                                 </div>
                                 </td>
                             </tr>
@@ -118,9 +92,9 @@
             {% if devices.paginator.num_pages > 1 %}
                 {% bootstrap_pagination devices extra=request.GET.urlencode pages_to_show=4 %}
             {% endif %}
-            <div><small class="text-muted">*Last value within last 2 weeks period</small></div>
         {% endif %}
     </div>
+</div>
 {% endblock sub_sub_content %}
 
 {% block extra_body %}

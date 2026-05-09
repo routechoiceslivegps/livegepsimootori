@@ -37,6 +37,7 @@ from routechoices.core.models import (
     Club,
     Competitor,
     Device,
+    DeviceClubOwnership,
     Event,
     EventSet,
     Map,
@@ -312,6 +313,15 @@ class DeviceForm(Form):
     nickname = CharField(max_length=12)
 
 
+class DeviceClubOwnerShipForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    class Meta:
+        model = DeviceClubOwnership
+        fields = ["nickname"]
+
+
 class MapForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -379,9 +389,7 @@ class EventSetForm(ModelForm):
         if self.instance.id:
             qs = qs.exclude(id=self.instance.id)
         if qs.exists():
-            raise ValidationError(
-                "Name already used by another event set of this club."
-            )
+            raise ValidationError("Name already used by another bundle.")
         return name
 
     def clean_slug(self):
@@ -396,7 +404,7 @@ class EventSetForm(ModelForm):
             if self.instance.id:
                 qs = qs.exclude(id=self.instance.id)
             if qs.exists():
-                raise ValidationError("URL already used by another event set.")
+                raise ValidationError("URL already used by another bundle.")
             elif Event.objects.filter(club=self.club, slug__iexact=slug).exists():
                 raise ValidationError("URL already used by an event.")
         return slug
@@ -497,7 +505,7 @@ class EventForm(ModelForm):
                 qs = qs.exclude(id=self.instance.id)
             if qs.exists():
                 self.add_error(
-                    "name", "Name already used by another event in this event set."
+                    "name", "Name already used by another event in same bundle."
                 )
 
         # Check that slug is unique for this club
@@ -510,7 +518,7 @@ class EventForm(ModelForm):
         elif EventSet.objects.filter(
             club_id=club.id, create_page=True, slug__iexact=slug
         ).exists():
-            self.add_error("slug", "URL already used by an event set.")
+            self.add_error("slug", "URL already used by a bundle.")
 
     def clean_start_date(self):
         result = self.cleaned_data.get("start_date")

@@ -40,21 +40,30 @@
                 <table class="table table-striped mb-3">
                     <thead>
                         <tr>
-                            <th>Name</th>
+                            <th>Map</th>
                             <th>Download</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tboby>
                     {% for map in maps %}
                         <tr>
                             <td>
-                                <a href="{% url 'dashboard_club:map:edit_view' map_id=map.aid club_slug=request.club.slug %}"><span class="flags-polyfill" title="{{ map.country_name }}">{{ map.country_flag }}</span> {{ map.name }}</a>
+                                <button type="button" class="btn btn-primary dashboard-link" disabled><i class="fa-solid fa-map"></i> <span>{{ map.name }}</span></button>
                             </td>
                             <td>
                                 {% if map.image %}
-                                    <a class="btn btn-sm btn-primary me-1 mb-1" href="{{ map.image.url }}"><i class="fa-solid fa-download"></i> Image</a>
-                                    <a class="btn btn-sm btn-primary mb-1" href="{{ map.image.url }}.kmz"><i class="fa-solid fa-download"></i> KMZ</a>
+                                <a class="btn btn-info dashboard-link" href="{{ map.image.url }}"><i class="fa-solid fa-download"></i> <span>Image</span></a>
+                                <a class="btn btn-info dashboard-link" href="{{ map.image.url }}.kmz"><i class="fa-solid fa-download"></i> <span>KMZ</span></a>
                                 {% endif %}
+                            </td>
+                            <td>
+                                <a class="btn btn-secondary dashboard-link" href="{% url 'dashboard_club:map:edit_view' map_id=map.aid club_slug=request.club.slug %}">
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i> <span>Edit</span>
+                                </a>
+                                <a class="btn btn-danger dashboard-link" href="{% url 'dashboard_club:map:delete_view' map_id=map.aid club_slug=request.club.slug %}" >
+                                    <i class="fa-solid fa-trash"></i> <span>Delete</span>
+                                </a>
                             </td>
                         </tr>
                     {% endfor %}

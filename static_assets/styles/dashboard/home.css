@@ -24,3 +24,8 @@
 		width: 50%; /* 6 columns */
 	}
 }
+
+.dashboard-link {
+	margin-bottom: 0.25rem !important;
+	white-space: nowrap;
+}

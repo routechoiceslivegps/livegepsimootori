@@ -50,7 +50,7 @@ th {
 Label the data
 */
 	td:nth-of-type(1):before {
-		content: "Device ID";
+		content: "Tracker";
 		font-weight: bold;
 	}
 	td:nth-of-type(2):before {
@@ -58,7 +58,7 @@ Label the data
 		font-weight: bold;
 	}
 	td:nth-of-type(3):before {
-		content: "Last Seen*";
+		content: "Last Seen";
 		font-weight: bold;
 	}
 	td:nth-of-type(4):before {
@@ -66,11 +66,7 @@ Label the data
 		font-weight: bold;
 	}
 	td:nth-of-type(5):before {
-		content: "Last Used By*";
-		font-weight: bold;
-	}
-	td:nth-of-type(6):before {
-		content: "Action";
+		content: "Actions";
 		font-weight: bold;
 	}
 }

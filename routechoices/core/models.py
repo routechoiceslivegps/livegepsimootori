@@ -38,6 +38,7 @@ from django.http.response import Http404
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.utils.functional import cached_property
+from django.utils.html import format_html
 from django.utils.timezone import now
 from django_hosts.resolvers import reverse
 from PIL import Image, ImageDraw, ImageFile
@@ -637,7 +638,9 @@ class Map(models.Model, SomewhereOnEarth):
     )
     creation_date = models.DateTimeField(auto_now_add=True)
     modification_date = models.DateTimeField(auto_now=True)
-    club = models.ForeignKey(Club, related_name="maps", on_delete=models.CASCADE, editable=False)
+    club = models.ForeignKey(
+        Club, related_name="maps", on_delete=models.CASCADE, editable=False
+    )
     name = models.CharField(max_length=255)
     image = models.ImageField(
         upload_to=map_upload_path,
@@ -1512,7 +1515,11 @@ class EventSet(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
     modification_date = models.DateTimeField(auto_now=True)
     club = models.ForeignKey(
-        Club, verbose_name="Club", related_name="event_sets", on_delete=models.CASCADE, editable=False
+        Club,
+        verbose_name="Club",
+        related_name="event_sets",
+        on_delete=models.CASCADE,
+        editable=False,
     )
     name = models.CharField(verbose_name="Name", max_length=255)
     create_page = models.BooleanField(
@@ -1538,10 +1545,7 @@ class EventSet(models.Model):
     description = models.TextField(
         blank=True,
         default="",
-        help_text=(
-            "Text displayed on the page, "
-            "use markdown formatting"
-        ),
+        help_text=("Text displayed on the page, " "use markdown formatting"),
     )
 
     def save(self, *args, **kwargs):
@@ -1557,7 +1561,7 @@ class EventSet(models.Model):
                 name="event_set_name_club_uc", fields=("name", "club")
             )
         ]
-        verbose_name="Event bundle"
+        verbose_name = "Event bundle"
 
     def __str__(self):
         return self.name
@@ -1567,6 +1571,18 @@ class EventSet(models.Model):
         if self.create_page:
             return f"{self.club.nice_url}{self.slug}"
         return ""
+
+    def display(self):
+        if self.create_page:
+            return format_html(
+                '<a class="btn btn-primary dashboard-link" href="{}" ><i class="fa-solid fa-folder-open"></i> <span>{}</span></a>',
+                self.url,
+                str(self),
+            )
+        return format_html(
+            '<button type="button" disabled class="btn btn-primary dashboard-link"><i class="fa-solid fa-folder-open"></i> <span>{}</span></button>',
+            str(self),
+        )
 
     @property
     def shortcut(self):
@@ -1704,9 +1720,7 @@ class Event(models.Model, SomewhereOnEarth):
         verbose_name="Availability",
         choices=VISIBILITY_CHOICES,
         default=VISIBILITY_LIVE,
-        help_text=(
-            "Controls when this event becomes visible to users."
-        ),
+        help_text=("Controls when this event becomes visible to users."),
     )
     featured = models.BooleanField(
         "Featured",
@@ -1775,10 +1789,7 @@ class Event(models.Model, SomewhereOnEarth):
         blank=True,
         related_name="events",
         on_delete=models.SET_NULL,
-        help_text=(
-            "Event within the same bundle are listed together "
-            "on our pages."
-        ),
+        help_text=("Event within the same bundle are listed together " "on our pages."),
     )
     emergency_contacts = models.TextField(
         default="",
@@ -2898,10 +2909,13 @@ class ImeiDevice(models.Model):
 
 class DeviceClubOwnership(models.Model):
     device = models.ForeignKey(
-        Device, related_name="club_ownerships", on_delete=models.CASCADE
+        Device,
+        verbose_name="Tracker",
+        related_name="club_ownerships",
+        on_delete=models.CASCADE,
     )
     club = models.ForeignKey(
-        Club, related_name="device_ownerships", on_delete=models.CASCADE, db_index=True
+        Club, related_name="device_owner", on_delete=models.CASCADE, db_index=True
     )
     creation_date = models.DateTimeField(auto_now_add=True)
     nickname = models.CharField(max_length=12, default="")

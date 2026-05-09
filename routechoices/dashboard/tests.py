@@ -719,9 +719,7 @@ class TestDashboard(EssentialDashboardBase):
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertContains(res, "invalid-feedback")
-        self.assertContains(
-            res, "Name already used by another event in this event set."
-        )
+        self.assertContains(res, "Name already used by another event in same bundle.")
 
         # slug already exists in an event
         res = self.client.post(
@@ -769,7 +767,7 @@ class TestDashboard(EssentialDashboardBase):
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertContains(res, "invalid-feedback")
-        self.assertContains(res, "URL already used by an event set.")
+        self.assertContains(res, "URL already used by a bundle.")
 
         raster_map = Map.objects.create(
             club=self.club,
@@ -1036,7 +1034,7 @@ class TestDashboard(EssentialDashboardBase):
         # Create event set
         url = self.reverse_and_check(
             "dashboard_club:event_set:create_view",
-            "/clubs/myclub/event-sets/new",
+            "/clubs/myclub/bundles/new",
             extra_kwargs={"club_slug": self.club.slug},
         )
         res = self.client.get(url)
@@ -1087,13 +1085,13 @@ class TestDashboard(EssentialDashboardBase):
         self.assertContains(res, "invalid-feedback")
         self.assertContains(res, "URL must be set when creating a page.")
 
-        url = "/clubs/myclub/event-sets/new"
+        url = "/clubs/myclub/bundles/new"
         res = self.client.post(
             url, {"name": "Easy Competition", "create_page": "on", "slug": "someslug"}
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertContains(res, "invalid-feedback")
-        self.assertContains(res, "Name already used by another event set of this club.")
+        self.assertContains(res, "Name already used by another bundle.")
 
         res = self.client.post(
             url,
@@ -1101,7 +1099,7 @@ class TestDashboard(EssentialDashboardBase):
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertContains(res, "invalid-feedback")
-        self.assertContains(res, "URL already used by another event set.")
+        self.assertContains(res, "URL already used by another bundle.")
 
         Event.objects.create(
             club=self.club,

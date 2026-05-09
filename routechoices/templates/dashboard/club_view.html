@@ -55,23 +55,23 @@
         <ul class="nav nav-tabs mb-3">
             <li>
                 <a class="flex-sm-fill text-sm-center nav-link {% if request.resolver_match.view_name == 'dashboard_club:edit_view' %}active{% endif %}"
-                   href="{% url 'dashboard_club:edit_view' club_slug=request.club.slug %}"><i class="fa-solid fa-house-flag"></i> Home</a>
+                   href="{% url 'dashboard_club:edit_view' club_slug=request.club.slug %}"><i class="fa-solid fa-house-flag"></i> <span>Home</span></a>
             </li>
             <li>
                 <a class="flex-sm-fill text-sm-center nav-link {% if request.resolver_match.view_name|slice:':22' == 'dashboard_club:device:' %}active{% endif %}"
-                   href="{% url 'dashboard_club:device:list_view' club_slug=request.club.slug %}"><i class="fa-solid fa-mobile-screen-button"></i> Devices</a>
+                   href="{% url 'dashboard_club:device:list_view' club_slug=request.club.slug %}"><i class="fa-solid fa-mobile"></i> <span>Trackers</span></a>
             </li>
             <li>
                 <a class="flex-sm-fill text-sm-center nav-link {% if request.resolver_match.view_name|slice:':19' == 'dashboard_club:map:' %}active{% endif %}"
-                   href="{% url 'dashboard_club:map:list_view' club_slug=request.club.slug %}"><i class="fa-regular fa-map"></i>  Maps</a>
+                   href="{% url 'dashboard_club:map:list_view' club_slug=request.club.slug %}"><i class="fa-solid fa-map"></i> <span>Maps</span></a>
             </li>
             <li>
                 <a class="flex-sm-fill text-sm-center nav-link {% if request.resolver_match.view_name|slice:':25' in 'dashboard_club:event_set:' %}active{% endif %}"
-                   href="{% url 'dashboard_club:event_set:list_view' club_slug=request.club.slug %}"><i class="fa-solid fa-folder-open"></i> Event Sets</a>
+                   href="{% url 'dashboard_club:event_set:list_view' club_slug=request.club.slug %}"><i class="fa-solid fa-folder-open"></i> <span>Bundles</span></a>
             </li>
             <li>
                 <a class="flex-sm-fill text-sm-center nav-link {% if request.resolver_match.view_name|slice:':21' == 'dashboard_club:event:' %}active{% endif %}"
-                   href="{% url 'dashboard_club:event:list_view' club_slug=request.club.slug %}"><i class="fa-solid fa-trophy"></i> Events</a>
+                   href="{% url 'dashboard_club:event:list_view' club_slug=request.club.slug %}"><i class="fa-solid fa-trophy"></i> <span>Events</span></a>
             </li>
         </ul>
         {% block sub_sub_content %}

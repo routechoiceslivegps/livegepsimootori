@@ -27,11 +27,11 @@ from django.utils.timezone import now
 from django.views.decorators.cache import cache_page
 from django_hosts.resolvers import reverse
 from hijack.views import ReleaseUserView
+from invitations.forms import InviteForm
 from kagi.views.backup_codes import BackupCodesView
 from oauth2_provider.models import AccessToken
 from user_sessions.views import SessionDeleteOtherView
 
-from invitations.forms import InviteForm
 from routechoices.core.models import (
     PRIVACY_SECRET,
     Club,
@@ -49,6 +49,7 @@ from routechoices.dashboard.forms import (
     ClubForm,
     CompetitorFormSet,
     CompetitorUploadGPSForm,
+    DeviceClubOwnerShipForm,
     DeviceForm,
     EventForm,
     EventSetForm,
@@ -115,6 +116,13 @@ def requires_club_in_session(function):
                 aid=obj_aid,
                 club=club,
             )
+        elif obj_aid := kwargs.get("device_id"):
+            obj = get_object_or_404(
+                DeviceClubOwnership.objects.select_related("club"),
+                device__aid=obj_aid,
+                club=club,
+            )
+
         request.object = obj
         request.club = club
         return function(request, *args, **kwargs)
@@ -409,8 +417,8 @@ def device_add_view(request):
     if request.method == "POST":
         # create a form instance and populate it with data from the request:
         form = DeviceForm(request.POST)
-        # check whether it's valid:
         form.fields["device"].queryset = Device.objects.exclude(owners=club)
+        # check whether it's valid:
         if form.is_valid():
             device = form.cleaned_data["device"]
             ownership = DeviceClubOwnership()
@@ -581,9 +589,45 @@ def map_create_view(request):
 
 @login_required
 @requires_club_in_session
+def device_edit_view(request, device_id):
+    club = request.club
+    device = request.object
+    if request.method == "POST":
+        # create a form instance and populate it with data from the request:
+        device_copy = deepcopy(device)
+        form = DeviceClubOwnerShipForm(request.POST, instance=device_copy)
+        # check whether it's valid:
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Changes saved successfully")
+            return redirect(
+                "dashboard_club:device:list_view", club_slug=request.club.slug
+            )
+    else:
+        form = DeviceClubOwnerShipForm(instance=device)
+    return render(
+        request,
+        "dashboard/device_edit.html",
+        {
+            "club": club,
+            "context": "edit",
+            "device": device,
+            "form": form,
+        },
+    )
+
+
+@login_required
+@requires_club_in_session
+def device_delete_view(request, map_id):
+    pass
+
+
+@login_required
+@requires_club_in_session
 def map_edit_view(request, map_id):
     club = request.club
-    raster_map = get_object_or_404(Map, aid=map_id)
+    raster_map = request.object
 
     if request.method == "POST":
         # create a form instance and populate it with data from the request:
@@ -619,7 +663,7 @@ def map_edit_view(request, map_id):
 @requires_club_in_session
 def map_delete_view(request, map_id):
     club = request.club
-    raster_map = get_object_or_404(Map, aid=map_id)
+    raster_map = request.object
 
     if request.method == "POST":
         events_used_in = Event.objects.filter(map_id=raster_map.id).prefetch_related(
@@ -771,7 +815,7 @@ def event_set_create_view(request):
                 r.content_type = "application/json"
                 r.status_code = 201
                 return r
-            messages.success(request, "Event set created successfully")
+            messages.success(request, "Bundle created successfully")
             return redirect(
                 "dashboard_club:event_set:list_view", club_slug=request.club.slug
             )
@@ -832,7 +876,7 @@ def event_set_delete_view(request, event_set_id):
     event_set = get_object_or_404(EventSet, aid=event_set_id)
     if request.method == "POST":
         event_set.delete()
-        messages.success(request, "Event set deleted")
+        messages.success(request, "Bundle deleted")
         return redirect("dashboard_club:event:list_view", club_slug=request.club.slug)
     return render(
         request,

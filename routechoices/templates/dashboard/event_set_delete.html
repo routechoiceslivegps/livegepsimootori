@@ -4,9 +4,9 @@
     <div class="row">
         <div class="col-12">
             <h1>
-                <i class="fa-solid fa-triangle-exclamation	"></i> Delete event set {{ event_set.name }}?
+                <i class="fa-solid fa-triangle-exclamation	"></i> Delete {{ event_set.name }} bundle?
             </h1>
-            <p>This will delete this event set, however the events within will not be deleted.</p>
+            <p>This will delete this bundle, however its events will not be deleted.</p>
             <form action="" method="post">
                 {% csrf_token %}
                 <div class="mb-3">
