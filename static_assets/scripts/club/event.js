@@ -1540,7 +1540,7 @@ function RCEvent(infoURL, clockURL, locale) {
 		prevDisplayRefresh = performance.now();
 		prevMeterDisplayRefresh = performance.now();
 		prevShownTime = getCompetitionStartDate();
-		playbackRate = 8;
+		playbackRate = 64;
 
 		function renderReplay(ts) {
 			if (
