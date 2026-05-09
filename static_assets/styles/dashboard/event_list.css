@@ -51,6 +51,7 @@ Label the data
 	td:nth-of-type(1):before {
 		content: "Event\A Bundle";
 		font-weight: bold;
+		white-space: pre-line;
 	}
 	td:nth-of-type(1).no-bundle:before {
 		content: "Event";
