@@ -861,7 +861,10 @@ class EventApiTestCase(EssentialApiBase):
 
         time.sleep((time.time() // 5 + 1) * 5 - time.time() + 0.1)
         url_delta = self.reverse_and_check(
-            "event_data_delta", f"/events/{event.aid}/data/{key}", "api", {"event_id": event.aid, "previous_key": key}
+            "event_data_delta",
+            f"/events/{event.aid}/data/{key}",
+            "api",
+            {"event_id": event.aid, "previous_key": key},
         )
         res = self.client.get(url_delta)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
