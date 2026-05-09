@@ -49,10 +49,10 @@
                                 </td>
                                 <td>
                                     {% if device.last_location %}
-                                        <button type="button" class="btn btn-info dashboard-link" disabled >
+                                        <button type="button" class="btn btn-sm btn-info dashboard-link" disabled >
                                             <i class="fa-solid fa-stopwatch"></i> <span class="date-utc text-nowrap" data-date="{{ device.last_location_datetime|date:'c' }}">{{ device.last_location_datetime|date:'Y-m-d H:i:s' }} UTC</span>
                                         </button>
-                                        <a class="btn btn-success dashboard-link" target="_blank" rel="noopener noreferrer" href="https://map.routechoices.com/?latlon={{ device.last_location.1 }},{{ device.last_location.2 }}">
+                                        <a class="btn btn-success btn-sm dashboard-link" target="_blank" rel="noopener noreferrer" href="https://map.routechoices.com/?latlon={{ device.last_location.1 }},{{ device.last_location.2 }}">
                                             <i class="fa-solid fa-map-location-dot"></i> <span>{{ device.last_location.1 }}, {{ device.last_location.2 }}</span>
                                         </a>
                                         {% if device.battery_level != None and device.battery_level != '' %}
