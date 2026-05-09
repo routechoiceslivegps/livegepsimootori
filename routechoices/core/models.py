@@ -1538,10 +1538,7 @@ class EventSet(models.Model):
         blank=True,
         default="",
     )
-    list_secret_events = models.BooleanField(
-        default=False,
-        help_text="Controls if the page lists the secret events",
-    )
+    list_secret_events = models.BooleanField(default=False)
     description = models.TextField(
         blank=True,
         default="",

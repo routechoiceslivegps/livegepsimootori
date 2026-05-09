@@ -26,7 +26,6 @@
 	.collapsable > td {
 		/* Behave  like a "row" */
 		border: none;
-		border-bottom: 1px solid #eee;
 		position: relative;
 		padding-left: 100px;
 	}
@@ -50,7 +49,7 @@ Label the data
 	}
 
 	td:nth-of-type(1):before {
-		content: "Name";
+		content: "Event";
 		font-weight: bold;
 	}
 	td:nth-of-type(2):before {
@@ -63,7 +62,7 @@ Label the data
 		white-space: pre-line;
 	}
 	td:nth-of-type(4):before {
-		content: "Visibility";
+		content: "Visibility\A State";
 		font-weight: bold;
 		white-space: pre-line;
 	}

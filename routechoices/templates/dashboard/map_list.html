@@ -1,5 +1,13 @@
 {% extends "dashboard/club_view.html" %}
-{% load django_bootstrap5 hosts static %}
+{% load compress django_bootstrap5 hosts static %}
+{% block extra_head %}
+    {{ block.super }}
+    {% compress css %}
+        <link rel="stylesheet"
+              href="{% static 'styles/dashboard/map_list.css' %}" />
+    {% endcompress %}
+{% endblock extra_head %}
+
 {% block sub_sub_content %}
     <div class="row">
         <div class="col-12">
@@ -37,7 +45,7 @@
                 {% if maps.paginator.num_pages > 1 %}
                     {% bootstrap_pagination maps extra=request.GET.urlencode pages_to_show=4 %}
                 {% endif %}
-                <table class="table table-striped mb-3">
+                <table class="table mb-3" style="vertical-align: middle;">
                     <thead>
                         <tr>
                             <th>Map</th>
@@ -45,9 +53,9 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tboby>
+                    <tbody>
                     {% for map in maps %}
-                        <tr>
+                        <tr class="collapsable">
                             <td>
                                 <button type="button" class="btn btn-primary dashboard-link" disabled><i class="fa-solid fa-map"></i> <span>{{ map.name }}</span></button>
                             </td>
@@ -59,7 +67,7 @@
                             </td>
                             <td>
                                 <a class="btn btn-secondary dashboard-link" href="{% url 'dashboard_club:map:edit_view' map_id=map.aid club_slug=request.club.slug %}">
-                                    <i class="fa-solid fa-arrow-up-right-from-square"></i> <span>Edit</span>
+                                    <i class="fa-solid fa-pen-to-square"></i> <span>Edit</span>
                                 </a>
                                 <a class="btn btn-danger dashboard-link" href="{% url 'dashboard_club:map:delete_view' map_id=map.aid club_slug=request.club.slug %}" >
                                     <i class="fa-solid fa-trash"></i> <span>Delete</span>
@@ -67,7 +75,7 @@
                             </td>
                         </tr>
                     {% endfor %}
-                    </tboby>
+                    </tbody>
                 </table>
                 {% if maps.paginator.num_pages > 1 %}
                     {% bootstrap_pagination maps extra=request.GET.urlencode pages_to_show=4 %}

@@ -28,10 +28,11 @@
 .dashboard-link {
 	margin-bottom: 0.25rem !important;
 	white-space: nowrap;
-	max-width:100%;
-	}
-	.dashboard-link span {
-			max-width:100%;
-	overflow: hidden;
+	max-width: 100%;
 	text-overflow: ellipsis;
+	overflow-x: hidden;
+}
+
+.dashboard-link span {
+	max-width: 100%;
 }

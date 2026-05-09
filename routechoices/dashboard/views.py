@@ -335,6 +335,9 @@ def device_list_view(request):
     ordering_timestamp_blank_last = Case(
         When(device___last_location_datetime=None, then=Value(1)), default=Value(0)
     )
+    ordering_timestamp_blank_last = Case(
+        When(device___last_location_datetime=None, then=Value(1)), default=Value(0)
+    )
 
     ordering_query = request.GET.get("sort_by")
     if ordering_query == "nickname_asc":
