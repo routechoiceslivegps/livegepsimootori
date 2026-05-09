@@ -305,8 +305,7 @@ class ClubDomainForm(ModelForm):
 
 class DeviceForm(Form):
     device = ModelChoiceField(
-        label="Device ID",
-        help_text="Enter the device ID of the tracker",
+        label="Tracker ID",#
         queryset=Device.objects.all(),
         to_field_name="aid",
     )
@@ -964,7 +963,7 @@ class RegisterForm(Form):
     short_name = CharField(max_length=32, required=False)
     tag = ChoiceField(label="Category", required=False)
     device_id = ModelChoiceField(
-        required=False, queryset=Device.objects.none(), label="Device ID"
+        required=False, queryset=Device.objects.none(), label="Tracker ID"
     )
 
     def __init__(self, *args, **kwargs):
