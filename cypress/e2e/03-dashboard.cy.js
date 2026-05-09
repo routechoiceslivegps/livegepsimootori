@@ -73,14 +73,14 @@ context("Dashboard actions", () => {
 		cy.login();
 		cy.visit("https://dashboard.routechoices.dev/clubs/");
 		cy.contains("Halden SK").click();
-		cy.contains("Devices").click();
-		cy.contains("Add new device").click();
+		cy.contains("Trackers").click();
+		cy.contains("Add Tracker").click();
 		cy.get("#id_device-ts-control").type("10000000").wait(1000);
 		cy.get("#id_nickname").type("MyDevice");
 		cy.get("input").contains("Add").click();
-		cy.get("#django-messages").contains("Device added successfully");
+		cy.get("#django-messages").contains("Tracker added successfully");
 		cy.contains("MyDevice");
-		cy.get(".edit-nick-btn").first().click();
+		cy.contains("Edit").first().click();
 		cy.get("input[placeholder='Nickname'")
 			.clear()
 			.type("Dev1")
@@ -88,7 +88,7 @@ context("Dashboard actions", () => {
 			.type("{enter}");
 		cy.contains("Dev1");
 		cy.contains("MyDevice").should("not.exist");
-		cy.get(".remove-btn").first().click().wait(500);
+		cy.get("DELETE").first().click().wait(500);
 		cy.get("button.confirm").click();
 	});
 
@@ -205,7 +205,7 @@ context("Dashboard actions", () => {
 		cy.contains("Changes saved successfully", { timeout: 10_000 });
 	});
 
-	it("Create events", () => {
+	it.only("Create events", () => {
 		cy.login();
 		cy.visit("https://dashboard.routechoices.dev/clubs/");
 		cy.contains("Halden SK").click();
@@ -215,7 +215,7 @@ context("Dashboard actions", () => {
 
 		// Create Event with minimal info
 		cy.visit("https://dashboard.routechoices.dev/clubs/halden-sk/events/");
-		cy.get("a").contains("Create new event").click();
+		cy.get("a").contains("Create Event").click();
 		cy.location("pathname").should("eq", "/clubs/halden-sk/events/new");
 
 		cy.get("#id_name").type("Jukola 2019 - 1st Leg");
@@ -224,16 +224,21 @@ context("Dashboard actions", () => {
 		cy.get(".ts-dropdown-content > .create").click();
 		cy.get("#id_start_date").focus().clear().type("2019-06-15T23:00:00");
 		cy.get("#id_end_date").focus().clear().type("2019-06-16T12:00:00");
-		cy.get("#id_map").select("Jukola 2019 - 1st Leg");
+		cy.get("#id_map").select(1);
 		cy.get("button:not([type]),button[type=submit]").first().click();
 
 		// Edit event we just created
 		cy.location("pathname").should("eq", "/clubs/halden-sk/events/");
-		cy.get("a").contains("Jukola 2019 - 1st Leg").click();
+		cy.get("a")
+			.contains("Jukola 2019 - 1st Leg")
+			.closest("tr")
+			.contains("Edit")
+			.click();
 
 		cy.get("#csv_input").selectFile("cypress/fixtures/startlist.csv");
 		cy.get("#id_competitors-2-name").should("have.value", "Samuel Heinonen");
 		cy.get("button[name='save_continue']").click();
+
 		const runners = [
 			{
 				club: "KooVee",

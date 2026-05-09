@@ -476,7 +476,7 @@ function showLocalTime(el) {
 		},
 		create: (input, callback) => {
 			reqwest({
-				url: `/clubs/${window.local.clubSlug}/event-sets/new`,
+				url: `/clubs/${window.local.clubSlug}/bundles/new`,
 				method: "post",
 				data: {
 					name: input,

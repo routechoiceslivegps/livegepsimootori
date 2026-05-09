@@ -325,7 +325,7 @@ class ImeiApiTestCase(EssentialApiBase):
 class EventSetCreationApiTestCase(EssentialApiBase):
     def setUp(self):
         super().setUp()
-        self.url = self.reverse_and_check("event_set", "/event-set")
+        self.url = self.reverse_and_check("event_set", "/event-set/")
         self.club = Club.objects.create(name="Test club", slug="club")
         self.club.admins.set([self.user])
         self.client.force_login(self.user)

@@ -14,7 +14,7 @@
             <div class="mb-3">
                 {% if not events %}<p>You haven't created any events.</p>{% endif %}
                 <a href="{% url 'dashboard_club:event:create_view' club_slug=request.club.slug %}"
-                   class="btn btn-primary mb-1 me-1"><i class="fa-solid fa-circle-plus"></i> Create new event</a>
+                   class="btn btn-primary mb-1 me-1"><i class="fa-solid fa-circle-plus"></i> Create Event</a>
                 <a href="{% url 'dashboard_club:event:quick_start_view' club_slug=request.club.slug %}"
                    class="btn btn-secondary mb-1"
                    data-bs-toggle="tooltip"

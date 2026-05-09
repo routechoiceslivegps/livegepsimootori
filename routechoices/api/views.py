@@ -1671,7 +1671,7 @@ def create_device_id(request):
         )
     if not request.user.is_authenticated or not request.user.is_superuser:
         raise PermissionDenied(
-            "Authentication Failed, Only validated apps can create new device IDs"
+            "Authentication Failed, Only validated apps can generate Tracker IDs"
         )
     device = Device.objects.create(user_agent=request.session.user_agent[:200])
     return Response(

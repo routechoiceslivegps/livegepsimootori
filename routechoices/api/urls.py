@@ -29,7 +29,7 @@ schema_view = get_schema_view(
 urlpatterns = [
     re_path(r"^$", schema_view.with_ui("swagger", cache_timeout=60), name="api_doc"),
     re_path(r"^check-latlon/?$", views.ip_latlon, name="ip_latlon"),
-    re_path(r"^event-set/?$", views.event_set_creation, name="event_set"),
+    re_path(r"^event-set/$", views.event_set_creation, name="event_set"),
     path(
         r"healthcheck/",
         HealthCheckView.as_view(

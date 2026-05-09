@@ -14,7 +14,7 @@
             <div class="mb-3">
                 {% if not event_sets %}<p>You haven't created any event sets.</p>{% endif %}
                 <a href="{% url 'dashboard_club:event_set:create_view' club_slug=request.club.slug %}"
-                   class="btn btn-primary mb-1"><i class="fa-solid fa-circle-plus"></i> Create new event set</a>
+                   class="btn btn-primary mb-1"><i class="fa-solid fa-circle-plus"></i> Create Bundle</a>
             </div>
             {% if event_sets %}
                 {% if event_sets.paginator.num_pages > 1 %}

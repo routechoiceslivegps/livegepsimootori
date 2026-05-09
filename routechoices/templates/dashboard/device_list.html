@@ -14,7 +14,7 @@
         <div class="mb-3">
             {% if not devices %}<p>You haven't added any devices.</p>{% endif %}
             <a href="{% url 'dashboard_club:device:add_view' club_slug=request.club.slug %}"
-               class="btn btn-primary mb-1 me-1 mb-1"><i class="fa-solid fa-circle-plus"></i> Add new device</a>
+               class="btn btn-primary mb-1 me-1 mb-1"><i class="fa-solid fa-circle-plus"></i> Add Tracker</a>
             {% if devices %}
                 <a href="{% url 'dashboard_club:device:list_download' club_slug=request.club.slug %}"
                    class="btn btn-secondary mb-1 me-1 mb-1"><i class="fa-solid fa-download"></i> Download device list</a>

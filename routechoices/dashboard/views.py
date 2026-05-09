@@ -85,15 +85,12 @@ def requires_club_in_session(function):
             club_select_page = reverse("dashboard_club:select_view", host="dashboard")
             return redirect(f"{club_select_page}?next={request.path}")
 
-        club = get_object_or_404(
-            Club,
-            slug__iexact=club_slug,
-        )
+        club = Club.objects.filter(slug__iexact=club_slug).first()
 
-        if not club.is_admin(request.user):
+        if not (club and club.is_admin(request.user)):
             return render(
                 request,
-                "403.html",
+                "dashboard/not_your_club.html",
                 {"message": "You are not administrator of this club"},
             )
 
@@ -431,7 +428,7 @@ def device_add_view(request):
             ownership.device = device
             ownership.nickname = form.cleaned_data["nickname"]
             ownership.save()
-            messages.success(request, "Device added successfully")
+            messages.success(request, "Tracker added successfully")
             return redirect(
                 "dashboard_club:device:list_view", club_slug=request.club.slug
             )
@@ -893,7 +890,7 @@ def event_set_edit_view(request, event_set_id):
 
 @login_required
 @requires_club_in_session
-def event_set_delete_view(request, *args):
+def event_set_delete_view(request, *args, **kwargs):
     if request.method == "POST":
         request.object.delete()
         messages.success(request, "Bundle deleted")
