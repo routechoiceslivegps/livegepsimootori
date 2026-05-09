@@ -1739,7 +1739,7 @@ class Event(models.Model, SomewhereOnEarth):
     )
     open_registration = models.BooleanField(
         default=False,
-        help_text="Allow anyone to register thenselves as participants of this event.",
+        help_text="Allow anyone to register themselves as participants of this event.",
     )
     acceptable_tags = models.CharField(
         verbose_name="Participants accepted categories upon registration",
