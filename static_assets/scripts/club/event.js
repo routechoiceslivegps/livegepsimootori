@@ -39,7 +39,7 @@ function RCEvent(infoURL, clockURL, locale) {
 	let routesLastFetched = Number.NEGATIVE_INFINITY;
 	let liveDataLastKey = null;
 	const fetchPositionInterval = 10;
-	let playbackRate = 8;
+	let playbackRate = 64;
 	let playbackPaused = true;
 	let prevDisplayRefresh = 0;
 	let prevMeterDisplayRefresh = 0;
