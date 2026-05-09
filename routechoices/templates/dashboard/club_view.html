@@ -12,13 +12,13 @@
 {% block sub_content %}
     <div class="row">
         <div class="col-12">
-            <h1>
+            <h1 class="text-truncate text-no-wrap">
                 <img src="{% if club.logo %}{{ club.logo_url_www }}{% else %}{% static 'img/club-default.png' %}{% endif %}"
                      width="80"
                      height="80"
                      alt="Club {{ club.name }} Logo"
                      class="rounded">
-                {{ club.name }}
+                <span>{{ club.name }}</span>
             </h1>
         </div>
     </div>
