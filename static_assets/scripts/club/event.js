@@ -1013,11 +1013,17 @@ function RCEvent(infoURL, clockURL, locale) {
 					u("#play_pause_button").on("click", pressPlayPauseButton);
 					u("#next_button").on("click", (e) => {
 						e.preventDefault();
-						playbackRate = playbackRate * 2;
+      currentTime = Math.max(
+						    getCompetitionStartDate(),
+						    prevShownTime + 60000,
+					 );
 					});
 					u("#prev_button").on("click", (e) => {
 						e.preventDefault();
-						playbackRate = Math.max(1, playbackRate / 2);
+						currentTime = Math.max(
+						    getCompetitionStartDate(),
+						    prevShownTime - 60000,
+					 );
 					});
 					u("#real_time_button").on("click", (e) => {
 						e.preventDefault();
@@ -3116,7 +3122,7 @@ function RCEvent(infoURL, clockURL, locale) {
 	function drawCompetitors(refreshMeters) {
 		// play/pause button
 		if (playbackPaused) {
-			const playButton = `<i class="fa-solid fa-play fa-fw"></i><small>x${playbackRate}</small>`;
+			const playButton = `<i class="fa-solid fa-play fa-fw"></i>`;
 			if (u("#play_pause_button").html() !== playButton) {
 				u("#play_pause_button").html(playButton);
 			}
