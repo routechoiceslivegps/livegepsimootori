@@ -1013,14 +1013,14 @@ function RCEvent(infoURL, clockURL, locale) {
 					u("#play_pause_button").on("click", pressPlayPauseButton);
 					u("#next_button").on("click", (e) => {
 						e.preventDefault();
-      currentTime = Math.max(
+      prevShownTime = Math.max(
 						    getCompetitionStartDate(),
 						    prevShownTime + 60000,
 					 );
 					});
 					u("#prev_button").on("click", (e) => {
 						e.preventDefault();
-						currentTime = Math.max(
+						prevShownTime = Math.max(
 						    getCompetitionStartDate(),
 						    prevShownTime - 60000,
 					 );
@@ -3127,7 +3127,7 @@ function RCEvent(infoURL, clockURL, locale) {
 				u("#play_pause_button").html(playButton);
 			}
 		} else {
-			const pauseButton = `<i class="fa-solid fa-pause fa-fw"></i><small>x${playbackRate}</small>`;
+			const pauseButton = `<i class="fa-solid fa-pause fa-fw"></i>`;
 			if (u("#play_pause_button").html() !== pauseButton) {
 				u("#play_pause_button").html(pauseButton);
 			}
