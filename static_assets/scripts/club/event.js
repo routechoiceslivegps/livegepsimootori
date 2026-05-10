@@ -1058,7 +1058,7 @@ function RCEvent(infoURL, clockURL, locale) {
 					if (eventStart > now) {
 						isPreview = true;
 						eventStateControl.setPreview();
-						u("#replay_mode_buttons").hide();
+						u(".replay_mode_buttons").hide();
 						u("#replay_button").parent().addClass("d-none");
 						u("#live_button").addClass("d-none");
 					} else if (eventEnd > now) {
@@ -1067,7 +1067,7 @@ function RCEvent(infoURL, clockURL, locale) {
 						eventStateControl.setLive();
 						u(".if-live").removeClass("d-none");
 						u("#full_progress_bar").parent().addClass("d-none");
-						u("#replay_mode_buttons").hide();
+						u(".replay_mode_buttons").hide();
 						u("#replay_control_buttons")
 							.addClass("d-none")
 							.removeClass("d-inline-flex");
@@ -1180,7 +1180,7 @@ function RCEvent(infoURL, clockURL, locale) {
 		u("#replay_button").parent().removeClass("d-none");
 		u("#real_time_button").removeClass("active");
 		u("#mass_start_button").removeClass("active");
-		u("#replay_mode_buttons").hide();
+		u(".replay_mode_buttons").hide();
 		u("#replay_control_buttons")
 			.addClass("d-none")
 			.removeClass("d-inline-flex");
@@ -1534,7 +1534,7 @@ function RCEvent(infoURL, clockURL, locale) {
 			.addClass("btn-secondary");
 		u("#live_button").parent().removeClass("d-none");
 		u("#replay_button").parent().addClass("d-none");
-		u("#replay_mode_buttons").css({ display: "" });
+		u(".replay_mode_buttons").css({ display: "" });
 		u("#replay_control_buttons")
 			.removeClass("d-none")
 			.addClass("d-inline-flex");
