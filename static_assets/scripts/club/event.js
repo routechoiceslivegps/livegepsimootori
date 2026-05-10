@@ -1013,17 +1013,17 @@ function RCEvent(infoURL, clockURL, locale) {
 					u("#play_pause_button").on("click", pressPlayPauseButton);
 					u("#next_button").on("click", (e) => {
 						e.preventDefault();
-      prevShownTime = Math.max(
-						    getCompetitionStartDate(),
-						    prevShownTime + 60000,
-					 );
+						prevShownTime = Math.max(
+							getCompetitionStartDate(),
+							prevShownTime + 60000,
+						);
 					});
 					u("#prev_button").on("click", (e) => {
 						e.preventDefault();
 						prevShownTime = Math.max(
-						    getCompetitionStartDate(),
-						    prevShownTime - 60000,
-					 );
+							getCompetitionStartDate(),
+							prevShownTime - 60000,
+						);
 					});
 					u("#real_time_button").on("click", (e) => {
 						e.preventDefault();
@@ -1068,7 +1068,9 @@ function RCEvent(infoURL, clockURL, locale) {
 						u(".if-live").removeClass("d-none");
 						u("#full_progress_bar").parent().addClass("d-none");
 						u("#replay_mode_buttons").hide();
-						u("#replay_control_buttons").hide();
+						u("#replay_control_buttons")
+							.addClass("d-none")
+							.removeClass("d-inline-flex");
 					} else {
 						// event is archived
 						eventStateControl.setReplay();
@@ -1179,7 +1181,9 @@ function RCEvent(infoURL, clockURL, locale) {
 		u("#real_time_button").removeClass("active");
 		u("#mass_start_button").removeClass("active");
 		u("#replay_mode_buttons").hide();
-		u("#replay_control_buttons").hide();
+		u("#replay_control_buttons")
+			.addClass("d-none")
+			.removeClass("d-inline-flex");
 		onAppResize();
 		function renderLive(ts) {
 			if (
@@ -1531,7 +1535,9 @@ function RCEvent(infoURL, clockURL, locale) {
 		u("#live_button").parent().removeClass("d-none");
 		u("#replay_button").parent().addClass("d-none");
 		u("#replay_mode_buttons").css({ display: "" });
-		u("#replay_control_buttons").css({ display: "" });
+		u("#replay_control_buttons")
+			.removeClass("d-none")
+			.addClass("d-inline-flex");
 		onAppResize();
 
 		if (!setMassStartContextMenuItem) {
