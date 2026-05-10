@@ -27,7 +27,12 @@ urlpatterns = [
         "admin/",
         admin.site.urls,
     ),
-    path(r"contact/", site_views.contact, name="contact_view"),
+    path(
+        "go/",
+        views.quick_event,
+        name="quick_start_view",
+    ),
+    path("contact/", site_views.contact, name="contact_view"),
     path(
         "participations",
         views.participations_view,
@@ -245,11 +250,6 @@ urlpatterns = [
                                                     "new",
                                                     views.event_create_view,
                                                     name="create_view",
-                                                ),
-                                                path(
-                                                    "quick-start",
-                                                    views.quick_event,
-                                                    name="quick_start_view",
                                                 ),
                                                 re_path(
                                                     r"^(?P<event_id>[A-Za-z0-9_-]+)/",

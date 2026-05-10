@@ -19,8 +19,12 @@
                                     Hello <i>{{ request.user.username }}</i>! <i class="fa-solid fa-hand"></i>
                                 </h1>
                                 <div>
-                                    <a href="{% host_url 'account_logout' host 'dashboard' %}"
-                                    class="btn btn-info btn-sm mb-3">Logout <i class="fa-solid fa-arrow-right-from-bracket"></i></a>
+                                    <a class="btn btn-secondary dashboard-link me-1" data-bs-toggle="tooltip" data-bs-title="Single person GPS tracking without custom maps starting immediately" href="{% url 'quick_start_view' %}">
+                                        <i class="fa-solid fa-circle-plus"></i> <span>Quick tracking</span>
+                                    </a>
+                                    <a href="{% host_url 'account_logout' host 'dashboard' %}" class="btn btn-info dashboard-link">
+                                        <span>Logout</span> <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                                    </a>
                                 </div>
                             </div>
                             <div class="col-12 col-lg-4 mb-lg-0 mb-3">

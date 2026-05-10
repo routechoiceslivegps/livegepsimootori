@@ -1,4 +1,4 @@
-{% extends "dashboard/club_view.html" %}
+{% extends "dashboard/home.html" %}
 {% load compress hosts static %}
 {% block extra_head %}
     {{ block.super }}
@@ -6,17 +6,13 @@
           href="{% static 'vendor/tom-select-2.0.1/tom-select.bootstrap5.min.css' %}" />
 {% endblock extra_head %}
 
-{% block sub_sub_content %}
+{% block content %}
     <div class="row">
         <div class="col-12">
             <h1>Create Quick Tracking</h1>
             <p>Single person GPS tracking without custom maps starting immediately</p>
             <form action="" id="quick-creation-form" method="POST">
                 {% csrf_token %}
-                <div class="mb-3">
-                    <label class="form-label fw-bold" for="name" required>Name</label>
-                    <input type="text" name="name" id="id_name" class="form-control" />
-                </div>
                 <div class="mb-3">
                     <label class="form-label fw-bold" for="device_id" required>Tracker ID</label>
                     <select name="device_id" id="id_device_id" class="form-select">
@@ -56,17 +52,16 @@
                     </select>
                 </div>
                 <button type="submit" class="btn btn-primary mb-1" id="submit-btn">
-                    <i class="fa-solid fa-circle-plus"></i> Create Quick Tracking
+                    <i class="fa-solid fa-circle-plus"></i> Create Quick Tracking Page
                 </button>
             </form>
         </div>
     </div>
-{% endblock sub_sub_content %}
+{% endblock content %}
 
 {% block extra_body %}
     <script src="{% static 'scripts/load-local-variables.js' %}?v=2023112700"
             data-api-base-url="{% host_url 'api_doc' host 'api' %}"
-            data-club-slug="{{ club.slug }}"
             data-username="{{ request.user.username }}"
             data-csrf-token="{{ csrf_token }}"></script>
     {% compress js %}

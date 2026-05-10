@@ -70,6 +70,7 @@ from routechoices.lib.helpers import (
     long_random_key,
     set_content_disposition,
     short_random_key,
+    short_random_slug,
 )
 from routechoices.lib.lemonsqueezy import get_subscriptions
 from routechoices.lib.s3 import serve_from_s3
@@ -1594,66 +1595,53 @@ def event_route_upload_view(request, event_id):
 
 
 @login_required
-@requires_club_in_session
 def quick_event(request):
-    club = request.club
+    club, created = Club.objects.get_or_create(
+        slug="follow-me", defaults={"forbid_invite_request": True}
+    )
     if request.method == "POST":
-        if club.can_modify_events:
-            start_date = now()
-            duration = int(request.POST.get("duration", "60"))
-            end_date = start_date + timedelta(minutes=duration)
-            backdrop = request.POST.get("backdrop", "osm")
-            slug = short_random_key()
-            device_id = request.POST.get("device_id")
-            device = None
-            if device_id:
-                device = Device.objects.filter(virtual=False, aid=device_id).first()
-            name = f"Quick tracking {short_random_key()}"
-            e = Event.objects.create(
-                name=name,
-                slug=slug,
-                club=club,
-                start_date=start_date,
-                end_date=end_date,
-                backdrop_map=backdrop,
-                privacy=PRIVACY_SECRET,
-            )
-            cname = request.POST.get("name", "Anonymous")
-            c = Competitor.objects.create(
-                name=cname,
-                event=e,
-            )
-            if device:
-                c.device = device
-                c.save()
-            return redirect(f"{club.nice_url}{e.slug}")
-        if club.subscription_paused:
-            messages.error(
-                request,
-                "Your subscription is currently paused, you cannot create or edit events.",
-            )
+        start_date = now()
+        date_str = start_date.strftime("%Y-%m-%d")
+        name = f"GPS Tracking {date_str} - {{request.user.username}}"
+        slug = f"{date_str}-{request.user.username}-{short_random_slug()}"
+        duration = max(
+            int(request.POST.get("duration", 60)), 300
+        )  # Default 1 hour, max 5Hours
+        end_date = start_date + timedelta(minutes=duration)
+        backdrop = request.POST.get("backdrop", "osm")
+
+        e = Event(
+            name=name,
+            slug=slug,
+            club=club,
+            start_date=start_date,
+            end_date=end_date,
+            backdrop_map=backdrop,
+            privacy=PRIVACY_SECRET,
+        )
+
+        try:
+            e.full_clean()
+        except Exception:
+            messages.error(request, "Oops, Something went wrong")
         else:
-            messages.error(
-                request,
-                "Your 10 days free trial has now expired, you cannot create or edit events anymore.",
-            )
-    all_devices_id = set(club.devices.values_list("id", flat=True))
-    devices_qs = (
-        Device.objects.filter(id__in=all_devices_id)
-        .defer("locations_encoded")
-        .prefetch_related("club_ownerships")
-    )
-    devices = sorted(
-        [
-            {
-                "aid": device.aid,
-                "name": device.get_display_str(club),
-                "key": (device.get_nickname(club), device.get_display_str(club)),
-            }
-            for device in devices_qs
-        ],
-        key=lambda x: (x["key"][0] == "", x["key"]),
-    )
+            device_id = request.POST.get("device_id")
+            device = Device.objects.filter(virtual=False, aid=device_id).first()
+            if not device:
+                messages.error(request, "Tracker not found")
+            else:
+                cname = request.user.username
+                c = Competitor(
+                    name=cname,
+                    event=e,
+                    device=device,
+                )
+                e.save()
+                c.save()
+                return redirect(f"{club.nice_url}{e.slug}")
+
+    devices = Device.objects.none()
+
     return render(
         request,
         "dashboard/quick_event.html",
