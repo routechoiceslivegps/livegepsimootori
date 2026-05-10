@@ -1631,13 +1631,13 @@ def quick_event(request):
                 messages.error(request, "Tracker not found")
             else:
                 cname = request.user.username
+                e.save()
                 c = Competitor(
                     name=cname,
                     event=e,
                     device=device,
                     user=request.user,
                 )
-                e.save()
                 c.save()
                 return redirect(f"{club.nice_url}{e.slug}")
 
