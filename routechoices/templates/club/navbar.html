@@ -20,7 +20,7 @@
                      class="rounded">
             </span>
         {% else %}
-            <span class="d-inline-block ">
+            <span class="d-inline-block">
                 <img src="{% static 'img/logo.png' %}?v=20250709"
                      alt="Site logo"
                      height="40"
@@ -32,7 +32,7 @@
         </a>
         {% if club %}
             <span class="text-nowrap overflow-hidden d-inline-block text-truncate"
-                  style="max-width: calc(100% - 120px);font-weight: 700;"
+                  style="max-width: calc(100%);font-weight: 700;"
                   title="{% if is_event_page %}{{ event.name }}{% else %}{{ club.name }}{% endif %}">
                 {% if is_event_page %}
                     {{ event.name }}
@@ -40,7 +40,7 @@
                     {{ club.name }}
                 {% endif %}
             </span>
-            <div class="navbar d-none" id="navbarNav">
+            <div class="navbar" id="navbarNav">
                 <ul class="nav navbar-nav me-auto mb-2 mb-lg-0">
                 </ul>
                 <ul class="nav navbar-nav d-flex flex-nowrap">

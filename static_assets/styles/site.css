@@ -447,11 +447,11 @@ a.navbar-brand.logo:focus {
 }
 
 .theme-selector > svg {
-	color: var(--bs-navbar-color);
+	color: #fff;
 }
 
 .theme-selector:hover > svg {
-	color: var(--bs-navbar-hover-color);
+	color: #fff;
 }
 
 #status-indicator {
