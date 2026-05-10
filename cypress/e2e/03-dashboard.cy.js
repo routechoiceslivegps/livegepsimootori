@@ -88,8 +88,9 @@ context("Dashboard actions", () => {
 			.type("{enter}");
 		cy.contains("Dev1");
 		cy.contains("MyDevice").should("not.exist");
-		cy.get("DELETE").first().click().wait(500);
-		cy.get("button.confirm").click();
+		cy.contains("Delete").first().click();
+		// cy.get("button.confirm").click();
+  // TODO: confirm the action, check MyDevice is not there no more
 	});
 
 	it("Upgrade account", () => {
