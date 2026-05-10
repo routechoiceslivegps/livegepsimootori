@@ -81,7 +81,7 @@ context("Dashboard actions", () => {
 		cy.get("#django-messages").contains("Tracker added successfully");
 		cy.contains("MyDevice");
 		cy.contains("Edit").first().click();
-		cy.get("input[placeholder='Nickname'")
+		cy.get("#id_nickname")
 			.clear()
 			.type("Dev1")
 			.wait(500)
