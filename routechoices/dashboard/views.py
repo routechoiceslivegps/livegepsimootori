@@ -1634,6 +1634,7 @@ def quick_event(request):
                 e.save()
                 c = Competitor(
                     name=cname,
+                    short_name=cname,
                     event=e,
                     device=device,
                     user=request.user,
