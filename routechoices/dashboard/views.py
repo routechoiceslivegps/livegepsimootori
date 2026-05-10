@@ -1635,6 +1635,7 @@ def quick_event(request):
                     name=cname,
                     event=e,
                     device=device,
+                    user=request.user,
                 )
                 e.save()
                 c.save()
