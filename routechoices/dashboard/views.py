@@ -1602,7 +1602,7 @@ def quick_event(request):
     if request.method == "POST":
         start_date = now()
         date_str = start_date.strftime("%Y-%m-%d")
-        name = f"GPS Tracking {date_str} - {request.user.username}"
+        name = f"GPS Tracking {date_str} - {{request.user.username}}"
         slug = f"{date_str}-{request.user.username}-{short_random_slug()}"
         duration = max(
             int(request.POST.get("duration", 60)), 300
