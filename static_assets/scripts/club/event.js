@@ -1058,6 +1058,7 @@ function RCEvent(infoURL, clockURL, locale) {
 					if (eventStart > now) {
 						isPreview = true;
 						eventStateControl.setPreview();
+						u("#replay_mode_buttons").hide();
 						u("#replay_button").parent().addClass("d-none");
 						u("#live_button").addClass("d-none");
 					} else if (eventEnd > now) {
