@@ -32,7 +32,7 @@
         </a>
         {% if club %}
             <span class="text-nowrap overflow-hidden d-inline-block text-truncate"
-                  style="max-width: calc(100%);font-weight: 700;"
+                  style="max-width: calc(100% - 120px);font-weight: 700;"
                   title="{% if is_event_page %}{{ event.name }}{% else %}{{ club.name }}{% endif %}">
                 {% if is_event_page %}
                     {{ event.name }}
