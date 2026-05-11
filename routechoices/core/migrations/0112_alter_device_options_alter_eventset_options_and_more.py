@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
             name="eventset",
             options={
                 "ordering": ["-creation_date", "name"],
-                "verbose_name": "Event bundle",
+                "verbose_name": "Bundle",
             },
         ),
         migrations.AlterField(
