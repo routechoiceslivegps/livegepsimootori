@@ -727,12 +727,13 @@ function RCEvent(infoURL, clockURL, locale) {
 		locateControl.addTo(map);
 		eventStateControl = L.control.eventState();
 		coordsControl = L.control.mapCenterCoord({
-			position: "bottomright",
+			position: "bottomleft",
 			latLngFormatter: coordsFormatters[coordsUsed].format,
 		});
 		panControl = L.control.pan();
 		zoomControl = L.control.zoom();
 		rotateControl = L.control.rotate({ closeOnZeroBearing: false });
+		coordsControl.addTo(map);
 		scaleControl = L.control.scale({
 			imperial: false,
 			updateWhenIdle: true,
@@ -745,8 +746,8 @@ function RCEvent(infoURL, clockURL, locale) {
 			zoomControl.addTo(map);
 			rotateControl.addTo(map);
 		}
-		coordsControl.addTo(map);
 		scaleControl.addTo(map);
+		logoWatermark.addTo(map);
 		map.doubleClickZoom.disable();
 		map.on("dblclick", onPressCustomMassStart);
 

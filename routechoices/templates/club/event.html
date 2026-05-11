@@ -91,30 +91,6 @@
                             <i class="fa-solid fa-fw fa-share-nodes"></i>
                         </button>
                     </div>
-                    <div class="px-0 py-2 powered-vert">
-                        <a target="_blank"
-                           href="{% host_url 'site:landing_page' host 'www' %}"
-                           style="line-height: 30px;
-                                  font-size: 1.2em;
-                                  font-weight: 700;
-                                  font-family: Atkinson Hyperlegible, sans-serif;
-                                  color: var(--bs-primary-text);
-                                  margin-right: 3px;
-                                  user-select: none;
-                                  -webkit-user-select: none;"
-                           class="d-flex text-decoration-none fw-bold">
-                            <div>
-                                <img src="{% static 'img/logo.svg' %}?v=20250709"
-                                     alt="Site logo"
-                                     width="30"
-                                     style="vertical-align: bottom;transform: rotate(90deg) translate(0, -3px);">
-                            </div>
-                            <div class="px-0 py-2">
-                                <div style="font-size:.82em;line-height: 1em;text-align: left;">ROUTECHOICES</div>
-                                <div style="font-size:.82em;line-height: 1em;">LIVE GPS TRACKING</div>
-                            </div>
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>
@@ -297,14 +273,17 @@
 {% block extra_body %}
     {{ block.super }}
     <script src="{% static 'scripts/load-local-variables.js' %}?v=2023112700"
+            data-watermark-link="{% host_url 'site:landing_page' host 'www' %}"
+            data-watermark-logo="{% static 'img/logo.svg' %}?v=20260411"
+            data-server-clock-url="{% host_url 'time_api' host 'api' %}"
+            data-wms-service-url="{% host_url 'wms_service' host 'wms' %}"
+            data-event-url="{{ event.get_api_detail_url }}"
             data-club-name="{{ event.club.name }}"
             data-event-id="{{ event.aid }}"
-            data-event-url="{{ event.get_api_detail_url }}"
-            data-server-clock-url="{% host_url 'time_api' host 'api' %}"
             data-static-root="{% static '' %}"
-            data-wms-service-url="{% host_url 'wms_service' host 'wms' %}"
             data-token="{{ token }}"
-            data-is-private="{% if event.privacy == 'private' %}1{% else %}{% endif %}"></script>
+            data-is-private="{% if event.privacy == 'private' %}1{% else %}{% endif %}">
+    </script>
     {% compress js %}
         <script src="{% static 'vendor/dayjs-1.11.7/dayjs.min.js' %}?langs=en-es-fi-fr-nl-pl-sv"></script>
         <script src="{% static 'vendor/dayjs-1.11.7/duration.min.js' %}"></script>

@@ -63,6 +63,22 @@ const printTime = (time) => {
 	return `${text + prependZero(s)}s`;
 };
 
+const logoWatermark = L.control({ position: "bottomright" });
+logoWatermark.onAdd = () => {
+	var div = L.DomUtil.create("div", "info legend");
+	div.innerHTML = `<a class="d-inline-block site-name m-0 pe-2" href="${window.local.watermarkLink}" target="_blank" rel="nofollow noopener">
+	<div class="d-inline-block">
+		<img alt="Site logo" src="${window.local.watermarkLogo}" height="35" style="vertical-align:top">
+	</div>
+	<div class="d-inline-block px-2" style="vertical-align: center;text-decoration: none;color: #000">
+		<div style="line-height:1em"><small>Powered By</small></div>
+		<div style="text-align:left;font-size:1em;line-height:1em;color: #000">ROUTECHOICES</div>
+		<div style="font-size:1em;line-height:1em">LIVE GPS TRACKING</div>
+	</div>
+</a>`;
+	return div;
+};
+
 function getProgressBarText(
 	currentTime,
 	hide = false,
