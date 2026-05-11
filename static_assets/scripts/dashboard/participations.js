@@ -350,7 +350,7 @@ function parseGpx(xmlstr) {
 		swal(
 			{
 				title: "Confirm withdrawal",
-				text: `Are you sure you want to remove your participation the event ${eventName}?\nType WITHDRAW to confirm:`,
+				text: `Are you sure you want to remove yourself from the event "${eventName}"?\nType WITHDRAW to confirm:`,
 				type: "input",
 				closeOnConfirm: false,
 				showCancelButton: true,
