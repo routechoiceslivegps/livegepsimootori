@@ -454,3 +454,7 @@
 	-ms-overflow-style: none; /* IE and Edge */
 	scrollbar-width: none; /* Firefox */
 }
+
+.logo {
+	background-color: rgba(255, 255, 255, 0.7);
+}

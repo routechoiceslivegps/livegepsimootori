@@ -65,7 +65,7 @@ const printTime = (time) => {
 
 const logoWatermark = L.control({ position: "bottomright" });
 logoWatermark.onAdd = () => {
-	var div = L.DomUtil.create("div", "info legend");
+	var div = L.DomUtil.create("div", "rounded logo p-1");
 	div.innerHTML = `<a class="d-inline-block site-name m-0 pe-2" href="${window.local.watermarkLink}" target="_blank" rel="nofollow noopener">
 	<div class="d-inline-block">
 		<img alt="Site logo" src="${window.local.watermarkLogo}" height="35" style="vertical-align:top">
