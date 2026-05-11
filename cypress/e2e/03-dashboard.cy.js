@@ -81,16 +81,12 @@ context("Dashboard actions", () => {
 		cy.get("#django-messages").contains("Tracker added successfully");
 		cy.contains("MyDevice");
 		cy.contains("Edit").first().click();
-		cy.get("#id_nickname")
-			.clear()
-			.type("Dev1")
-			.wait(500)
-			.type("{enter}");
+		cy.get("#id_nickname").clear().type("Dev1").wait(500).type("{enter}");
 		cy.contains("Dev1");
 		cy.contains("MyDevice").should("not.exist");
 		cy.contains("Delete").first().click();
 		// cy.get("button.confirm").click();
-  // TODO: confirm the action, check MyDevice is not there no more
+		// TODO: confirm the action, check MyDevice is not there no more
 	});
 
 	it("Upgrade account", () => {

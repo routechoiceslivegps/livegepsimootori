@@ -305,7 +305,7 @@ class ClubDomainForm(ModelForm):
 
 class DeviceForm(Form):
     device = ModelChoiceField(
-        label="Tracker ID",#
+        label="Tracker ID",  #
         queryset=Device.objects.all(),
         to_field_name="aid",
     )
