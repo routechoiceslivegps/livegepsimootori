@@ -245,7 +245,7 @@ class EssentialApiTestCase1(EssentialApiBase):
             start_date=datetime.utcfromtimestamp(-1).replace(tzinfo=UTC),
             end_date=epoch_to_datetime(1),
         )
-        Competitor.objects.create(
+        c = Competitor.objects.create(
             name="A",
             short_name="A",
             device=device,
@@ -255,6 +255,15 @@ class EssentialApiTestCase1(EssentialApiBase):
         device.refresh_from_db()
         device.remove_unused_location(until=epoch_to_datetime(10))
         self.assertEqual(device.location_count, 2)
+        device.save()
+
+        c.archive_device()
+        c.refresh_from_db()
+        device.refresh_from_db()
+        self.assertEqual(device.location_count, 2)
+        self.assertNotEqual(device.id, c.device.id)
+        self.assertTrue(c.device.aid.endswith("_ARC"))
+        self.assertEqual(c.device.location_count, 1)
 
 
 class ImeiApiTestCase(EssentialApiBase):

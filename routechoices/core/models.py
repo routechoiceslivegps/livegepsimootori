@@ -3050,7 +3050,8 @@ class Competitor(models.Model, SomewhereOnEarth):
                     original=original, archive=archive
                 )
             else:
-                self.device = None
+                self.device = original
+                self.device.save()
                 self.save()
 
     @property
