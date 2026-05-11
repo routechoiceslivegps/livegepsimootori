@@ -197,18 +197,18 @@
                     </div>
                 </div>
                 <hr />
-                <button class="btn btn-primary mb-1 me-1 save" id="submit-btn" type="submit">
-                    <i class="fa-solid fa-floppy-disk"></i> Save
+                <button class="btn btn-primary dashboard-link float-end" id="submit-btn" type="submit">
+                    <i class="fa-solid fa-floppy-disk"></i> <span>Save</span>
                 </button>
-                <button class="btn btn-secondary mb-1 me-1"
+                <button class="btn btn-secondary dashboard-link float-end me-1"
                         name="save_continue"
                         value="True"
                         type="submit">
-                    <i class="fa-solid fa-floppy-disk"></i> Save and Continue Editing
+                    <i class="fa-solid fa-floppy-disk"></i> <span>Save</span> and Continue Editing
                 </button>
                 {% if context == 'edit' %}
                     <a href="{% url 'dashboard_club:event:delete_view' event_id=event.aid club_slug=request.club.slug %}"
-                       class="btn btn-danger mb-1 float-end"><i class="fa-solid fa-trash"></i> Delete</a>
+                       class="btn btn-danger dashboard-link"><i class="fa-solid fa-trash"></i> <span>Delete</span></a>
                 {% endif %}
             </form>
         </div>

@@ -72,8 +72,8 @@
                 {% if competitors.paginator.num_pages > 1 %}
                     {% bootstrap_pagination competitors extra=request.GET.urlencode pages_to_show=4 %}
                 {% endif %}
-                <button type="submit" class="save btn btn-primary mb-1" id="submit-btn">
-                    <i class="fa-solid fa-floppy-disk"></i> Save
+                <button type="submit" class="save btn btn-primary dashboard-link float-end" id="submit-btn">
+                    <i class="fa-solid fa-floppy-disk"></i> <span>Save</span>
                 </button>
             </form>
         </div>

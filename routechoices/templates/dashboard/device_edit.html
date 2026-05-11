@@ -29,12 +29,12 @@
             <form action="" method="post">
                 {% csrf_token %}
                 {% bootstrap_form form %}
-                <button type="submit" class="save btn btn-primary me-1 mb-1" id="submit-btn">
-                    <i class="fa-solid fa-floppy-disk"></i> Save
+                <button type="submit" class="save btn btn-primary dashboard-link float-end" id="submit-btn">
+                    <i class="fa-solid fa-floppy-disk"></i> <span>Save</span>
                 </button>
                 {% if context == 'edit' %}
                     <a href="{% url 'dashboard_club:device:delete_view' device_id=device.device.aid club_slug=request.club.slug %}"
-                       class="btn btn-danger mb-1 float-end"><i class="fa-solid fa-trash"></i> Delete</a>
+                       class="btn btn-danger dashboard-link"><i class="fa-solid fa-trash"></i> <span>Delete</span></a>
                 {% endif %}
             </form>
         </div>

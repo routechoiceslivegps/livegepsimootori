@@ -28,11 +28,11 @@
         <form action="" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {% bootstrap_form form %}
-            <button type="submit" class="btn btn-primary mb-1 me-1" id="submit-btn">
-                <i class="fa-solid fa-floppy-disk"></i> Save
+            <button type="submit" class="btn btn-primary dashboard-link float-end" id="submit-btn">
+                <i class="fa-solid fa-floppy-disk"></i> <span>Save</span>
             </button>
             <a href="{% url 'account_delete_view' %}"
-               class="btn btn-danger mb-1 float-end"><i class="fa-solid fa-trash"></i> Delete account</a>
+               class="btn btn-danger mb-1 dashboard-link"><i class="fa-solid fa-trash"></i> <span>Delete</span> account</a>
         </form>
     {% endblock sub_sub_content %}
 {% endblock sub_content %}
