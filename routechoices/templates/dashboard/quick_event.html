@@ -21,6 +21,7 @@
                         <option value="{{ device.aid }}">{{ device.name }}</option>
                         {% endfor %}
                     </select>
+                    <div class="form-text" id="id_device_id"><a href="{% host_url 'site:trackers_view' host 'www' %}">How to get a tracker ID</a></div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label fw-bold" for="backdrop" required>Background Map</label>
