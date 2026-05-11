@@ -1630,12 +1630,12 @@ def quick_event(request):
             if not device:
                 messages.error(request, "Tracker not found")
             else:
-                device_competitors = Competitor.objects.filter(device=device)
                 live_user_quick_tracking_competitors = Competitor.objects.filter(
                     user=request.user,
                     competitors__in=device_competitors,
                     event__club=club,
                     event__end_date__gt=start_date,
+                    device=device
                 )
                 Event.objects.filter(
                     club=club,
