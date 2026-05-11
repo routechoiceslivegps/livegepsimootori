@@ -1636,7 +1636,8 @@ def quick_event(request):
                     event__end_date__gt=start_date,
                 )
                 Event.objects.filter(
-                    competitors__in=[c for c in live_user_quick_tracking_competitors]
+                    club=club,
+                    competitors__in=[c for c in live_user_quick_tracking_competitors],
                 ).update(end_date=start_date)
                 # TODO: Count quick tracking event in day for name
                 cname = request.user.username
