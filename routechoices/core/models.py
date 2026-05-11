@@ -3043,6 +3043,7 @@ class Competitor(models.Model, SomewhereOnEarth):
         self.device = archive
         if save:
             if archive.locations_encoded != "":
+                archive.save()
                 self.device.save()
                 self.save()
                 DeviceArchiveReference.objects.create(
