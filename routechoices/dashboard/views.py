@@ -1596,7 +1596,7 @@ def event_route_upload_view(request, event_id):
 
 @login_required
 def quick_event(request):
-    club, created = Club.objects.get_or_create(
+    club, _ = Club.objects.get_or_create(
         slug="follow-me", defaults={"forbid_invite_request": True}
     )
     if request.method == "POST":
@@ -1630,6 +1630,15 @@ def quick_event(request):
             if not device:
                 messages.error(request, "Tracker not found")
             else:
+                live_user_quick_tracking_competitors = Competitor.objects.filter(
+                    user=request.user,
+                    event__club=club,
+                    event__end_date__gt=start_date,
+                )
+                Event.objects.filter(
+                    competitors__in=[c for c in live_user_quick_tracking_competitors]
+                ).update(end_date=start_date)
+                # TODO: Count quick tracking event in day for name
                 cname = request.user.username
                 e.save()
                 c = Competitor(
