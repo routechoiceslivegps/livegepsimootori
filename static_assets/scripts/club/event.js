@@ -1026,6 +1026,14 @@ function RCEvent(infoURL, clockURL, locale) {
 							prevShownTime - 60000,
 						);
 					});
+					u("#faster_button").on("click", (e) => {
+						e.preventDefault();
+						playbackRate *= 2;
+					});
+					u("#slower_button").on("click", (e) => {
+						e.preventDefault();
+						playbackRate = Math.max(playbackRate / 2, 1);
+					});
 					u("#real_time_button").on("click", (e) => {
 						e.preventDefault();
 						isRealTime = true;

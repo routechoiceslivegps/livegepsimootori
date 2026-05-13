@@ -27,11 +27,11 @@ from django.utils.timezone import now
 from django.views.decorators.cache import cache_page
 from django_hosts.resolvers import reverse
 from hijack.views import ReleaseUserView
+from invitations.forms import InviteForm
 from kagi.views.backup_codes import BackupCodesView
 from oauth2_provider.models import AccessToken
 from user_sessions.views import SessionDeleteOtherView
 
-from invitations.forms import InviteForm
 from routechoices.core.models import (
     PRIVACY_SECRET,
     Club,
@@ -1634,13 +1634,13 @@ def quick_event(request):
                     user=request.user,
                     event__club=club,
                     event__end_date__gt=start_date,
-                    device=device
+                    device=device,
                 )
                 Event.objects.filter(
                     club=club,
                     competitors__in=[c for c in live_user_quick_tracking_competitors],
                 ).update(end_date=start_date)
-                # TODO: Count quick tracking event in day for name
+                # TODO: Count quick tracking event in day for suffixing name
                 cname = request.user.username
                 e.save()
                 c = Competitor(
