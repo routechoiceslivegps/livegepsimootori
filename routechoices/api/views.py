@@ -1124,8 +1124,8 @@ def competitor_route_upload(request, competitor_id):
             "Latitudes, longitudes, and timestamps, should have same amount of points"
         )
 
-    if len(lats) < 2:
-        raise ValidationError("Minimum amount of locations is 2")
+    if len(lats) < 1:
+        raise ValidationError("Could not find any location data.")
 
     loc_array = []
     start_time = None
