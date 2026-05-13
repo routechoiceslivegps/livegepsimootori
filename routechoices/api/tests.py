@@ -1345,20 +1345,19 @@ class RouteUploadApiTestCase(EssentialApiBase):
         )
 
     def test_route_upload_api_not_enough_points(self):
-        t = time.time()
         res = self.client.post(
             self.url,
             {
-                "latitudes": "1.1",
-                "longitudes": "3.1",
-                "timestamps": f"{t}",
+                "latitudes": "",
+                "longitudes": "",
+                "timestamps": "",
             },
         )
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         errors = json.loads(res.content)
         self.assertEqual(len(errors), 1)
         self.assertIn(
-            "Minimum amount of locations is 2",
+            "No locations sent",
             errors[0],
         )
 

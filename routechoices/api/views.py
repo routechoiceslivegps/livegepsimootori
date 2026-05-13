@@ -1119,13 +1119,13 @@ def competitor_route_upload(request, competitor_id):
     except ValueError:
         raise ValidationError("Invalid data format")
 
-    if not (len(lats) == len(lons) == len(times)):
+    if not ((loc_count := len(lats)) == len(lons) == len(times)):
         raise ValidationError(
             "Latitudes, longitudes, and timestamps, should have same amount of points"
         )
 
-    if len(lats) < 1:
-        raise ValidationError("Could not find any location data.")
+    if loc_count == 0:
+        raise ValidationError("No locations sent")
 
     loc_array = []
     start_time = None
@@ -1161,7 +1161,7 @@ def competitor_route_upload(request, competitor_id):
         competitor.save()
 
     if len(loc_array) == 0:
-        raise ValidationError("No locations within event schedule were detected")
+        raise ValidationError("No locations within event's schedule were detected")
 
     return Response(
         {
