@@ -290,7 +290,6 @@ OAUTH2_PROVIDER = {
 }
 SWAGGER_SETTINGS = {
     "SECURITY_DEFINITIONS": {
-        "Basic": {"type": "basic"},
         "OAuth2": {
             "type": "oauth2",
             "authorizationUrl": "/oauth2/authorize/",
