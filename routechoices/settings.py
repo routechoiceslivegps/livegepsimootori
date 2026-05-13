@@ -221,6 +221,7 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 20,
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
+        "rest_framework.authentication.SessionAuthentication",  # TODO: only enable in tests context
     ),
 }
 ACCOUNT_ADAPTER = "routechoices.lib.account_adapters.SiteAccountAdapter"
