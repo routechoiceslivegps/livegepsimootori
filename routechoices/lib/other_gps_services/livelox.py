@@ -372,18 +372,26 @@ class Livelox(ThirdPartyTrackingSolutionWithProxy):
                         draw.line(
                             [
                                 int(
-                                    upscale * (pt[0] + circle_radius * math.cos(angle))
-                                ),
-                                int(
-                                    upscale * (pt[1] + circle_radius * math.sin(angle))
+                                    upscale
+                                    * (pt[0] + circle_radius * 1.2 * math.cos(angle))
                                 ),
                                 int(
                                     upscale
-                                    * (next_pt[0] - circle_radius * math.cos(angle))
+                                    * (pt[1] + circle_radius * 1.2 * math.sin(angle))
                                 ),
                                 int(
                                     upscale
-                                    * (next_pt[1] - circle_radius * math.sin(angle))
+                                    * (
+                                        next_pt[0]
+                                        - circle_radius * 1.2 * math.cos(angle)
+                                    )
+                                ),
+                                int(
+                                    upscale
+                                    * (
+                                        next_pt[1]
+                                        - circle_radius * 1.2 * math.sin(angle)
+                                    )
                                 ),
                             ],
                             fill=line_color,
