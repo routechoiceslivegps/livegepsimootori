@@ -32,6 +32,11 @@ urlpatterns = [
         views.quick_event,
         name="quick_start_view",
     ),
+    path(
+        "starting-gate/",
+        views.quick_event_share,
+        name="quick_event_share",
+    ),
     path("contact/", site_views.contact, name="contact_view"),
     path(
         "participations",

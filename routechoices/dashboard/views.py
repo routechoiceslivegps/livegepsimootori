@@ -1595,6 +1595,32 @@ def event_route_upload_view(request, event_id):
 
 
 @login_required
+def quick_event_share(request):
+    last_quick_tracking_competitor = (
+        Competitor.objects.select_related("event")
+        .filter(
+            user=request.user,
+            event__club__slug="follow-me",
+            device__virtual=False,
+        )
+        .order_by("-event__end_date")
+        .first()
+    )
+
+    if not last_quick_tracking_competitor:
+        raise Http404()
+
+    event = last_quick_tracking_competitor.event
+    return render(
+        request,
+        "dashboard/quick_event_sharing.html",
+        {
+            "event": event,
+        },
+    )
+
+
+@login_required
 def quick_event(request):
     club, _ = Club.objects.get_or_create(
         slug="follow-me", defaults={"forbid_invite_request": True}
@@ -1643,18 +1669,20 @@ def quick_event(request):
                 # TODO: Count quick tracking event in day for suffixing name
                 cname = request.user.username
                 e.save()
-                c = Competitor(
+                Competitor.objects.create(
                     name=cname,
                     short_name=cname,
                     event=e,
                     device=device,
                     user=request.user,
                 )
-                c.save()
-                return redirect(f"{club.nice_url}{e.slug}")
+                messages.success(request, "Quick tracking ready for your start...")
+                return redirect(
+                    "quick_event_share",
+                )
+        messages.error(request, "Could not create the quick tracking…")
 
     devices = Device.objects.none()
-
     return render(
         request,
         "dashboard/quick_event.html",
