@@ -292,8 +292,8 @@ SWAGGER_SETTINGS = {
     "SECURITY_DEFINITIONS": {
         "OAuth2": {
             "type": "oauth2",
-            "authorizationUrl": "/oauth2/authorize/",
-            "tokenUrl": "/oauth2/token/",
+            "authorizationUrl": f"https://api.{PARENT_HOST}/oauth2/authorize/",
+            "tokenUrl": f"https://api.{PARENT_HOST}/oauth2/token/",
             "flow": "implicit",
             "scopes": OAUTH2_PROVIDER["SCOPES"],
         },
