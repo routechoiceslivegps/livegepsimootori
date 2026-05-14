@@ -19,7 +19,6 @@ from django.http.response import Http404
 from django.utils.dateparse import parse_datetime
 from django.utils.timezone import is_naive, make_aware
 from PIL import Image, ImageFile
-from timezonefinder import TimezoneFinder
 from user_sessions.templatetags.user_sessions import device as device_name
 
 from routechoices.lib.random_strings import generate_random_string
@@ -28,7 +27,6 @@ from routechoices.lib.validators import validate_nice_slug
 UTC_TZ = zoneinfo.ZoneInfo("UTC")
 
 COUNTRIES = reverse_geocode.GeocodeData()._countries
-TIMEZONEFINDER = TimezoneFinder(in_memory=True)
 ORIGIN_SHIFT = 2 * math.pi * 6378137 / 2.0  # 20037508.342789244
 
 
@@ -67,11 +65,6 @@ class Point:
 
 def country_code_at_coords(wgs84_coordinate):
     return reverse_geocode.get(wgs84_coordinate.latlon).get("country_code")
-
-
-def timezone_at_coords(wgs84_coordinate):
-    lat, lon = wgs84_coordinate.latlon
-    return TIMEZONEFINDER.timezone_at(lng=lat, lat=lon)
 
 
 def simplify_periods(ps):

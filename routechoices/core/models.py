@@ -75,7 +75,6 @@ from routechoices.lib.helpers import (
     simplify_line,
     simplify_periods,
     time_base32,
-    timezone_at_coords,
     triangle_area,
     wgs84_to_meters,
 )
@@ -243,12 +242,6 @@ class SomewhereOnEarth:
     def country_code(self):
         if coords := self.earth_coords:
             return country_code_at_coords(Wgs84Coordinate(coords))
-        return None
-
-    @property
-    def timezone(self):
-        if coords := self.earth_coords:
-            return timezone_at_coords(Wgs84Coordinate(coords))
         return None
 
     @property
