@@ -295,7 +295,7 @@ SWAGGER_SETTINGS = {
             "type": "oauth2",
             "authorizationUrl": f"https://api.{PARENT_HOST}/oauth2/authorize/",
             "tokenUrl": f"https://api.{PARENT_HOST}/oauth2/token/",
-            "flow": "implicit",
+            "flow": "authorization_code",
             "scopes": OAUTH2_PROVIDER["SCOPES"],
         },
     }
