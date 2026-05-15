@@ -1,13 +1,12 @@
+import oauth2_provider.views as oauth2_views
 from django.conf import settings
 from django.urls import include, path, re_path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from health_check.views import HealthCheckView
-from oauth2_provider.urls import app_name, base_urlpatterns
 from rest_framework import permissions
 
 from routechoices.api import views
-from routechoices.lib.oauth import CustomOAuth2ProviderLoginView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -26,6 +25,11 @@ schema_view = get_schema_view(
     urlconf="routechoices.api.urls",
 )
 
+oauth2_endpoint_views = [
+    path("authorize/", oauth2_views.AuthorizationView.as_view(), name="authorize"),
+    path("token/", oauth2_views.TokenView.as_view(), name="token"),
+    path("revoke-token/", oauth2_views.RevokeTokenView.as_view(), name="revoke-token"),
+]
 
 urlpatterns = [
     re_path(r"^$", schema_view.with_ui("swagger", cache_timeout=60), name="api_doc"),
@@ -51,10 +55,6 @@ urlpatterns = [
         name="api_login",
     ),
     re_path(r"^locations/?$", views.locations_api_gw, name="locations_api_gw"),
-    path(
-        "oauth2/authorize/", CustomOAuth2ProviderLoginView.as_view(), name="authorize"
-    ),
-    path("oauth2/", include((base_urlpatterns, app_name), namespace=app_name)),
     re_path(r"^time/?$", views.get_time, name="time_api"),
     re_path(r"^user/?$", views.user_view, name="user_view_api"),
     re_path(r"^version/?$", views.get_version, name="version"),
@@ -250,5 +250,11 @@ urlpatterns = [
     path(
         "webhooks/",
         include(("routechoices.webhooks.urls", "webhooks"), namespace="webhooks"),
+    ),
+    path(
+        "oauth2/",
+        include(
+            (oauth2_endpoint_views, "oauth2_provider"), namespace="oauth2_provider"
+        ),
     ),
 ]

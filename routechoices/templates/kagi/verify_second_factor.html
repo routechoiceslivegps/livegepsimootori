@@ -11,6 +11,7 @@
                         {% if forms.webauthn %}
                             <form id="webauthn-auth-form">
                                 {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ next }}" />
                                 <div id="webauthn-error" style="color: red"></div>
                                 <div id="webauthn-feature" class="d-grid">
                                     <button class="btn btn-primary submit-btn"
@@ -27,6 +28,7 @@
                                 <form method="post">
                                     {% csrf_token %}
                                     {% bootstrap_form forms.totp %}
+                                    <input type="hidden" name="next" value="{{ next }}" />
                                     <div class="d-grid">
                                         <button class="btn btn-primary submit-btn"
                                                 value="totp"
@@ -43,6 +45,7 @@
                                 <form method="post">
                                     {% csrf_token %}
                                     {% bootstrap_form forms.backup %}
+                                    <input type="hidden" name="next" value="{{ next }}" />
                                     <div class="d-grid">
                                         <button class="btn btn-primary submit-btn"
                                                 value="backup"
