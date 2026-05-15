@@ -102,7 +102,7 @@ urlpatterns = [
         "account/mfa/",
         include(
             [
-                path("login/", RedirectView.as_view(url="/login")),
+                path("login/", site_views.CustomLoginView.as_view()),
                 path("backup-codes/", views.backup_codes, name="backup-codes"),
                 path("", include("kagi.urls", namespace="kagi")),
             ]
