@@ -1258,8 +1258,8 @@ class TestInviteFlow(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_302_FOUND)
         self.assertRedirects(
             res,
-            "//dashboard.routechoices.dev",
-            target_status_code=status.HTTP_302_FOUND,
+            "/",
+            target_status_code=status.HTTP_200_OK,
         )
 
         self.assertTrue(self.club.admins.filter(email=new_user_email).exists())
