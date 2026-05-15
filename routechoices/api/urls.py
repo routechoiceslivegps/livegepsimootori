@@ -24,6 +24,8 @@ schema_view = get_schema_view(
     url=f"https://api.{settings.PARENT_HOST}",
     urlconf="routechoices.api.urls",
 )
+ApiAuthorizationView = oauth2_views.AuthorizationView
+ApiAuthorizationView.login_url = f"//api.{settings.PARENT_HOST}/login/"
 
 oauth2_endpoint_views = [
     path("authorize/", oauth2_views.AuthorizationView.as_view(), name="authorize"),
