@@ -56,6 +56,10 @@ urlpatterns = [
         views.CustomApiLoginView.as_view(),
         name="api_login",
     ),
+    path(
+        "mfa/",
+        include("kagi.urls", namespace="kagi"),
+    ),
     re_path(r"^locations/?$", views.locations_api_gw, name="locations_api_gw"),
     re_path(r"^time/?$", views.get_time, name="time_api"),
     re_path(r"^user/?$", views.user_view, name="user_view_api"),
