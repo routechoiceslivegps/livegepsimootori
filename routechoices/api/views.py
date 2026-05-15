@@ -80,6 +80,7 @@ from routechoices.lib.validators import (
     validate_longitude,
     validate_nice_slug,
 )
+from routechoices.site.views import CustomLoginView
 
 logger = logging.getLogger(__name__)
 
@@ -2456,3 +2457,7 @@ def third_party_event_data(request, provider, uid):
     cache.set(cache_key, output, 10)
 
     return Response(output)
+
+
+class CustomApiLoginView(CustomLoginView):
+    login_url = "/login/"

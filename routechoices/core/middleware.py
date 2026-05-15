@@ -295,15 +295,13 @@ class SessionMiddleware(OrigSessionMiddleware):
         except AttributeError:
             return response
 
-        session_domain = settings.SESSION_COOKIE_DOMAIN
-        if request.use_cname:
-            session_domain = request.get_host()
+        session_domain = request.get_host()
 
         # First check if we need to delete this cookie.
         # The session should be deleted only if the session is entirely empty.
-        if settings.SESSION_COOKIE_NAME in request.COOKIES and empty:
+        if session_domain in request.COOKIES and empty:
             response.delete_cookie(
-                settings.SESSION_COOKIE_NAME,
+                session_domain,
                 path=settings.SESSION_COOKIE_PATH,
                 domain=session_domain,
                 samesite=settings.SESSION_COOKIE_SAMESITE,

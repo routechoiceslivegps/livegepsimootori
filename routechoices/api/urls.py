@@ -7,6 +7,7 @@ from oauth2_provider.urls import app_name, base_urlpatterns
 from rest_framework import permissions
 
 from routechoices.api import views
+from routechoices.lib.oauth import CustomOAuth2ProviderLoginView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -44,7 +45,15 @@ urlpatterns = [
             ],
         ),
     ),
+    path(
+        "login/",
+        views.CustomApiLoginView.as_view(),
+        name="api_login",
+    ),
     re_path(r"^locations/?$", views.locations_api_gw, name="locations_api_gw"),
+    path(
+        "oauth2/authorize/", CustomOAuth2ProviderLoginView.as_view(), name="authorize"
+    ),
     path("oauth2/", include((base_urlpatterns, app_name), namespace=app_name)),
     re_path(r"^time/?$", views.get_time, name="time_api"),
     re_path(r"^user/?$", views.user_view, name="user_view_api"),
