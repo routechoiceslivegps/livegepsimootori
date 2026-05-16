@@ -459,6 +459,7 @@ def club_create_view(request):
             form.save_m2m()
             messages.success(request, "Club created successfully")
             return redirect("dashboard_club:edit_view", club_slug=club.slug)
+        messages.error(request, "Did not save! Check the form!")
     else:
         form = ClubForm(initial={"admins": request.user})
     form.fields["admins"].queryset = User.objects.filter(id=request.user.id)
@@ -484,6 +485,7 @@ def club_view(request):
             form.save()
             messages.success(request, "Changes saved successfully")
             return redirect("dashboard_club:edit_view", club_slug=form.instance.slug)
+        messages.error(request, "Did not save the changes! Check the form!")
     else:
         form = ClubForm(instance=club)
     form.fields["admins"].queryset = User.objects.filter(id__in=club.admins.all())
