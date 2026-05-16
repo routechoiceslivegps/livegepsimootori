@@ -295,51 +295,53 @@ class SessionMiddleware(OrigSessionMiddleware):
         except AttributeError:
             return response
 
-        session_domain = request.get_host()
+        session_domain = request.host.regex
 
         # First check if we need to delete this cookie.
         # The session should be deleted only if the session is entirely empty.
-        if session_domain in request.COOKIES and empty:
-            response.delete_cookie(
-                session_domain,
-                path=settings.SESSION_COOKIE_PATH,
-                domain=session_domain,
-                samesite=settings.SESSION_COOKIE_SAMESITE,
-            )
-            patch_vary_headers(response, ("Cookie",))
-        else:
-            if accessed:
+        if request.host.regex in ("api", "dashboard"):
+            session_domain = request.host.regex
+            if session_domain in request.COOKIES and empty:
+                response.delete_cookie(
+                    session_domain,
+                    path=settings.SESSION_COOKIE_PATH,
+                    domain=session_domain,
+                    samesite=settings.SESSION_COOKIE_SAMESITE,
+                )
                 patch_vary_headers(response, ("Cookie",))
-            if (modified or settings.SESSION_SAVE_EVERY_REQUEST) and not empty:
-                if request.session.get_expire_at_browser_close():
-                    max_age = None
-                    expires = None
-                else:
-                    max_age = request.session.get_expiry_age()
-                    expires_time = time.time() + max_age
-                    expires = http_date(expires_time)
-                # Save the session data and refresh the client cookie.
-                # Skip session save for 5xx responses.
-                if response.status_code < 500:
-                    try:
-                        request.session.save()
-                    except UpdateError:
-                        raise SessionInterrupted(
-                            "The request's session was deleted before the "
-                            "request completed. The user may have logged "
-                            "out in a concurrent request, for example."
+            else:
+                if accessed:
+                    patch_vary_headers(response, ("Cookie",))
+                if (modified or settings.SESSION_SAVE_EVERY_REQUEST) and not empty:
+                    if request.session.get_expire_at_browser_close():
+                        max_age = None
+                        expires = None
+                    else:
+                        max_age = request.session.get_expiry_age()
+                        expires_time = time.time() + max_age
+                        expires = http_date(expires_time)
+                    # Save the session data and refresh the client cookie.
+                    # Skip session save for 5xx responses.
+                    if response.status_code < 500:
+                        try:
+                            request.session.save()
+                        except UpdateError:
+                            raise SessionInterrupted(
+                                "The request's session was deleted before the "
+                                "request completed. The user may have logged "
+                                "out in a concurrent request, for example."
+                            )
+                        response.set_cookie(
+                            settings.SESSION_COOKIE_NAME,
+                            request.session.session_key,
+                            max_age=max_age,
+                            expires=expires,
+                            domain=session_domain,
+                            path=settings.SESSION_COOKIE_PATH,
+                            secure=settings.SESSION_COOKIE_SECURE or None,
+                            httponly=settings.SESSION_COOKIE_HTTPONLY or None,
+                            samesite=settings.SESSION_COOKIE_SAMESITE,
                         )
-                    response.set_cookie(
-                        settings.SESSION_COOKIE_NAME,
-                        request.session.session_key,
-                        max_age=max_age,
-                        expires=expires,
-                        domain=session_domain,
-                        path=settings.SESSION_COOKIE_PATH,
-                        secure=settings.SESSION_COOKIE_SECURE or None,
-                        httponly=settings.SESSION_COOKIE_HTTPONLY or None,
-                        samesite=settings.SESSION_COOKIE_SAMESITE,
-                    )
         return response
 
 
