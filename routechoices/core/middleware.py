@@ -295,12 +295,10 @@ class SessionMiddleware(OrigSessionMiddleware):
         except AttributeError:
             return response
 
-        session_domain = request.host.regex
-
         # First check if we need to delete this cookie.
         # The session should be deleted only if the session is entirely empty.
-        if request.host.regex in ("api", "dashboard"):
-            session_domain = request.host.regex
+        session_domain = request.get_host()
+        if request.host.name in ("api", "dashboard"):
             if session_domain in request.COOKIES and empty:
                 response.delete_cookie(
                     session_domain,
