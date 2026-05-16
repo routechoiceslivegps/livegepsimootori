@@ -82,11 +82,6 @@ urlpatterns = [
                     include(
                         [
                             path(
-                                "",
-                                views.device_info,
-                                name="device_info_api",
-                            ),
-                            path(
                                 "registrations",
                                 views.device_registrations,
                                 name="device_registrations_api",

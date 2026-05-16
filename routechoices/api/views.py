@@ -1765,41 +1765,10 @@ def device_search(request):
     auto_schema=None,
 )
 @api_GET_view
-def device_info(request, device_id):
-    # TODO: Remove this endpoint
-    device = Device.objects.filter(aid=device_id, virtual=False).first()
-    if not device:
-        res = {"error": "No device matches this ID"}
-        return Response(res)
-
-    return Response(
-        {
-            "id": device.aid,
-            "last_position": (
-                {
-                    "timestamp": device.last_location[LOCATION_TIMESTAMP_INDEX],
-                    "coordinates": {
-                        "latitude": device.last_location[LOCATION_LATITUDE_INDEX],
-                        "longitude": device.last_location[LOCATION_LONGITUDE_INDEX],
-                    },
-                }
-                if device.last_location
-                else None
-            ),
-        }
-    )
-
-
-@swagger_auto_schema(
-    method="get",
-    auto_schema=None,
-)
-@api_GET_view
 def device_registrations(request, device_id):
-    # TODO: Change to is_device_used
     device = get_object_or_404(Device, aid=device_id, virtual=False)
     competitors = device.competitor_set.filter(event__end_date__gte=now())
-    return Response({"count": competitors.count()})
+    return Response({"count": 1 if competitors.exists() else 0})
 
 
 @swagger_auto_schema(

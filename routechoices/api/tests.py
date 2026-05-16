@@ -70,12 +70,6 @@ class EssentialApiTestCase1(EssentialApiBase):
     def test_id_is_registered(self):
         did = self.get_device_id()
         url = self.reverse_and_check(
-            "device_info_api", f"/device/{did}/", extra_kwargs={"device_id": did}
-        )
-        res = self.client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-
-        url = self.reverse_and_check(
             "device_registrations_api",
             f"/device/{did}/registrations",
             extra_kwargs={"device_id": did},
