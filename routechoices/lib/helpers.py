@@ -674,3 +674,22 @@ def meters_to_wgs84(val):
 def triangle_area(side_length):
     a, b, c = side_length
     return (((a + b + c) * (-a + b + c) * (a - b + c) * (a + b - c)) ** 0.5) / 4
+
+
+def retry_with_backoff(func, *args, **kwargs):
+    result = None
+    if max_retries := kwargs.get("max_retries", 3):
+        kwargs.pop("max_retries")
+    attempt = 0
+    while attempt < max_retries:
+        last_exception = None
+        try:
+            result = func(*args, **kwargs)
+        except Exception as e:
+            last_exception = e
+            pass
+        else:
+            return result
+        time.sleep(2**attempt)
+        attempt += 1
+    raise last_exception
