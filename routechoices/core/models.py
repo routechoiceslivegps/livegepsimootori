@@ -2283,13 +2283,17 @@ class Event(models.Model, SomewhereOnEarth):
             cache_key = f"coords_map:{center[0]}-{center[1]}"
             if cached := cache.get(cache_key):
                 return cached
-            raster_map = StaticMap(1200, 630, 10)
+            raster_map = StaticMap(
+                1200,
+                630,
+                10,
+                url_template="https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+            )
             marker = CircleMarker((float(center[1]), float(center[0])), "#00000000", 10)
             raster_map.add_marker(marker)
             img = retry_with_backoff(
                 raster_map.render,
                 zoom=13,
-                url_template="https://tile.openstreetmap.org/{z}/{x}/{y}.png",
             )
             cache.set(cache_key, img, DURATION_ONE_MONTH)
             return img
