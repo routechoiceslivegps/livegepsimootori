@@ -63,6 +63,7 @@ from routechoices.lib.helpers import (
     flatten,
     general_2d_projection,
     get_current_site,
+    git_master_hash,
     gpsseuranta_encode_data,
     meters_to_wgs84,
     project,
@@ -2288,13 +2289,13 @@ class Event(models.Model, SomewhereOnEarth):
                 10,
                 url_template=settings.THUMBNAIL_URL_TEMPLATE,
                 headers={
-                    "User-Agent": "Routechoices Live GPS Server (https://www.routechoices.com; contact@routechoices.com)",
+                    "User-Agent": f"Routechoices Live GPS Server {git_master_hash()} (https://www.routechoices.com; contact@routechoices.com)",
                     "X-Requested-With": "StaticMap",
                 },
             )
             marker = CircleMarker((float(center[1]), float(center[0])), "#00000000", 10)
             raster_map.add_marker(marker)
-            raster_map.render(zoom=13)
+            img = raster_map.render(zoom=13)
             cache.set(cache_key, img, DURATION_ONE_MONTH)
             return img
 
