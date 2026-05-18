@@ -678,8 +678,9 @@ def triangle_area(side_length):
 
 def retry_with_backoff(func, *args, **kwargs):
     result = None
-    if max_retries := kwargs.get("max_retries", 3):
-        kwargs.pop("max_retries")
+    max_retries = 3
+    if kwargs.get("max_retries", 3):
+        max_retries = kwargs.pop("max_retries")
     attempt = 0
     while attempt < max_retries:
         last_exception = None
