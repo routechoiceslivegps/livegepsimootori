@@ -68,7 +68,6 @@ from routechoices.lib.helpers import (
     project,
     random_device_id,
     random_key,
-    retry_with_backoff,
     safe64encodedsha,
     short_random_key,
     short_random_slug,
@@ -2288,14 +2287,14 @@ class Event(models.Model, SomewhereOnEarth):
                 630,
                 10,
                 url_template="https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-                headers={"X-Requested-With": "Routechoices Live GPS Tracking Server"},
+                headers={
+                    "User-Agent": "Routechoices Live GPS Server (https://www.routechoices.com; contact@routechoices.com)",
+                    "X-Requested-With": "StaticMap",
+                },
             )
             marker = CircleMarker((float(center[1]), float(center[0])), "#00000000", 10)
             raster_map.add_marker(marker)
-            img = retry_with_backoff(
-                raster_map.render,
-                zoom=13,
-            )
+            raster_map.render(zoom=13)
             cache.set(cache_key, img, DURATION_ONE_MONTH)
             return img
 
