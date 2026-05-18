@@ -340,6 +340,7 @@ PERMISSIONS_POLICY = {
 }
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 100_000
+THUMBNAIL_URL_TEMPLATE = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
 
 try:
     from .settings_overrides import *  # noqa: F403, F401

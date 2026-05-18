@@ -2286,7 +2286,7 @@ class Event(models.Model, SomewhereOnEarth):
                 1200,
                 630,
                 10,
-                url_template="https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                url_template=settings.THUMBNAIL_URL_TEMPLATE,
                 headers={
                     "User-Agent": "Routechoices Live GPS Server (https://www.routechoices.com; contact@routechoices.com)",
                     "X-Requested-With": "StaticMap",
