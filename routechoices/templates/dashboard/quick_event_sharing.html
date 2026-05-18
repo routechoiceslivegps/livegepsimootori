@@ -10,14 +10,21 @@
 <div class="row">
     <div class="col-12">
         <h1>Quick Tracking Ready</h1>
-        <p>You can now set your tracking device to start sharing share its position</p>
-        <form class="row">
-            <label for="id_url" class="form-label">Your Quick Tracking link:</label>
+        <p class="alert alert-success">
+            You may now set your GPS device to share its location with <i>RouteChoices.com</i>, Click the <i>Start live GPS tracking</i> button in the tracker app.
+        </p>
+        <p>
+            Your live location will be shown at the following URL.
+        </p>
+        <form class="row mb-3">
             <div class="input-group">
                 <input type="text" disabled class="form-control d-inline" id="id_url" value="{{ event.get_absolute_url }}">
                 <button type="button" class="input-group-text" id="copy-btn"><i class="fa-solid fa-clipboard me-1"></i><span>Copy to clipboard</span></button>
             </div>
         </form>
+        <p class="alert alert-info">
+            <i class="fa-solid fa-circle-info"></i> You can stop sharing your location at anytime. Click Stop live GPS tracking in the tracker app.
+        </p>
     </div>
 </div>
 {% endblock content %}
