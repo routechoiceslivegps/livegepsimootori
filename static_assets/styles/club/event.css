@@ -14,6 +14,19 @@
 	src: url("../../fonts/KodeMono-Bold.woff2") format("woff2");
 }
 
+@font-face {
+	font-family: "Twemoji Country Flags";
+	unicode-range:
+		U+1F1E6-1F1FF, U+1F3F4, U+E0062-E0063, U+E0065, U+E0067, U+E006C, U+E006E,
+		U+E0073-E0074, U+E0077, U+E007F;
+	src: url("../../fonts/twemoji-country-flags.woff2") format("woff2");
+	font-display: swap;
+}
+
+body {
+	font-family: "Twemoji Country Flags", var(--bs-body-font-family) !important;
+}
+
 .big-clock {
 	font-family: "KodeMono", monospace;
 	font-variant-numeric: tabular-nums;
@@ -226,15 +239,11 @@
 }
 
 .runner-icon span {
-	font-family: "Atkinson Hyperlegible", sans-serif;
+	font-family: "Twemoji Country Flags", "Atkinson Hyperlegible", sans-serif;
 	font-size: calc(var(--runner-scale) * 1rem);
 	font-weight: 700;
 	padding: 0 15px;
 	white-space: nowrap;
-}
-
-.runner-icon.flags-polyfill span {
-	font-family: "Twemoji Country Flags", "Atkinson Hyperlegible", sans-serif;
 }
 
 .runner-tail {

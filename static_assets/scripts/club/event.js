@@ -37,7 +37,7 @@ function RCEvent(infoURL, clockURL, locale) {
 	const competitorRoutes = {};
 	const competitorBatteyLevels = {};
 	let routesLastFetched = Number.NEGATIVE_INFINITY;
-	let liveDataLastKey = null;
+	let liveDataNextUrl = null;
 	const fetchPositionInterval = 10;
 	let playbackRate = 64;
 	let playbackPaused = true;
@@ -726,19 +726,19 @@ function RCEvent(infoURL, clockURL, locale) {
 		});
 		locateControl.addTo(map);
 		eventStateControl = L.control.eventState();
+
+		panControl = L.control.pan();
+		zoomControl = L.control.zoom();
+		rotateControl = L.control.rotate({ closeOnZeroBearing: false });
+
+		/*
 		coordsControl = L.control.mapCenterCoord({
 			position: "bottomleft",
 			latLngFormatter: coordsFormatters[coordsUsed].format,
 		});
-		panControl = L.control.pan();
-		zoomControl = L.control.zoom();
-		rotateControl = L.control.rotate({ closeOnZeroBearing: false });
 		coordsControl.addTo(map);
-		scaleControl = L.control.scale({
-			imperial: false,
-			updateWhenIdle: true,
-			position: "bottomleft",
-		});
+		*/
+
 		eventStateControl.addTo(map);
 		eventStateControl.hide();
 		if (showControls) {
@@ -746,7 +746,15 @@ function RCEvent(infoURL, clockURL, locale) {
 			zoomControl.addTo(map);
 			rotateControl.addTo(map);
 		}
+		/*
+		scaleControl = L.control.scale({
+			imperial: false,
+			updateWhenIdle: true,
+			position: "bottomleft",
+		});
 		scaleControl.addTo(map);
+		*/
+
 		logoWatermark.addTo(map);
 		map.doubleClickZoom.disable();
 		map.on("dblclick", onPressCustomMassStart);
@@ -1738,7 +1746,6 @@ function RCEvent(infoURL, clockURL, locale) {
 
 	function updateCompetitorList(newList) {
 		newList.forEach(updateCompetitor);
-		console.log(competitorList, competitorList.size);
 		const count = Object.keys(competitorList).length;
 		if (count === 1) {
 			competitorList[Object.keys(competitorList)[0]].focused = true;
@@ -2249,8 +2256,8 @@ function RCEvent(infoURL, clockURL, locale) {
 	function fetchCompetitorRoutes(cb) {
 		isCurrentlyFetchingRoutes = true;
 		let targetURL = dataURL;
-		if (isLive && liveDataLastKey) {
-			targetURL += liveDataLastKey;
+		if (isLive && liveDataNextUrl) {
+			targetURL = liveDataNextUrl;
 		}
 		targetURL += fetchDataUrlSuffix;
 		fetch(targetURL, {
@@ -2265,14 +2272,14 @@ function RCEvent(infoURL, clockURL, locale) {
 			.then((response) => {
 				if (!response?.competitors) {
 					// Prevent fetching competitor data for 1 second
-					liveDataLastKey = null;
+					liveDataNextUrl = null;
 					setTimeout(() => {
 						isCurrentlyFetchingRoutes = false;
 					}, 1000);
 					cb?.();
 					return;
 				}
-				liveDataLastKey = response.key;
+				liveDataNextUrl = response.next;
 				isCurrentlyFetchingRoutes = false;
 				const runnerPoints = [];
 				for (const competitor of response.competitors) {
@@ -2330,7 +2337,7 @@ function RCEvent(infoURL, clockURL, locale) {
 				cb?.();
 			})
 			.catch(() => {
-				liveDataLastKey = null;
+				liveDataNextUrl = null;
 				setTimeout(() => {
 					isCurrentlyFetchingRoutes = false;
 				}, 1000);
@@ -2643,16 +2650,18 @@ function RCEvent(infoURL, clockURL, locale) {
 
 			const crsSelector = u("<select/>")
 				.addClass("form-select")
-				.attr({ ariaLabel: "Background map" })
+				.attr({ ariaLabel: "Coordinates" })
 				.on("change", (e) => {
 					coordsUsed = e.target.value;
+					/*
 					coordsControl.remove();
 					coordsControl = L.control
 						.mapCenterCoord({
-							position: "bottomright",
+							position: "bottomleft",
 							latLngFormatter: coordsFormatters[coordsUsed].format,
 						})
 						.addTo(map);
+					*/
 				});
 
 			for (const [key, { name }] of Object.entries(coordsFormatters)) {

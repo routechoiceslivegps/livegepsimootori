@@ -480,3 +480,7 @@ a.navbar-brand.logo:focus {
 .status-indicator-default {
 	background-color: #808080;
 }
+
+body {
+	font-family: "Twemoji Country Flags", var(--bs-body-font-family) !important;
+}

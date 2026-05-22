@@ -61,3 +61,16 @@ const makeTextAreasAutoGrow = () => {
 		u(el).trigger("input");
 	});
 };
+
+(() => {
+	u(".external-link").on("click", (e) => {
+		const link = u(e.target).closest("a").attr("href");
+		e.preventDefault();
+		const confirmation = window.confirm(
+			"You are about to exit the dashboard, continue?",
+		);
+		if (confirmation) {
+			window.open(link);
+		}
+	});
+})();

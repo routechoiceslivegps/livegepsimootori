@@ -41,6 +41,7 @@ from routechoices.core.models import (
     PRIVACY_PRIVATE,
     PRIVACY_PUBLIC,
     PRIVACY_SECRET,
+    TAGS_SEPARATOR,
     TOP_LEFT,
     TOP_RIGHT,
     VISIBILITY_LIVE,
@@ -116,6 +117,8 @@ event_param = openapi.Parameter(
 def serialize_map(event, index, raster_map, title, tags=None):
     if not tags:
         tags = []
+    else:
+        tags = tags.split(TAGS_SEPARATOR)
     ext = raster_map.mime_type.split("/")[1]
     if ext not in ("jpeg", "png", "webp", "avif"):
         ext = "webp"
@@ -136,7 +139,7 @@ def serialize_map(event, index, raster_map, title, tags=None):
         "max_zoom": raster_map.max_zoom,
         "modification_date": raster_map.modification_date,
         "default": index == 0,
-        "tags": tags.split(" "),
+        "tags": tags,
         "id": raster_map.aid,
         "url": url,
         "wms": True,
@@ -392,7 +395,9 @@ def event_list(request):
             open_registration = True
             if acceptable_tags_raw := request.data.get("acceptable_tags", ""):
                 try:
-                    acceptable_tags = " ".join(acceptable_tags_raw.split(" "))
+                    acceptable_tags = TAGS_SEPARATOR.join(
+                        acceptable_tags_raw.split(TAGS_SEPARATOR)
+                    )
                 except Exception:
                     raise ValidationError("Invalid acceptable_tags")
 
@@ -988,7 +993,7 @@ def competitor_api(request, competitor_id):
     tags = None
     if new_tags is not None:
         new_tags = new_tags[:256]
-        tags = new_tags.split(" ")
+        tags = new_tags.split(TAGS_SEPARATOR)
 
     if new_color is not None:
         try:
@@ -1034,7 +1039,7 @@ def competitor_api(request, competitor_id):
     if new_color:
         competitor.color = new_color
     if tags is not None:
-        competitor.tags = " ".join(tags)
+        competitor.tags = TAGS_SEPARATOR.join(tags)
 
     if new_name or new_short_name or new_device_id or new_color:
         competitor.save()
@@ -1199,8 +1204,7 @@ def competitor_route_upload(request, competitor_id):
                             "categories": ["Black", "HE"],
                         }
                     ],
-                    "nb_points": 0,
-                    "key": 123456,
+                    "next": "//api.routechoices.com/events/pwaCro4TErI/data/1234",
                 }
             },
         ),
@@ -1264,10 +1268,13 @@ def event_data(request, event_id):
 
     response = {
         "competitors": competitors_data,
-        "nb_points": total_nb_pts,
     }
     if event.is_live:
-        response["key"] = cache_ts
+        response["next"] = reverse(
+            "event_data_delta",
+            host="api",
+            kwargs={"event_id": event.aid, "previous_key": cache_ts},
+        )
 
     cache_duration = DURATION_ONE_MINUTE + (
         EVENT_CACHE_INTERVAL_LIVE if event.is_live else EVENT_CACHE_INTERVAL_ARCHIVED
@@ -1295,7 +1302,11 @@ def event_data_delta(request, event_id, previous_key):
     if cache_ts == previous_key:
         response = {
             "competitors": [],
-            "key": cache_ts,
+            "next": reverse(
+                "event_data_delta",
+                host="api",
+                kwargs={"event_id": event_id, "previous_key": cache_ts},
+            ),
             "partial": 1,
         }
         return Response(response)
@@ -1308,11 +1319,11 @@ def event_data_delta(request, event_id, previous_key):
         return Response(cached_resp, headers={"X-Cache-Hit": 1})
 
     # Retrieve previous state
+    partial = False
     src_cache_key = f"event:{event_id}:tag:{tag or ""}:data:{previous_key}:live"
     prev_data = cache.get(src_cache_key)
-    if not prev_data:
-        raise Http404()
-
+    if prev_data:
+        partial = True
     # Retrieve current state
     req = HttpRequest()
     req.method = "GET"
@@ -1323,8 +1334,10 @@ def event_data_delta(request, event_id, previous_key):
     current_resp = event_data(req, event_id)
     if not current_resp.status_code // 100 == 2:
         return Response(status=current_resp.status_code)
-    current_data = current_resp.data
+    elif not partial:
+        return Response(current_resp.data)
 
+    current_data = current_resp.data
     # Do the diff
     prev_competitors = {}
     for competitor in prev_data.get("competitors", []):
@@ -1334,10 +1347,10 @@ def event_data_delta(request, event_id, previous_key):
 
     for competitor in current_data.get("competitors", []):
         if categories := competitor.get("categories"):
-            competitor["categories"] = " ".join(categories)
+            competitor["categories"] = TAGS_SEPARATOR.join(categories)
         if old_match := prev_competitors.get(competitor["id"]):
             if categories := old_match.get("categories"):
-                old_match["categories"] = " ".join(categories)
+                old_match["categories"] = TAGS_SEPARATOR.join(categories)
 
             old_version = set(old_match.items())
             new_version = set(competitor.items())
@@ -1348,7 +1361,7 @@ def event_data_delta(request, event_id, previous_key):
 
             diff["id"] = competitor.get("id")
             if "categories" in diff:
-                diff["categories"] = diff["categories"].split(" ")
+                diff["categories"] = diff["categories"].split(TAGS_SEPARATOR)
             if "encoded_data" in diff:
                 if old_encoded_locations := old_match.get("encoded_data"):
                     diff["encoded_data"] = gps_data_codec.encoded_diff(
@@ -1363,8 +1376,8 @@ def event_data_delta(request, event_id, previous_key):
     # Return the response
     response = {
         "competitors": competitors_data,
-        "key": current_data.get("key"),
-        "partial": 1,
+        "next": current_data.get("next"),
+        "partial": True,
     }
 
     headers = {}
@@ -2414,7 +2427,7 @@ def third_party_event_data(request, provider, uid):
     event = proxy.get_event()
     dev_data = proxy.get_competitor_devices_data(event)
     competitors_data = proxy.get_competitors_data()
-    output = {"competitors": [], "key": None}
+    output = {"competitors": []}
     for c_id, competitor in competitors_data.items():
         locs = dev_data.get(c_id, [])
         output["competitors"].append(
@@ -2428,7 +2441,6 @@ def third_party_event_data(request, provider, uid):
         )
 
     cache.set(cache_key, output, 10)
-
     return Response(output)
 
 

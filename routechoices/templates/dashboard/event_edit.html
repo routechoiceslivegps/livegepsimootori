@@ -81,35 +81,37 @@
             <form action="" method="post" enctype='multipart/form-data'>
                 {% csrf_token %}
                 {% bootstrap_form form %}
-                <h4>Extra Maps</h4>
-                <div class="form-text">Extra maps can be used for example if the route is split in multiple parts</div>
-                {% bootstrap_formset_errors extra_maps_formset %}
-                <table class="table map_table">
-                    {{ extra_maps_formset.management_form }}
-                    {% for form in extra_maps_formset %}
-                        {% if forloop.first %}
-                            <thead>
-                                <tr>
-                                    {% for field in form.visible_fields %}
-                                        <th {% if not field.field.required %}class="fw-normal"{% endif %}>{{ field.label|capfirst }}</th>
-                                    {% endfor %}
-                                </tr>
-                            </thead>
-                        {% endif %}
-                        <tr class="extra_map_formset_row">
-                            {% for field in form.visible_fields %}
-                                <td>
-                                    {# Include the hidden fields in the form #}
-                                    {% if forloop.first %}
-                                        {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
-                                    {% endif %}
-                                    {% bootstrap_field field show_label=False %}
-                                </td>
-                            {% endfor %}
-                        </tr>
-                    {% endfor %}
-                </table>
-                <hr />
+                <div id="extra_map_formset">
+                    <h4>Extra Maps</h4>
+                    <div class="form-text">Extra maps can be used for example if the route is split in multiple parts</div>
+                    {% bootstrap_formset_errors extra_maps_formset %}
+                    <table class="table map_table">
+                        {{ extra_maps_formset.management_form }}
+                        {% for form in extra_maps_formset %}
+                            {% if forloop.first %}
+                                <thead>
+                                    <tr>
+                                        {% for field in form.visible_fields %}
+                                            <th {% if not field.field.required %}class="fw-normal"{% endif %}>{{ field.label|capfirst }}</th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                            {% endif %}
+                            <tr class="extra_map_formset_row">
+                                {% for field in form.visible_fields %}
+                                    <td>
+                                        {# Include the hidden fields in the form #}
+                                        {% if forloop.first %}
+                                            {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+                                        {% endif %}
+                                        {% bootstrap_field field show_label=False %}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <hr />
+                </div>
                 <h3>Announcement</h3>
                 {% bootstrap_form notice_form %}
                 <h3>Competitors</h3>

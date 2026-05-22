@@ -112,6 +112,7 @@ TOP_RIGHT = 1
 BOTTOM_RIGHT = 2
 BOTTOM_LEFT = 3
 
+TAGS_SEPARATOR = " "
 
 GLOBAL_MERCATOR = GlobalMercator()
 
@@ -1535,7 +1536,7 @@ class EventSet(models.Model):
     description = models.TextField(
         blank=True,
         default="",
-        help_text=("Text displayed on the page, " "use markdown formatting"),
+        help_text=("Text displayed on the page, use markdown formatting"),
     )
 
     def save(self, *args, **kwargs):
@@ -1775,7 +1776,7 @@ class Event(models.Model, SomewhereOnEarth):
         blank=True,
         related_name="events",
         on_delete=models.SET_NULL,
-        help_text=("Event within the same bundle are listed together " "on our pages."),
+        help_text=("Event within the same bundle are listed together on our pages."),
     )
     emergency_contacts = models.TextField(
         default="",
@@ -1879,19 +1880,19 @@ class Event(models.Model, SomewhereOnEarth):
     def acceptable_categories(self):
         if not self.acceptable_tags:
             return []
-        return self.acceptable_tags.split(" ")
+        return self.acceptable_tags.split(TAGS_SEPARATOR)
 
     @property
     def map_categories(self, idx=0):
         if idx == 0:
             if not self.map or not self.map_tags:
                 return []
-            return self.map_tags.split(" ")
+            return self.map_tags.split(TAGS_SEPARATOR)
         elif idx > 0:
             extra_map = self.map_assignations.all()[idx - 1]
             if not extra_map.tags:
                 return []
-            return extra_map.tags.split(" ")
+            return extra_map.tags.split(TAGS_SEPARATOR)
 
     def enumerate_maps(self):
         if self.map:
@@ -1903,7 +1904,7 @@ class Event(models.Model, SomewhereOnEarth):
     def categories(self):
         if self.pk:
             tags = set(self.competitors.exclude(tags="").values_list("tags", flat=True))
-            return sorted(set(flatten([tag.split(" ") for tag in tags])))
+            return sorted(set(flatten([tag.split(TAGS_SEPARATOR) for tag in tags])))
         return []
 
     def get_competitors_in_category(self, category):
@@ -2052,7 +2053,7 @@ class Event(models.Model, SomewhereOnEarth):
             quoted_terms = re.findall(r"\"(.+?)\"", search_text)
             if quoted_terms:
                 search_text = re.sub(r"\"(.+?)\"", "", search_text)
-            search_terms = search_text.split(" ")
+            search_terms = search_text.split(TAGS_SEPARATOR)
             for search_term in search_terms + quoted_terms:
                 key_name = "name__icontains"
                 key_club_name = "club__name__icontains"
@@ -2485,9 +2486,9 @@ class Device(models.Model, SomewhereOnEarth):
                 owner = ownership
                 break
         if owner and owner.nickname:
-            return f"{owner.nickname}{'*' if original_device else ''}"
+            return f"@ {owner.nickname}{' (Archive)' if original_device else ''}"
         if original_device:
-            return "Archive"
+            return "Live Data Archive"
         if self.virtual:
             return "GPS File"
         else:
@@ -3111,7 +3112,7 @@ class Competitor(models.Model, SomewhereOnEarth):
     def categories(self):
         if not self.tags:
             return []
-        return self.tags.split(" ")
+        return self.tags.split(TAGS_SEPARATOR)
 
     @property
     def earth_coords(self):

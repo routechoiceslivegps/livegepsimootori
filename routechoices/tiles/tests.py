@@ -192,7 +192,7 @@ class MapApiTestCase(EssentialApiBase):
             end_date=arrow.get().shift(hours=1).datetime,
             map=raster_map,
         )
-        base_url = f"{url}?z=17&layers={event.aid}&" "format=image%2Fjpeg"
+        base_url = f"{url}?z=17&layers={event.aid}&format=image%2Fjpeg"
         intersecting_bbox = "&x=74352&y=36993"
         non_intersecting_bbox = "&x=742&y=36993"
         non_intersecting_bbox_2 = "&x=352&y=36993"

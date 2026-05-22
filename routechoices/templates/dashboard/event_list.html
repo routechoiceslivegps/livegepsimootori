@@ -45,13 +45,13 @@
                         {% for event in events %}
                             <tr class="collapsable">
                                 <td class="{% if not event.event_set %}no-bundle{% endif %}">
-                                    <a class="btn btn-primary dashboard-link" href="{{ event.get_absolute_url }}" target="_blank">
-                                        <i class="fa-solid fa-trophy"></i> <span class="flags-polyfill" title="{{ event.country_name }}"></span> <span>{{ event.name }}</span>
+                                    <a class="btn btn-primary dashboard-link external-link" href="{{ event.get_absolute_url }}" target="_blank">
+                                        <i class="fa-solid fa-trophy"></i> <span title="{{ event.country_name }}"></span> <span>{{ event.name }}</span>
                                     </a>
                                     {% if event.event_set %}
                                     <br />
                                         {% if event.event_set.create_page %}
-                                        <a class="btn btn-primary dashboard-link btn-sm" href="{{ event.event_set.url }}" ><i class="fa-solid fa-folder-open"></i> <span>{{ event.event_set.name }}</span></a>
+                                        <a class="btn btn-primary dashboard-link external-link btn-sm" href="{{ event.event_set.url }}" ><i class="fa-solid fa-folder-open"></i> <span>{{ event.event_set.name }}</span></a>
                                         {% else %}
                                         <button type="button" disabled class="btn btn-primary dashboard-link btn-sm"><i class="fa-solid fa-folder-open"></i> <span>{{ event.event_set.name }}</span></button>
                                         {% endif %}
@@ -108,6 +108,7 @@
     {% compress js %}
         <script src="{% static 'vendor/umbrella-3.3.3/umbrella.min.js' %}"></script>
         <script src="{% static 'vendor/dayjs-1.11.7/dayjs.min.js' %}"></script>
+        <script src="{% static 'scripts/dashboard/common.js' %}"></script>
         <script src="{% static 'scripts/dashboard/date_to_local.js' %}"></script>
         <script src="{% static 'scripts/dashboard/tooltips.js' %}"></script>
     {% endcompress %}

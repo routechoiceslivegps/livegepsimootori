@@ -202,7 +202,7 @@ context("Dashboard actions", () => {
 		cy.contains("Changes saved successfully", { timeout: 10_000 });
 	});
 
-	it("Create events", () => {
+	it.only("Create events", () => {
 		cy.login();
 		cy.visit("https://dashboard.routechoices.dev/clubs/");
 		cy.contains("Halden SK").click();

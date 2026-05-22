@@ -33,7 +33,7 @@
                             <tr class="collapsable">
                                 <td>
                                     {% if event_set.create_page %}
-                                    <a class="btn btn-primary dashboard-link" href="{{ event_set.url }}" ><i class="fa-solid fa-folder-open"></i> <span>{{ event_set.name }}</span></a>
+                                    <a class="btn btn-primary dashboard-link external-link" href="{{ event_set.url }}" ><i class="fa-solid fa-folder-open"></i> <span>{{ event_set.name }}</span></a>
                                     {% else %}
                                     <button type="button" disabled class="btn btn-primary dashboard-link"><i class="fa-solid fa-folder-open"></i> <span>{{ event_set.name }}</span></button>
                                     {% endif %}
@@ -58,3 +58,10 @@
         </div>
     </div>
 {% endblock sub_sub_content %}
+
+{% block extra_body %}
+    {% compress js %}
+        <script src="{% static 'vendor/umbrella-3.3.3/umbrella.min.js' %}"></script>
+        <script src="{% static 'scripts/dashboard/common.js' %}"></script>
+    {% endcompress %}
+{% endblock extra_body %}
