@@ -344,7 +344,7 @@ function selectizeDeviceInput(field) {
 		}
 		if (u("#upload-form").nodes.length) {
 			u("#id_device_id-ts-label").text(
-				"Device ID (Leave blank if you intend to upload a GPS File)",
+				"Tracker ID (Leave blank if you intend to upload a GPS File)",
 			);
 		}
 	}

@@ -734,7 +734,7 @@ def event_detail(request, event_id):
             ),
             "device_id": openapi.Schema(
                 type=openapi.TYPE_STRING,
-                description="Device ID",
+                description="Tracker ID",
             ),
             "color": openapi.Schema(
                 type=openapi.TYPE_STRING,
@@ -822,7 +822,7 @@ def create_competitor(request):
     device = Device.objects.filter(aid=device_id).defer("locations_encoded").first()
 
     if not device and device_id:
-        errors.append("Device ID not found")
+        errors.append("Tracker ID not found")
 
     if not is_event_admin:
         if event.competitors.filter(name=name).exists():
@@ -897,7 +897,7 @@ def create_competitor(request):
         properties={
             "device_id": openapi.Schema(
                 type=openapi.TYPE_STRING,
-                description="Device ID",
+                description="Tracker ID",
             ),
             "name": openapi.Schema(
                 type=openapi.TYPE_STRING,

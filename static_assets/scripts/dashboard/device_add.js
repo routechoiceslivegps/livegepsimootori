@@ -48,7 +48,7 @@ function onCsvParsed(result) {
 							displaySuccess(`${nImported} devices imported`);
 						})
 						.fail(() => {
-							errors += `Device ID ${deviceId}, nickname "${nickname}": Failed\n`;
+							errors += `Failed to import: Tracker ID ${deviceId}, nickname "${nickname}"\n`;
 							displayErrors(errors);
 						});
 				} else {

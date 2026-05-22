@@ -34,6 +34,12 @@
                                         <a href="{% url 'account_edit_view' %}"><i class="fa-solid fa-user"></i> Your Details</a>
                                     </li>
                                     <li class="list-group-item">
+                                        <a href="{% url 'dashboard_participations_view' %}"><i class="fa-solid fa-trophy"></i> Your Event Participations</a>
+                                    </li>
+                                    <ul class="list-group list-group-flush">
+                                        <li  class="list-group-item"><a href="{% url 'dashboard_club:select_view' %}"><i class="fa-solid fa-house-flag"></i> Your clubs</a></li>
+                                    </ul>
+                                    <li class="list-group-item">
                                         <a href="{% url 'account_email_list' %}"><i class="fa-solid fa-envelope"></i> Email Addresses</a>
                                     </li>
                                     <li class="list-group-item">
@@ -47,11 +53,9 @@
                                     </li>
                                 </ul>
                             </div>
-                            <div class="col-12 col-lg-4 mb-lg-0 mb-3 border-start-0 border-lg-start-1">
+                            <div class="col-12 col-lg-8 mb-lg-0 mb-3 border-start-0 border-lg-start-1">
                                 <h2><i class="fa-solid fa-house-flag"></i> Clubs</h2>
-                                <ul class="list-group list-group-flush">
-                                    <li  class="list-group-item"><a href="{% url 'dashboard_club:select_view' %}">Manage your clubs</a></li>
-                                </ul>
+
                                 {% if clubs %}
                                 <small class="ms-3"><b>Your clubs</b></small>
                                 <ul class="list-group list-group-flush">
@@ -85,27 +89,18 @@
                                     </li>
                                     {% endfor %}
                                 </ul>
+                                {% else %}
+                                <div class="jumbotron">
+                                    <p>It seems you don't manage any club yet! No worries...</p>
+                                    <p>
+                                        <span>You can create a club.</span><br/><a href="{% url 'dashboard_club:create_view' %}" class="btn btn-primary dashboard-link"><i class="fa-solid fa-circle-plus"></i> Create a Club</a>
+                                    </p>
+                                    <p>
+                                        <span>Or ask to join the list of managers of an existing club.</span><br><a href="{% url 'dashboard_request_club_invite_view' %}" class="btn btn-primary dashboard-link"><i class="fa-solid fa-hand"></i> Request an invite</a>
+                                    </p>
+                                </div>
                                 {% endif %}
                             </div>
-
-                            <div class="col-12 col-lg-4 mb-lg-0 mb-3 border-start-0 border-lg-start-1">
-                                <h2><i class="fa-solid fa-trophy"></i> Participations</h2>
-                                <ul class="list-group list-group-flush">
-                                    <li  class="list-group-item"><a href="{% url 'dashboard_participations_view' %}">Manage your participations</a></li>
-                                </ul>
-                                {% if participations %}
-                                <small class="ms-3"><b>Latest participations</b></small>
-                                <ul class="list-group list-group-flush">
-                                {% for p in participations %}
-                                    <li class="list-group-item">
-                                        <a href="{{ p.event.get_absolute_url }}">{{ p.event.name }}</a> by {{ p.event.club.name }} as {{ p.name }} ({{ p.short_name }})
-                                    </li>
-                                {% endfor %}
-                                {% if has_more_participations %}<li class="list-group-item">And more...</li>{% endif %}
-                                </ul>
-                                {% endif %}
-                            </div>
-                        </div>
                         <!--/.col-12.col-sm-9-->
                     </div>
                 </div>

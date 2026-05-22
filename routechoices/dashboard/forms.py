@@ -116,7 +116,7 @@ class RequestInviteForm(Form):
 
     club = ModelChoiceField(
         label="Club",
-        help_text="Enter the club you want to be added as administrator",
+        help_text="Select the club you want to be added as manager",
         queryset=Club.objects.filter(
             forbid_invite_request=False, upgraded=True
         ).exclude(subscription_paused_at__isnull=False),

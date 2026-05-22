@@ -15,7 +15,7 @@ class Command(BaseCommand):
             self.stderr.write(f"No such club: {options.get('club_slug')[0]}")
             return
 
-        self.stdout.write("Nickname;Device ID;IMEI\n")
+        self.stdout.write("Nickname;Tracker ID;IMEI\n")
 
         devices_qs = (
             DeviceClubOwnership.objects.filter(club_id=club.id)

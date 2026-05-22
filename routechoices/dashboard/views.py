@@ -1764,7 +1764,7 @@ def device_list_download(request):
 
     csvfile = StringIO()
     datawriter = csv.writer(csvfile, delimiter=";")
-    datawriter.writerow(["Nickname", "Device ID", "IMEI"])
+    datawriter.writerow(["Nickname", "Tracker ID", "IMEI"])
     for dev in devices.values():
         datawriter.writerow([dev.get("nickname"), dev.get("aid"), dev.get("imei", "")])
 

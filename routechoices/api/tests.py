@@ -1568,7 +1568,7 @@ class RegistrationApiTestCase(EssentialApiBase):
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         errors = json.loads(res.content)
         self.assertEqual(len(errors), 1)
-        self.assertIn("Device ID not found", errors[0])
+        self.assertIn("Tracker ID not found", errors[0])
         # ok
         res = self.client.post(
             url,

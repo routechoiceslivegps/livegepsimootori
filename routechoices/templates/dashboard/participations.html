@@ -22,7 +22,13 @@
                         <tbody>
                             {% for p in participations %}
                                 <tr>
-                                    <td><a href="{{ p.event.get_absolute_url }}">{{ p.event.name }}</a> by {{ p.event.club.name }} as {{ p.name }} ({{ p.short_name }})</td>
+                                    <td>
+                                        <a href="{{ p.event.get_absolute_url }}" class="btn btn-primary dashboard-link external-link">
+                                            <i class="fa-solid fa-trophy"></i> <span><i>{{ p.event.name }}</i></span><br/>
+                                            <span>
+                                                <i class="fa-solid fa-flag"></i> <i>{{ p.event.club.name }}</i> – <i class="fa-solid fa-person"></i> <i>{{ p.name }} ({{ p.short_name }})</i>
+                                            </span>
+                                        </a></td>
                                     <td>
                                         <button data-competitor-name="{{ p.name }}"
                                                 data-competitor-short-name="{{ p.short_name }}"
@@ -30,13 +36,13 @@
                                                 data-device-id="{{ p.device.aid }}"
                                                 data-competition-allowed-tags="{{ p.event.acceptable_tags }}"
                                                 data-competitor-tags="{{ p.tags }}"
-                                                class="me-1 mb-1 btn btn-secondary edit-info-btn">Edit info</button>
+                                                class="me-1 mb-1 btn btn-secondary dashboard-link edit-info-btn"><i class="fa-solid fa-pen-to-square"></i> <span>Edit</span></button>
                                         {% if p.event.allow_route_upload %}
                                             <button data-competitor-id="{{ p.aid }}"
-                                                    class="me-1 mb-1 btn btn-secondary open-upload-btn">Upload Route</button>
+                                                    class="me-1 mb-1 btn btn-secondary dashboard-link open-upload-btn"><i class="fa-solid fa-cloud-arrow-up"></i> <span>Upload Route</span></button>
                                         {% endif %}
                                             <button data-competitor-id="{{ p.aid }}" data-event-name="{{ p.event.name }}"
-                                                    class="mb-1 btn btn-danger confirm-withdraw-btn">Withdraw</button>
+                                                    class="mb-1 btn btn-danger dashboard-link confirm-withdraw-btn"><i class="fa-solid fa-door-open"></i> <span>Withdraw</span></button>
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -84,7 +90,7 @@
                             <select class="form-select" id="id_tag" name="tag"></select>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label" for="id_device_id">Device ID</label>
+                            <label class="form-label" for="id_device_id">Tracker ID</label>
                             <select class="form-select" id="id_device_id" name="device_id"></select>
                         </div>
                         <input type="hidden" id="id_id" />

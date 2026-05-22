@@ -1,5 +1,5 @@
 {
-	"dev-id": "Device ID",
+	"dev-id": "Tracker ID",
 	"refresh": "Refresh",
 	"settings": "Settings",
 	"name": "Name",
@@ -13,7 +13,7 @@
 	"registration-info-time": "You can stream your GPS data to only one competitor at a time. If you register now, your GPS data stream will be switched to this competitor at latest on $1",
 	"error": "Something went wrong.",
 	"register": "Register to an event",
-	"no-device-id": "Device ID not found",
+	"no-device-id": "Tracker ID not found",
 	"no-name": "Name is missing",
 	"invalid-start-time": "Start time could not be parsed",
 	"bad-start-time": "Competitor start time should be during the event time",
