@@ -1719,13 +1719,14 @@ class Event(models.Model, SomewhereOnEarth):
         blank=True,
     )
     map_title = models.CharField(
+        verbose_name="Default map title",
         max_length=255,
         blank=True,
         default="",
         help_text="Leave blank if not using extra maps",
     )
     map_tags = models.CharField(
-        verbose_name="Categories that uses the main map",
+        verbose_name="Categories that uses the default map",
         max_length=256,
         blank=True,
         default="",

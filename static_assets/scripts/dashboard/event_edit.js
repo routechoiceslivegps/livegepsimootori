@@ -507,7 +507,7 @@ function showLocalTime(el) {
 		addText: '<i class="fa-solid fa-circle-plus"></i> Add Map',
 		addCssClass: "btn btn-info add-map-btn",
 		deleteCssClass: "btn btn-danger delete-row",
-		deleteText: '<i class="fa-solid fa-xmark"></i>',
+		deleteText: '<i class="fa-solid fa-trash"></i>',
 		prefix: "map_assignations",
 		formCssClass: "extra_map_formset_row",
 	});
