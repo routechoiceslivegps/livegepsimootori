@@ -113,7 +113,9 @@ event_param = openapi.Parameter(
 )
 
 
-def serialize_map(event, index, raster_map, title):
+def serialize_map(event, index, raster_map, title, tags=None):
+    if not tags:
+        tags = []
     ext = raster_map.mime_type.split("/")[1]
     if ext not in ("jpeg", "png", "webp", "avif"):
         ext = "webp"
@@ -134,6 +136,7 @@ def serialize_map(event, index, raster_map, title):
         "max_zoom": raster_map.max_zoom,
         "modification_date": raster_map.modification_date,
         "default": index == 0,
+        "tags": tags.split(" "),
         "id": raster_map.aid,
         "url": url,
         "wms": True,
@@ -598,6 +601,7 @@ def club_list_view(request):
                             "max_zoom": 18,
                             "modification_date": "2019-06-10T17:21:52.417000Z",
                             "default": True,
+                            "tags": [],
                             "id": "or6tmT19cfk",
                         }
                     ],
@@ -681,8 +685,8 @@ def event_detail(request, event_id):
 
     maps = []
     if event.could_display_maps(request.user):
-        for i, (raster_map, title) in enumerate(event.enumerate_maps()):
-            maps.append(serialize_map(event, i, raster_map, title))
+        for i, (raster_map, title, tags) in enumerate(event.enumerate_maps()):
+            maps.append(serialize_map(event, i, raster_map, title, tags))
 
         if event.geojson_layer:
             output["geojson_url"] = event.get_geojson_url()
@@ -1609,7 +1613,7 @@ def get_version(request):
 @swagger_auto_schema(
     method="post",
     operation_id="device_create",
-    operation_description="Request a device ID. You need to be identified to get a valid answer unless you provide a valid IMEI.",
+    operation_description="Request a tracker ID. You need to be identified to get a valid answer unless you provide a valid IMEI.",
     tags=["Devices"],
     request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -1617,7 +1621,7 @@ def get_version(request):
             "imei": openapi.Schema(
                 type=openapi.TYPE_STRING,
                 example="<IMEI>",
-                description="Hardware GPS tracking device IMEI (Optional)",
+                description="Dedicated GPS tracking device IMEI (Optional)",
             ),
         },
         required=[],
@@ -1901,7 +1905,7 @@ def event_map_list(request, event_id):
         if len(title_input) > 255:
             raise ValidationError("Invalid title value (Too long)")
 
-        other_titles = set([title for _, title in event.enumerate_maps()])
+        other_titles = set([title for _, title, _ in event.enumerate_maps()])
         if title_input in other_titles:
             raise ValidationError(
                 "Invalid title value (Event can not include 2 maps with same title)"
@@ -1927,8 +1931,8 @@ def event_map_list(request, event_id):
         return Response(status=status.HTTP_425_TOO_EARLY)
 
     maps = []
-    for i, (raster_map, title) in enumerate(event.enumerate_maps()):
-        maps.append(serialize_map(event, i, raster_map, title))
+    for i, (raster_map, title, tags) in enumerate(event.enumerate_maps()):
+        maps.append(serialize_map(event, i, raster_map, title, tags))
 
     headers = {}
     if is_event_admin or event.privacy == PRIVACY_PRIVATE:
@@ -2004,7 +2008,7 @@ def event_map_detail(request, event_id, index="1", **kwargs):
             if len(title_input) > 255:
                 raise ValidationError("Invalid title value (Too long)")
 
-            all_titles = [title for _, title in event.enumerate_maps()]
+            all_titles = [title for _, title, _ in event.enumerate_maps()]
             all_titles.pop(int(index) - 1)
             other_titles = set(all_titles)
             if title_input in other_titles:

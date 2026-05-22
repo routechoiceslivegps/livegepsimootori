@@ -1712,6 +1712,7 @@ class Event(models.Model, SomewhereOnEarth):
     )
     map = models.ForeignKey(
         Map,
+        verbose_name="Default map",
         related_name="events_main_map",
         on_delete=models.SET_NULL,
         null=True,
@@ -1722,6 +1723,12 @@ class Event(models.Model, SomewhereOnEarth):
         blank=True,
         default="",
         help_text="Leave blank if not using extra maps",
+    )
+    map_tags = models.CharField(
+        verbose_name="Categories that uses the main map",
+        max_length=256,
+        blank=True,
+        default="",
     )
     extra_maps = models.ManyToManyField(
         Map,
@@ -1873,11 +1880,23 @@ class Event(models.Model, SomewhereOnEarth):
             return []
         return self.acceptable_tags.split(" ")
 
+    @property
+    def map_categories(self, idx=0):
+        if idx == 0:
+            if not self.map or not self.map_tags:
+                return []
+            return self.map_tags.split(" ")
+        elif idx > 0:
+            extra_map = self.map_assignations.all()[idx - 1]
+            if not extra_map.tags:
+                return []
+            return extra_map.tags.split(" ")
+
     def enumerate_maps(self):
         if self.map:
-            yield (self.map, self.map_title)
+            yield (self.map, self.map_title, self.map_tags)
             for i, other_map in enumerate(self.map_assignations.all()):
-                yield (other_map.map, other_map.title)
+                yield (other_map.map, other_map.title, other_map.tags)
 
     @cached_property
     def categories(self):
@@ -2388,6 +2407,18 @@ class MapAssignation(models.Model):
         Map, related_name="map_assignations", on_delete=models.CASCADE
     )
     title = models.CharField(max_length=255)
+    tags = models.CharField(
+        verbose_name="Categories that uses this map",
+        max_length=256,
+        blank=True,
+        default="",
+    )
+
+    @property
+    def categories(self):
+        if not self.tags:
+            return []
+        return self.tags.split(" ")
 
     class Meta:
         ordering = ["id"]
