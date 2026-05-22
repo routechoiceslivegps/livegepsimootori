@@ -440,6 +440,7 @@ class EventForm(ModelForm):
             "geojson_layer",
             "map",
             "map_title",
+            "map_tags",
             "timezone",
         ]
         widgets = {
@@ -450,6 +451,7 @@ class EventForm(ModelForm):
                 attrs={"class": "datetimepicker", "autocomplete": "off"}
             ),
             "acceptable_tags": TextInput(attrs={"class": "tag-input"}),
+            "map_tags": TextInput(attrs={"class": "tag-input"}),
         }
 
     def validate_unique(self):
@@ -597,7 +599,10 @@ class NoticeForm(ModelForm):
 class ExtraMapForm(ModelForm):
     class Meta:
         model = MapAssignation
-        fields = ("event", "map", "title")
+        fields = ("event", "map", "title", "tags")
+        widgets = {
+            "tags": TextInput(attrs={"class": "tag-input"}),
+        }
 
     def clean_map(self):
         raster_map = self.cleaned_data.get("map")

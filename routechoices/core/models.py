@@ -2476,7 +2476,6 @@ class Device(models.Model, SomewhereOnEarth):
             device = original_device
         else:
             device = self
-
         owner = None
         # Use this instead of .filter(club=club).first()
         # as club_ownership are already loaded avoiding n+1 query
@@ -2484,10 +2483,14 @@ class Device(models.Model, SomewhereOnEarth):
             if ownership.club_id == club.id:
                 owner = ownership
                 break
-        return (
-            f"{device.aid}{f' ({owner.nickname})' if owner and owner.nickname else ''}"
-            f"{'*' if original_device else ''}"
-        )
+        if owner and owner.nickname:
+            return f"{owner.nickname}{'*' if original_device else ''}"
+        if original_device:
+            return "Archive"
+        if self.virtual:
+            return "GPS File"
+        else:
+            return f"{device.aid}"
 
     def get_nickname(self, club):
         original_device = self.get_original_device()

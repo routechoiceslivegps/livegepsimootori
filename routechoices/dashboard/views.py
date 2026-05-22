@@ -1163,18 +1163,18 @@ def event_edit_view(request, event_id):
         key=lambda x: (x["key"][0] == "", x["key"]),
     )
 
-    devices_choices = [
+    devices_default_choices = [
         ["", "---------"],
     ] + [device["full"] for device in devices_list]
 
     for competitor_form in competitors_formset.forms:
-        competitor_devices_choices = devices_choices
+        competitor_devices_choices = devices_default_choices
 
         if competitor_form.instance.device and competitor_form.instance.device.virtual:
             virtual_device = competitor_form.instance.device
-            competitor_devices_choices.append(
+            competitor_devices_choices = devices_default_choices + [
                 (virtual_device.id, virtual_device.get_display_str(club))
-            )
+            ]
 
         competitor_form.fields["device"].queryset = devices_qs
         competitor_form.fields["device"].choices = competitor_devices_choices
@@ -1321,18 +1321,17 @@ def event_competitors_view(request, event_id):
         key=lambda x: (x["key"][0] == "", x["key"]),
     )
 
-    devices_choices = [
+    devices_default_choices = [
         ["", "---------"],
     ] + [device["full"] for device in devices_list]
 
     for competitor_form in competitors_formset.forms:
-        competitor_devices_choices = devices_choices
-
+        competitor_devices_choices = devices_default_choices
         if competitor_form.instance.device and competitor_form.instance.device.virtual:
             virtual_device = competitor_form.instance.device
-            competitor_devices_choices.append(
+            competitor_devices_choices = devices_default_choices + [
                 (virtual_device.id, virtual_device.get_display_str(club))
-            )
+            ]
 
         competitor_form.fields["device"].queryset = devices_qs
         competitor_form.fields["device"].choices = competitor_devices_choices

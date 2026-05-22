@@ -499,7 +499,7 @@ function showLocalTime(el) {
 		addText: '<i class="fa-solid fa-circle-plus"></i> Add Competitor',
 		addCssClass: "btn btn-info add-competitor-btn",
 		deleteCssClass: "btn btn-danger delete-row",
-		deleteText: '<i class="fa-solid fa-xmark"></i>',
+		deleteText: '<i class="fa-solid fa-trash"></i>',
 		prefix: "competitors",
 		added: onAddedCompetitorRow,
 	});
