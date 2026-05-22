@@ -114,88 +114,90 @@
                 </div>
                 <h3>Announcement</h3>
                 {% bootstrap_form notice_form %}
-                <h3>Competitors</h3>
-                {% if not use_competitor_formset and context == 'edit' %}
-                    <p>
-                        You have more than 100 competitors
-                        <a class="btn btn-primary" href="{% url 'dashboard_club:event:competitors_view' event_id=event.aid club_slug=request.club.slug %}" target="_blank">
-                            Manage existing competitors
-                        </a>
-                    </p>
-                    <h4>Add more competitors</h4>
-                {% endif %}
-                {% bootstrap_formset_errors competitors_formset %}
-                <table class="table competitor-table">
-                    {{ competitors_formset.management_form }}
-                    {% for form in competitors_formset %}
-                        {% bootstrap_form_errors form type='non_fields' %}
-                        {% if forloop.first %}
-                            <thead>
-                                <tr>
-                                    {% for field in form.visible_fields %}
-                                        <th {% if not field.field.required %}class="fw-normal"{% endif %}>{{ field.label|capfirst }}</th>
-                                    {% endfor %}
-                                </tr>
-                            </thead>
-                        {% endif %}
-                        <tr class="formset_row">
-                            {% for field in form.visible_fields %}
-                                <td>
-                                    {# Include the hidden fields in the form #}
-                                    {% if forloop.first %}
-                                        {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
-                                    {% endif %}
-                                    {% bootstrap_field field show_label=False %}
-                                </td>
-                            {% endfor %}
-                        </tr>
-                    {% endfor %}
-                </table>
-                <div class="iof-upload">
-                    <div id="iof-step-1">
-                        <label for="iof_input" class="form-label">Import competitors from IOF XML 3.0</label>
+                <div id="competitors_formset">
+                    <h3>Competitors</h3>
+                    {% if not use_competitor_formset and context == 'edit' %}
+                        <p>
+                            You have more than 100 competitors
+                            <a class="btn btn-primary" href="{% url 'dashboard_club:event:competitors_view' event_id=event.aid club_slug=request.club.slug %}" target="_blank">
+                                Manage existing competitors
+                            </a>
+                        </p>
+                        <h4>Add more competitors</h4>
+                    {% endif %}
+                    {% bootstrap_formset_errors competitors_formset %}
+                    <table class="table competitor-table">
+                        {{ competitors_formset.management_form }}
+                        {% for form in competitors_formset %}
+                            {% bootstrap_form_errors form type='non_fields' %}
+                            {% if forloop.first %}
+                                <thead>
+                                    <tr>
+                                        {% for field in form.visible_fields %}
+                                            <th {% if not field.field.required %}class="fw-normal"{% endif %}>{{ field.label|capfirst }}</th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                            {% endif %}
+                            <tr class="formset_row">
+                                {% for field in form.visible_fields %}
+                                    <td>
+                                        {# Include the hidden fields in the form #}
+                                        {% if forloop.first %}
+                                            {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+                                        {% endif %}
+                                        {% bootstrap_field field show_label=False %}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <div class="iof-upload">
+                        <div id="iof-step-1">
+                            <label for="iof_input" class="form-label">Import competitors from IOF XML 3.0</label>
+                            <input type="file"
+                                name="iof_input"
+                                id="iof_input"
+                                class="form-control"
+                                accept="text/xml" />
+                        </div>
+                        <div id="iof-step-2" class="d-none">
+                            <label for="iof_class_input" class="form-label">Select Class</label>
+                            <select type="select"
+                                    name="iof_class_input"
+                                    id="iof_class_input"
+                                    class="form-control mb-1"></select>
+                            <button class="btn btn-info me-1" id="iof-class-submit-btn" type="button">Import</button>
+                            <button class="btn btn-danger" id="iof-class-cancel-btn" type="button">Cancel</button>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="csv-upload">
+                        <label for="csv_input" class="form-label">Import competitors from CSV</label>
                         <input type="file"
-                               name="iof_input"
-                               id="iof_input"
-                               class="form-control"
-                               accept="text/xml" />
-                    </div>
-                    <div id="iof-step-2" class="d-none">
-                        <label for="iof_class_input" class="form-label">Select Class</label>
-                        <select type="select"
-                                name="iof_class_input"
-                                id="iof_class_input"
-                                class="form-control mb-1"></select>
-                        <button class="btn btn-info me-1" id="iof-class-submit-btn" type="button">Import</button>
-                        <button class="btn btn-danger" id="iof-class-cancel-btn" type="button">Cancel</button>
-                    </div>
-                </div>
-                <hr />
-                <div class="csv-upload">
-                    <label for="csv_input" class="form-label">Import competitors from CSV</label>
-                    <input type="file"
-                           name="csv_input"
-                           id="csv_input"
-                           class="form-control"
-                           accept="text/csv" />
-                    <div class="form-text">
-                        Follow the following format for the CSV:
-                        <br />
-                        Column A - Full name - displayed in the menu on the left during the event
-                        <br />
-                        Column B - Shortname - displayed next to the marker on the event
-                        <br />
-                        Column C - Start time for the competitor in the ISO format (e.g. 2014-05-31T08:57:00Z). Make sure this column is formatted as Text if you use Excel.
-                        <br />
-                        Column D - The ID of the GPS device
-                        <br />
-                        Column E - Color - in hexadecimal format (e.g. #f5e803)
-                        <br />
-                        Column F - Categories - values separated by space (e.g. "MenElite 8km")
-                        <br />
-                        File must be UTF-8 encoded
-                        <br />
-                        <a href={% static "assets/startlist.csv" %}>Download example file</a>
+                            name="csv_input"
+                            id="csv_input"
+                            class="form-control"
+                            accept="text/csv" />
+                        <div class="form-text">
+                            Follow the following format for the CSV:
+                            <br />
+                            Column A - Full name - displayed in the menu on the left during the event
+                            <br />
+                            Column B - Shortname - displayed next to the marker on the event
+                            <br />
+                            Column C - Start time for the competitor in the ISO format (e.g. 2014-05-31T08:57:00Z). Make sure this column is formatted as Text if you use Excel.
+                            <br />
+                            Column D - The ID of the GPS device
+                            <br />
+                            Column E - Color - in hexadecimal format (e.g. #f5e803)
+                            <br />
+                            Column F - Categories - values separated by space (e.g. "MenElite 8km")
+                            <br />
+                            File must be UTF-8 encoded
+                            <br />
+                            <a href="{% static 'assets/startlist.csv' %}">Download example file</a>
+                        </div>
                     </div>
                 </div>
                 <hr />
