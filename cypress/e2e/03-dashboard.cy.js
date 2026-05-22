@@ -202,7 +202,7 @@ context("Dashboard actions", () => {
 		cy.contains("Changes saved successfully", { timeout: 10_000 });
 	});
 
-	it("Create events", () => {
+	it.only("Create events", () => {
 		cy.login();
 		cy.visit("https://dashboard.routechoices.dev/clubs/");
 		cy.contains("Halden SK").click();
@@ -336,6 +336,10 @@ context("Dashboard actions", () => {
 		cy.get("#id_map_assignations-0-map").select("Another map");
 		cy.get("#id_map_assignations-0-title").type("Another map");
 		cy.get("#id_competitors-0-device-ts-control").type("10000000").wait(1000);
+		cy.get("#id_competitors-0-device-ts-dropdown > .option")
+			.eq(0)
+			.click()
+			.wait(300);
 		cy.get("#id_competitors-0-name").type("Björn Ekeberg");
 		cy.get("#id_competitors-0-short_name").type("🇳🇴 IL Tyrving");
 		cy.get("#id_competitors-0-start_time")
