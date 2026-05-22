@@ -1727,7 +1727,7 @@ class Event(models.Model, SomewhereOnEarth):
         help_text="Leave blank if not using extra maps",
     )
     map_tags = models.CharField(
-        verbose_name="Categories that uses the default map",
+        verbose_name="Default map categories",
         max_length=256,
         blank=True,
         default="",
@@ -2410,7 +2410,7 @@ class MapAssignation(models.Model):
     )
     title = models.CharField(max_length=255)
     tags = models.CharField(
-        verbose_name="Categories that uses this map",
+        verbose_name="Categories",
         max_length=256,
         blank=True,
         default="",

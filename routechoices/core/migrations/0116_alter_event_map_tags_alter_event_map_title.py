@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
                 blank=True,
                 default="",
                 max_length=256,
-                verbose_name="Categories that uses the default map",
+                verbose_name="Default map categories",
             ),
         ),
         migrations.AlterField(

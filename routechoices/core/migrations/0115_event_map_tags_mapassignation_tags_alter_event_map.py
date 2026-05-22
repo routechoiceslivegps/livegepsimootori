@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 blank=True,
                 default="",
                 max_length=256,
-                verbose_name="Categories that uses the main map",
+                verbose_name="Default map categories",
             ),
         ),
         migrations.AddField(
@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
                 blank=True,
                 default="",
                 max_length=256,
-                verbose_name="Categories that uses this map",
+                verbose_name="Categories",
             ),
         ),
         migrations.AlterField(

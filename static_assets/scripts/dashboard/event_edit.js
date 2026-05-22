@@ -375,6 +375,10 @@ function showLocalTime(el) {
 }
 
 (() => {
+	const announcementForm = u("#announcement_form").clone();
+	u("#announcement_form").remove();
+	u("#id_backdrop_map").parent().before(announcementForm);
+	u("#id_backdrop_map").parent().before("<h3>Maps</h3>");
 	// set timezone to local
 	const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 	console.log(`User timezone: ${userTimezone}`);
@@ -676,8 +680,6 @@ function showLocalTime(el) {
 			minInput.val(Math.floor((tailLength / 60) % 60));
 			secInput.val(Math.floor(tailLength % 60));
 		});
-
-	u("#id_backdrop_map").parent().before("<hr/><h3>Maps</h3>");
 
 	const currentGeoJson = u("#id_geojson_layer")
 		.parent()
