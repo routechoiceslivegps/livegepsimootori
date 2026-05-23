@@ -275,7 +275,7 @@ function parseGpx(xmlstr) {
 		const currentTag = (el.attr("data-competitor-tags") ?? "").split(" ")?.[0];
 		u("#id_tag").text("");
 		const allowedTags = (el.attr("data-competition-allowed-tags") ?? "").split(
-			" ",
+			"\u2063",
 		);
 		if ((el.attr("data-competition-allowed-tags") ?? "") !== "") {
 			u("#id_tag").append(u("<option>").attr({ value: "" }).text("------"));

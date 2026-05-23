@@ -31,7 +31,7 @@ const createTagWidget = (i) => {
 		persist: false,
 		createOnBlur: true,
 		create: true,
-		delimiter: " ",
+		delimiter: "\u2063",
 	});
 };
 
@@ -354,7 +354,7 @@ function onCsvParsed(result) {
 	clearEmptyCompetitorRows();
 	for (const l of result.data) {
 		if (l.length !== 1) {
-			addCompetitor(l[0], l[1], l[2], l?.[3], l?.[4], l?.[5]?.split(" "));
+			addCompetitor(l[0], l[1], l[2], l?.[3], l?.[4], l?.[5]?.split("\u2063"));
 		}
 	}
 	u(".add-competitor-btn").first().click();

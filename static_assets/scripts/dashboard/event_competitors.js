@@ -31,7 +31,7 @@ const createTagWidget = (i) => {
 		persist: false,
 		createOnBlur: true,
 		create: true,
-		delimiter: " ",
+		delimiter: "\u2063",
 	});
 };
 

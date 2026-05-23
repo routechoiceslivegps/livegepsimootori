@@ -112,7 +112,7 @@ TOP_RIGHT = 1
 BOTTOM_RIGHT = 2
 BOTTOM_LEFT = 3
 
-TAGS_SEPARATOR = " "
+TAGS_SEPARATOR = "\u2063"
 
 GLOBAL_MERCATOR = GlobalMercator()
 
@@ -2420,7 +2420,7 @@ class MapAssignation(models.Model):
     def categories(self):
         if not self.tags:
             return []
-        return self.tags.split(" ")
+        return self.tags.split(TAGS_SEPARATOR)
 
     class Meta:
         ordering = ["id"]

@@ -32,6 +32,7 @@ from kagi.views.backup_codes import BackupCodesView
 from oauth2_provider.models import AccessToken
 from user_sessions.views import SessionDeleteOtherView
 
+from routechoices.api.views import device_ownership_api_view
 from routechoices.core.models import (
     PRIVACY_SECRET,
     Club,
@@ -608,6 +609,10 @@ def device_edit_view(request, device_id):
             return redirect(
                 "dashboard_club:device:list_view", club_slug=request.club.slug
             )
+    elif request.method == "PATCH":
+        return device_ownership_api_view(
+            request, club_slug=club.slug, device_id=device_id
+        )
     else:
         form = DeviceClubOwnerShipForm(instance=device)
     return render(
