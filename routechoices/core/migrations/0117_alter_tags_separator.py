@@ -9,10 +9,12 @@ def change_separator(original_separator, new_separator, apps, schema_editor):
     qs_with_accepted_tags = Event.objects.using(db_alias).exclude(acceptable_tags="")
     qs_with_map_tags = Event.objects.using(db_alias).exclude(map_tags="")
     for event in qs_with_accepted_tags:
-        event.tags = event.tags.replace(original_separator, new_separator)
+        event.acceptable_tags = event.acceptable_tags.replace(
+            original_separator, new_separator
+        )
         event.save()
     for event in qs_with_map_tags:
-        event.map_tags = event.tags.replace(original_separator, new_separator)
+        event.map_tags = event.map_tags.replace(original_separator, new_separator)
         event.save()
 
     MapAssignation = apps.get_model("core", "MapAssignation")
