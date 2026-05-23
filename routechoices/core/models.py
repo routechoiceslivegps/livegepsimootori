@@ -1908,9 +1908,10 @@ class Event(models.Model, SomewhereOnEarth):
         return []
 
     def get_competitors_in_category(self, category):
-        return self.competitors.filter(
-            tags__iregex=rf"^([^ ]+ )?{re.escape(category)}$( [^ ]+)?"
-        )
+        filter_regex = rf"^([^{TAGS_SEPARATOR}]+{TAGS_SEPARATOR})?"
+        filter_regex += re.escape(category)
+        filter_regex += rf"$({TAGS_SEPARATOR}[^{TAGS_SEPARATOR}]+)?"
+        return self.competitors.filter(tags__iregex=filter_regex)
 
     @classmethod
     def get_by_url(cls, url):

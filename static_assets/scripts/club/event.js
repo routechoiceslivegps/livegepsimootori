@@ -2032,7 +2032,7 @@ function RCEvent(infoURL, clockURL, locale) {
 				topDiv.append(searchBar);
 			}
 
-			if (competitorsTags.size) {
+			if (competitorsTags.size && !fetchDataUrlSuffix) {
 				const categoryToggleBar = u("<div>");
 				const cats = [...competitorsTags.entries()].map((c) => c[0]);
 				cats.sort();
