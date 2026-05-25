@@ -79,6 +79,7 @@ from routechoices.lib.helpers import (
     triangle_area,
     wgs84_to_meters,
 )
+from routechoices.lib.s3 import get_s3_client
 from routechoices.lib.slippy_tiles import (
     latlon_to_tile_xy,
     tile_xy_to_north_west_latlon,
@@ -757,6 +758,32 @@ class Map(models.Model, SomewhereOnEarth):
             cv2_img = cv2.cvtColor(np.array(cv2_img_raw), cv2.COLOR_BGR2BGRA)
         return cv2_img
 
+    def get_image_as_mime(self, mime):
+        if mime[:6] != "image/":
+            raise ValueError("Invalid mime type requested")
+        file_path = self.image.name
+        cache_key = f"s3:image:{file_path}:{mime}"
+
+        if image := cache.get(cache_key):
+            return image
+
+        s3_buffer = BytesIO()
+        get_s3_client().download_fileobj(settings.AWS_S3_BUCKET, file_path, s3_buffer)
+        img_data = s3_buffer.getvalue()
+
+        pil_image = Image.open(BytesIO(img_data)).convert("RGBA")
+
+        out_buffer = BytesIO()
+        pil_image.save(
+            out_buffer,
+            mime[6:].upper(),
+            optimize=True,
+            quality=(40 if mime in ("image/webp", "image/avif") else 80),
+        )
+        image = out_buffer.getvalue()
+        cache.set(cache_key, image, DURATION_ONE_MONTH)
+        return image
+
     @property
     def hash(self):
         return shortsafe64encodedsha(f"{self.path}:{self.calibration_string_raw}")
@@ -1027,8 +1054,9 @@ class Map(models.Model, SomewhereOnEarth):
 
     @property
     def kmz(self):
-        doc_img = self.data
-        mime_type = magic.from_buffer(doc_img, mime=True)
+        mime_type = "image/png"
+
+        doc_img = self.get_image_as_mime(mime_type)
         extension = mime_type[6:]
 
         doc_kml = render_to_string(
