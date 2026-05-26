@@ -231,23 +231,6 @@ urlpatterns = [
             ]
         ),
     ),
-    re_path(
-        r"^(?P<provider>gpsseuranta|loggator|livelox)/(?P<uid>[^/]+)/",
-        include(
-            [
-                path(
-                    "",
-                    views.third_party_event,
-                    name="third_party_event_detail",
-                ),
-                path(
-                    "data",
-                    views.third_party_event_data,
-                    name="third_party_event_data",
-                ),
-            ]
-        ),
-    ),
     path(
         "webhooks/",
         include(("routechoices.webhooks.urls", "webhooks"), namespace="webhooks"),

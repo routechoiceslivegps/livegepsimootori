@@ -26,7 +26,7 @@ class Command(BaseCommand):
             "test-user", "test@routechoices.com", "pa$$word123"
         )
 
-        club = Club.objects.create(name="Halden SK", slug="halden-sk")
+        club = Club.objects.create(name="Kimito SK", slug="kimito-sk")
         club.admins.set([admin_user, other_user])
 
         Event.objects.create(
@@ -38,7 +38,7 @@ class Command(BaseCommand):
         )
         Event.objects.create(
             club=club,
-            name="My future event with open registration",
+            name="My future open event with open registration",
             slug="future-open-registration",
             start_date=arrow.now().shift(days=2).datetime,
             end_date=arrow.now().shift(days=3).datetime,
@@ -81,7 +81,3 @@ class Command(BaseCommand):
         FrontPageFeedback.objects.create(
             name="Anonymous", club_name="AA", content="Great Software", stars=5
         )
-
-        Club.objects.create(name="GPS Seuranta Proxy", slug="gpsseuranta")
-        Club.objects.create(name="Livelox Proxy", slug="livelox")
-        Club.objects.create(name="Loggator Proxy", slug="loggator")

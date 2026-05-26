@@ -383,7 +383,6 @@ SLUG_BLACKLIST = [
     "lists",
     "live",
     "live-gps-tracking",
-    "livelox-map",
     "load",
     "local",
     "localdomain",

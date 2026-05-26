@@ -9,7 +9,7 @@ Mono-repo for the server engine code of the Live GPS Tracking platform "Routecho
 It help serving:
 
   - A frontend server for listing and displaying GPS tracking event pages.
-  - A dashboard for users to manage their events, maps, devices...
+  - A dashboard for users to manage their events, maps, GPS devices...
   - A REST API and its documentation.
   - A TCP server for listening to dedicated GPS trackers.
   - A WMS server for serving events maps.

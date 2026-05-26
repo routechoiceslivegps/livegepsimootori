@@ -49,7 +49,6 @@ const onTCXParsed = (workout) => {
 	}
 	onRouteLoaded(newRoute, missingTimeInfo);
 };
-
 const onTCXLoaded = (e) => {
 	const xml = e.target.result;
 	try {
@@ -62,7 +61,6 @@ const onTCXLoaded = (e) => {
 		});
 	}
 };
-
 const onFitLoaded = (e) => {
 	var fitParser = new Fit.FitParser({
 		force: true,
@@ -98,7 +96,6 @@ const onFitLoaded = (e) => {
 		onRouteLoaded(newRoute, missingTimeInfo);
 	});
 };
-
 function onRouteLoaded(newRoute, missingTimeInfo) {
 	if (!newRoute?.length) {
 		if (missingTimeInfo) {
@@ -132,6 +129,7 @@ function onRouteLoaded(newRoute, missingTimeInfo) {
 	}
 	u(".upload-btn").removeClass("disabled");
 }
+
 let route = {};
 
 function getGpxData(node, resultRaw) {
@@ -209,6 +207,7 @@ function parseGpx(xmlstr) {
 			createOnBlur: false,
 			persist: false,
 			plugins: ["preserve_on_blur"],
+			allowEmptyOption: true,
 			load: (query, callback) => {
 				if (query.length < 4) {
 					return callback();
@@ -268,7 +267,7 @@ function parseGpx(xmlstr) {
 	});
 
 	u(".edit-info-btn").on("click", (e) => {
-		const el = u(e.target);
+		const el = u(e.target).closest(".edit-info-btn");
 		u("#id_name").val(el.attr("data-competitor-name"));
 		u("#id_short_name").val(el.attr("data-competitor-short-name"));
 		u("#id_id").val(el.attr("data-competitor-id"));
@@ -300,7 +299,7 @@ function parseGpx(xmlstr) {
 	});
 
 	u(".open-upload-btn").on("click", (e) => {
-		const el = u(e.target);
+		const el = u(e.target).closest(".open-upload-btn");
 		u("#id_competitor_aid").val(el.attr("data-competitor-id"));
 		u("#id_gpx_file").val("");
 		uploadModal.show();

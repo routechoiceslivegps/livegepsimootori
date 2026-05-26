@@ -69,9 +69,6 @@ from routechoices.lib.helpers import (
     short_random_key,
     short_random_slug,
 )
-from routechoices.lib.other_gps_services.gpsseuranta import GpsSeurantaNet
-from routechoices.lib.other_gps_services.livelox import Livelox
-from routechoices.lib.other_gps_services.loggator import Loggator
 from routechoices.lib.s3 import serve_from_s3, serve_image_from_s3
 from routechoices.lib.streaming_response import StreamingHttpRangeResponse
 from routechoices.lib.validators import (
@@ -524,8 +521,8 @@ def event_list(request):
                         "owner": False,
                     },
                     {
-                        "name": "Halden SK",
-                        "slug": "halden-sk",
+                        "name": "Kimito SK",
+                        "slug": "kimito-sk",
                         "url": "https://gps.haldensk.no/",
                         "owner": True,
                     },
@@ -1196,8 +1193,8 @@ def competitor_route_upload(request, competitor_id):
                         {
                             "id": "pwaCro4TErI",
                             "encoded_data": "<encoded data>",
-                            "name": "Olav Lundanes (Halden SK)",
-                            "short_name": "Halden SK",
+                            "name": "Olav Lundanes (Kimito SK)",
+                            "short_name": "Kimito SK",
                             "start_time": "2019-06-15T20:00:00Z",
                             "battery_level": 84,
                             "color": "#ff0000",
@@ -2327,121 +2324,6 @@ def two_d_rerun_race_data(request):
         content_type=content_type,
         headers=headers,
     )
-
-
-@swagger_auto_schema(
-    method="get",
-    auto_schema=None,
-)
-@api_GET_view
-def third_party_event(request, provider, uid):
-    cache_key = f"3rd_party_event_detail:{uid}"
-    if data := cache.get(cache_key):
-        return Response(data, headers={"X-Cache-Hit": 1})
-
-    if provider == "gpsseuranta":
-        proxy = GpsSeurantaNet()
-    elif provider == "loggator":
-        proxy = Loggator()
-    elif provider == "livelox":
-        proxy = Livelox()
-    else:
-        raise Http404()
-    try:
-        proxy.parse_init_data(uid)
-    except Exception:
-        raise Http404()
-
-    event = proxy.get_event()
-    event.map = proxy.get_map()
-
-    output = {
-        "event": {
-            "id": event.aid,
-            "name": event.name,
-            "start_date": event.start_date,
-            "end_date": event.end_date,
-            "slug": event.slug,
-            "club": {
-                "name": provider,
-                "slug": provider,
-            },
-            "privacy": "secret",
-            "visibility": "live",
-            "open_registration": False,
-            "acceptable_tags": [],
-            "open_route_upload": False,
-            "url": request.build_absolute_uri(event.get_absolute_url()),
-            "shortcut": "",
-            "backdrop": "blank",
-            "send_interval": event.send_interval,
-            "tail_length": event.tail_length,
-        },
-        "data_url": request.build_absolute_uri(event.get_api_data_url()),
-        "announcement": "",
-        "maps": [],
-    }
-    if event.map:
-        map_data = {
-            "title": "main",
-            "coordinates": event.map.bound_api,
-            "rotation": event.map.north_declination,
-            "hash": event.map.hash,
-            "max_zoom": event.map.max_zoom,
-            "modification_date": event.map.modification_date,
-            "default": True,
-            "id": uid,
-            "url": f"{event.club.nice_url}{event.slug}/map",
-            "wms": False,
-        }
-        output["maps"].append(map_data)
-
-    cache.set(cache_key, output, DURATION_ONE_MINUTE)
-
-    return Response(output)
-
-
-@swagger_auto_schema(
-    method="get",
-    auto_schema=None,
-)
-@api_GET_view
-def third_party_event_data(request, provider, uid):
-    cache_key = f"3rd_party_event_data:{uid}"
-    if data := cache.get(cache_key):
-        return Response(data, headers={"X-Cache-Hit": 1})
-
-    if provider == "gpsseuranta":
-        proxy = GpsSeurantaNet()
-    elif provider == "loggator":
-        proxy = Loggator()
-    elif provider == "livelox":
-        proxy = Livelox()
-    else:
-        raise Http404()
-    try:
-        proxy.parse_init_data(uid)
-    except Exception:
-        raise Http404()
-
-    event = proxy.get_event()
-    dev_data = proxy.get_competitor_devices_data(event)
-    competitors_data = proxy.get_competitors_data()
-    output = {"competitors": []}
-    for c_id, competitor in competitors_data.items():
-        locs = dev_data.get(c_id, [])
-        output["competitors"].append(
-            {
-                "id": c_id,
-                "encoded_data": gps_data_codec.encode(locs),
-                "name": competitor.name,
-                "short_name": competitor.short_name,
-                "start_time": competitor.start_time,
-            }
-        )
-
-    cache.set(cache_key, output, 10)
-    return Response(output)
 
 
 class CustomApiLoginView(CustomLoginView):

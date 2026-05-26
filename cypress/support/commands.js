@@ -16,7 +16,7 @@ Cypress.Commands.add("createClub", (name = "Kangasala SK") => {
 
 Cypress.Commands.add(
 	"createMap",
-	(name = "Jukola 2019 - 1st Leg", club = "halden-sk") => {
+	(name = "Jukola 2019 - 1st Leg", club = "kimito-sk") => {
 		cy.visit(`https://dashboard.routechoices.dev/clubs/${club}/maps/new`);
 		cy.fixture("Jukola2019/1/map.jpg", { encoding: null }).as("mapFile");
 		cy.get("#id_name").clear().type(name).blur();

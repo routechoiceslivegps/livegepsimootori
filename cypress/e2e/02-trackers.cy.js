@@ -1,9 +1,9 @@
-context("IMEI device id generation", () => {
+context("GPS Tracker ID generation", () => {
 	after(() => {
 		cy.wait(100);
 	});
 
-	it("Create an Device Id", () => {
+	it("Genereate an GPS Tracker ID", () => {
 		cy.visit("https:////www.routechoices.dev/trackers");
 		cy.get("#dedicated-trackers-tab").click();
 

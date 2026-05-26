@@ -2218,21 +2218,9 @@ class Event(models.Model, SomewhereOnEarth):
         return f"{self.club.nice_url}{self.slug}/export"
 
     def get_api_detail_url(self):
-        if self.club.slug in ("gpsseuranta", "loggator", "livelox"):
-            return reverse(
-                "third_party_event_detail",
-                host="api",
-                kwargs={"uid": self.slug, "provider": self.club.slug},
-            )
         return reverse("event_detail", host="api", kwargs={"event_id": self.aid})
 
     def get_api_data_url(self):
-        if self.club.slug in ("gpsseuranta", "loggator", "livelox"):
-            return reverse(
-                "third_party_event_data",
-                host="api",
-                kwargs={"uid": self.slug, "provider": self.club.slug},
-            )
         return reverse("event_data", host="api", kwargs={"event_id": self.aid})
 
     @property

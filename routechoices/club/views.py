@@ -1,6 +1,5 @@
 import time
 
-import magic
 from django.conf import settings
 from django.contrib.sitemaps.views import _get_latest_lastmod, x_robots_tag
 from django.core.paginator import EmptyPage, PageNotAnInteger
@@ -15,7 +14,6 @@ from rest_framework import status
 from routechoices.club import feeds
 from routechoices.core.models import PRIVACY_PRIVATE, Club, Event, EventSet
 from routechoices.lib import cache
-from routechoices.lib.duration_constants import DURATION_ONE_DAY
 from routechoices.lib.helpers import (
     get_best_image_mime,
     get_current_site,
@@ -23,9 +21,6 @@ from routechoices.lib.helpers import (
     gpsseuranta_encode_data,
     safe64encodedsha,
 )
-from routechoices.lib.other_gps_services.gpsseuranta import GpsSeurantaNet
-from routechoices.lib.other_gps_services.livelox import Livelox
-from routechoices.lib.other_gps_services.loggator import Loggator
 from routechoices.lib.s3 import serve_image_from_s3
 from routechoices.lib.streaming_response import StreamingHttpRangeResponse
 
@@ -149,30 +144,15 @@ def event_view(request, slug):
     if not club_slug:
         club_slug = request.club_slug
 
-    if club_slug in ("gpsseuranta", "loggator", "livelox"):
-        if club_slug == "gpsseuranta":
-            proxy = GpsSeurantaNet()
-        elif club_slug == "loggator":
-            proxy = Loggator()
-        elif club_slug == "livelox":
-            proxy = Livelox()
-        else:
-            raise Http404()
-        try:
-            proxy.parse_init_data(slug)
-        except Exception:
-            raise Http404()
-        event = proxy.get_event()
-    else:
-        event = (
-            Event.objects.all()
-            .select_related("club")
-            .filter(
-                club__slug__iexact=club_slug,
-                slug__iexact=slug,
-            )
-            .first()
+    event = (
+        Event.objects.all()
+        .select_related("club")
+        .filter(
+            club__slug__iexact=club_slug,
+            slug__iexact=slug,
         )
+        .first()
+    )
     if not event:
         event_set = (
             EventSet.objects.all()
@@ -365,33 +345,6 @@ def event_zip_view(request, slug):
 
 def event_map_view(request, slug, index="1", extension=None):
     club_slug = request.club_slug
-
-    if club_slug in ("gpsseuranta", "loggator", "livelox"):
-        cache_key = f"3rd_party_map:{club_slug}:slug:{slug}"
-        if data := cache.get(cache_key):
-            mime_type = magic.from_buffer(data, mime=True)
-            return HttpResponse(data, content_type=mime_type)
-        if club_slug == "gpsseuranta":
-            proxy = GpsSeurantaNet()
-        elif club_slug == "loggator":
-            proxy = Loggator()
-        elif club_slug == "livelox":
-            proxy = Livelox()
-        try:
-            proxy.parse_init_data(slug)
-        except Exception:
-            raise Http404()
-        try:
-            rmap = proxy.get_map_file()
-            with rmap.open("rb") as fp:
-                data = fp.read()
-        except Exception:
-            raise Http404()
-
-        cache.set(cache_key, data, DURATION_ONE_DAY)
-
-        mime_type = magic.from_buffer(data, mime=True)
-        return HttpResponse(data, content_type=mime_type)
 
     event = (
         Event.objects.all()
