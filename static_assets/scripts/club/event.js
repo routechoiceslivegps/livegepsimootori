@@ -76,7 +76,7 @@ function RCEvent(infoURL, clockURL, locale) {
 	let competitorsMinCustomOffset = null;
 	const competitorsTags = new Set();
 	const activeCompetitorCategories = new Set();
-	const targetMSPerFrame = 1000 / 30;
+	const targetMSPerFrame = 1000 / 25;
 	let loaded = false;
 	const MAX_RUNNER_DISPLAYED = 200;
 
