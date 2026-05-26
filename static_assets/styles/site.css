@@ -484,3 +484,8 @@ a.navbar-brand.logo:focus {
 body {
 	font-family: "Twemoji Country Flags", var(--bs-body-font-family) !important;
 }
+
+#myFooter .second-bar {
+	padding-top: 2em;
+	clip-path: polygon(100% 100%, 100% 7em, 73% 8em, 75% 0, 0 1em, 0 100%);
+}

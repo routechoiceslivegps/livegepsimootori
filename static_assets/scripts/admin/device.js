@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		const positions = PositionArchive.fromEncoded(encodedData);
 		const posArray = positions.getArray();
 		let gpxData = `<?xml version="1.0" encoding="UTF-8"?>
-<gpx creator="RouteChoices.com" version="1.1" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" >
+<gpx creator="Routechoices.com" version="1.1" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" >
 <metadata/>
 <trk>
 <name>Device ${deviceId} Data</name>
