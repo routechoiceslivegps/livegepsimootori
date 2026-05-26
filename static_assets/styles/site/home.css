@@ -185,4 +185,12 @@
 
 .logo-trustees {
 	background-color: var(--bs-body-bg);
+	background-color: #fff;
+    width: 120px;
+    height: 120px;
+    vertical-align: middle;
+    text-align: center;
+}
+.logo-trustees img {
+	padding-top: 10px
 }

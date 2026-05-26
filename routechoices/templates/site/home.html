@@ -193,12 +193,13 @@
                         <div class="col align-self-start text-center mb-4 mx-3 flex-basis-200px">
                             <a href="{{ club.nice_url }}"
                             target="_blank"
-                            class="d-inline-block text-decoration-none dark-link">
-                                <img src="{% if club.logo %}{{ club.logo_url_www }}{% else %}{% static 'img/club-default.png' %}{% endif %}"
-                                    width="100"
-                                    height="100"
-                                    class="rounded mx-auto d-block mb-2 logo-trustees"
-                                    alt="{{ club.name }}'s logo" />
+                            class="d-inline-block text-decoration-none dark-link rounded">
+                                <div class="rounded mx-auto d-block mb-2 logo-trustees" style="width: 120px">
+                                    <img src="{% if club.logo %}{{ club.logo_url_www }}{% else %}{% static 'img/club-default.png' %}{% endif %}"
+                                        width="100"
+                                        height="100"
+                                        alt="{{ club.name }}'s logo" />
+                                </div>
                                 <span class="fw-bold" style="color: var(--bs-body-bg);">{{ club.name }}</span>
                             </a>
                         </div>
