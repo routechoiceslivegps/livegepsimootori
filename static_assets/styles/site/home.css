@@ -105,6 +105,12 @@
 		url("../../img/backgrounds/emma.jpg") 1x
 	);
 }
+
+.image-trustee {
+	background-color: #000;
+	/* background-image: url("../../img/backgrounds/kiila.jpg"); */ /* fallback for non image-set browser */
+}
+
 .image-tv {
 	background-image: url("../../img/backgrounds/broadcast-room.webp"); /* fallback for non image-set browser */
 	background-image: -webkit-image-set(
@@ -165,10 +171,6 @@
 	line-height: 2.5em;
 }
 
-.sponsors-block {
-	background-color: var(--bs-body-bg);
-}
-
 .screenshots-block {
 	background-color: var(--bs-body-bg);
 }
@@ -179,4 +181,8 @@
 
 .flex-basis-200px {
 	flex-basis: 200px;
+}
+
+.logo-trustees {
+	background-color: var(--bs-body-bg);
 }
