@@ -335,7 +335,7 @@ context("Dashboard actions", () => {
 		cy.get("#id_map").select("Jukola 2019 - 1st Leg"); // doesnt matter
 		cy.get("#id_map_assignations-0-map").select("Another map");
 		cy.get("#id_map_assignations-0-title").type("Another map");
-		cy.get("#id_competitors-0-device-ts-control").type("100000").wait(500);
+		cy.get("#id_competitors-0-device-ts-control").type("@").wait(500);
 		cy.get("#id_competitors-0-device-ts-dropdown > .option")
 			.eq(0)
 			.click()
