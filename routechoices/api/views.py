@@ -27,7 +27,7 @@ from rest_framework.decorators import api_view, permission_classes, throttle_cla
 from rest_framework.exceptions import NotAuthenticated, ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.throttling import AnonRateThrottle
+from rest_framework.throttling import UserRateThrottle
 
 from routechoices.core.models import (
     BOTTOM_LEFT,
@@ -87,8 +87,8 @@ api_GET_POST_view = api_view(["GET", "HEAD", "POST"])
 api_POST_view = api_view(["POST"])
 
 
-class PostDataThrottle(AnonRateThrottle):
-    rate = "70/min"
+class PostDataThrottle(UserRateThrottle):
+    rate = "60/min"
 
     def allow_request(self, request, view):
         if request.method == "GET":
