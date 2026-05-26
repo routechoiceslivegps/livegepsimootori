@@ -487,5 +487,5 @@ body {
 
 #myFooter .second-bar {
 	padding-top: 2em;
-	clip-path: polygon(100% 100%, 100% 40%, 73% 45%, 75% 0, 0 5%, 0 100%);
+	clip-path: polygon(100% 100%, 100% 30%, 75% 39%, 76% 0, 0 5%, 0 100%);
 }
