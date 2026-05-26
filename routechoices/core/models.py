@@ -761,7 +761,7 @@ class Map(models.Model, SomewhereOnEarth):
         if mime[:6] != "image/":
             raise ValueError("Invalid mime type requested")
         file_path = self.image.name
-        cache_key = f"s3:image:{file_path}:{mime}"
+        cache_key = f"map:image:{file_path}:mime:{mime}"
 
         if image := cache.get(cache_key):
             return image
