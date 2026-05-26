@@ -79,7 +79,6 @@ from routechoices.lib.helpers import (
     triangle_area,
     wgs84_to_meters,
 )
-from routechoices.lib.s3 import get_s3_client
 from routechoices.lib.slippy_tiles import (
     latlon_to_tile_xy,
     tile_xy_to_north_west_latlon,
@@ -767,10 +766,7 @@ class Map(models.Model, SomewhereOnEarth):
         if image := cache.get(cache_key):
             return image
 
-        s3_buffer = BytesIO()
-        get_s3_client().download_fileobj(settings.AWS_S3_BUCKET, file_path, s3_buffer)
-        img_data = s3_buffer.getvalue()
-
+        img_data = self.data
         pil_image = Image.open(BytesIO(img_data)).convert("RGBA")
 
         out_buffer = BytesIO()
