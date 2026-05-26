@@ -294,8 +294,6 @@ def event_export_view(request, slug):
     elif event.club.domain and not request.use_cname:
         return redirect(f"{event.club.nice_url}{event.slug}/export")
 
-    if not event.could_display_maps():
-        raise Http404()
     event.check_user_permission(request.user)
 
     response = render(
