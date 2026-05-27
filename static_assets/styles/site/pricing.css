@@ -234,13 +234,15 @@ a #generic_price_table .generic_content.active .generic_price_btn {
 
 #generic_price_table .generic_content .generic_feature_list ul {
 	list-style: none;
-	padding: 0;
+	padding: 10px;
 	margin: 0;
 }
 
 #generic_price_table .generic_content .generic_feature_list ul li {
 	font-size: 1.2rem;
 	padding: 15px 0;
+	font-weight: bold;
+	border-bottom: rgba(0, 0, 0, 0.1) solid 1px;
 }
 #generic_price_table .generic_content .generic_feature_list ul li .fa {
 	padding: 0 10px;
