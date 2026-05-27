@@ -620,7 +620,7 @@ class TestDashboard(EssentialDashboardBase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertContains(
             res,
-            "Your 10 days free trial has now expired, you cannot create or edit events anymore.",
+            "Your 2 days free trial has now expired, you cannot create or edit events anymore.",
         )
 
         # subscription paused

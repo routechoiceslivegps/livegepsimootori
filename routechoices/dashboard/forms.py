@@ -476,7 +476,7 @@ class EventForm(ModelForm):
             else:
                 self.add_error(
                     None,
-                    "Your 10 days free trial has now expired, you cannot create or edit events anymore.",
+                    "Your 2 days free trial has now expired, you cannot create or edit events anymore.",
                 )
 
         # Check that start date is before end date
