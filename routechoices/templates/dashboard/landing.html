@@ -8,104 +8,107 @@
 {% endblock extra_head %}
 
 {% block content %}
-    <div class="row">
-        <div class="col-12 mx-auto">
-            <div class="card border-0 shadow rounded-3 my-5">
-                <div class="card-body p-4 p-sm-5">
-                    <div class="col-12">
-                        <div class="row">
-                            <div class="col-12">
-                                <h1>
-                                    Hello <i>{{ request.user.username }}</i>! <i class="fa-solid fa-hand" style="transform: rotate( 34deg);"></i>
-                                </h1>
-                                <div>
-                                    <a class="btn btn-secondary dashboard-link me-1" data-bs-toggle="tooltip" data-bs-title="Single person GPS tracking without custom maps starting immediately" href="{% url 'quick_start_view' %}">
-                                        <i class="fa-solid fa-circle-plus"></i> <span>Quick tracking</span>
-                                    </a>
-                                    <a href="{% host_url 'account_logout' host 'dashboard' %}" class="btn btn-info dashboard-link">
-                                        <span>Logout</span> <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                                    </a>
-                                </div>
+<div class="row">
+    <div class="col-12 mx-auto">
+        <div class="card border-0 shadow rounded-3 my-5">
+            <div class="card-body p-4 p-sm-5">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-12">
+                            <h1>
+                                Hello <i>{{ request.user.username }}</i>! <i class="fa-solid fa-hand" style="transform: rotate( 34deg);"></i>
+                            </h1>
+                            <div>
+                                <a class="btn btn-secondary dashboard-link me-1" data-bs-toggle="tooltip" data-bs-title="Single person GPS tracking without custom maps starting immediately" href="{% url 'quick_start_view' %}">
+                                    <i class="fa-solid fa-circle-plus"></i> <span>Quick tracking</span>
+                                </a>
+                                <a href="{% host_url 'account_logout' host 'dashboard' %}" class="btn btn-info dashboard-link">
+                                    <span>Logout</span> <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                                </a>
                             </div>
-                            <div class="col-12 col-lg-4 mb-lg-0 mb-3">
-                                <h2><i class="fa-solid fa-circle-user"></i> Account</h2>
-                                <ul class="list-group list-group-flush">
-                                    <li  class="list-group-item">
-                                        <a href="{% url 'account_edit_view' %}"><i class="fa-solid fa-user"></i> Your Details</a>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <a href="{% url 'dashboard_participations_view' %}"><i class="fa-solid fa-trophy"></i> Your Event Participations</a>
-                                    </li>
-                                    <li  class="list-group-item">
-                                        <a href="{% url 'dashboard_club:select_view' %}"><i class="fa-solid fa-house-flag"></i> Your clubs</a>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <a href="{% url 'account_email_list' %}"><i class="fa-solid fa-envelope"></i> Email Addresses</a>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <a href="{% url 'account_password_change_view' %}"><i class="fa-solid fa-key"></i> Password</a>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <a href="{% url 'kagi:two-factor-settings' %}"><i class="fa-solid fa-shield-halved"></i> Two-Factor Authentication</a>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <a href="{% url 'account_session:list_view' %}"><i class="fa-regular fa-window-restore"></i> Sessions</a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="col-12 col-lg-8 mb-lg-0 mb-3 border-start-0 border-lg-start-1">
-                                <h2><i class="fa-solid fa-house-flag"></i> Clubs</h2>
+                        </div>
+                        <div class="col-12 col-lg-4 mb-lg-0 mb-3">
+                            <h2><i class="fa-solid fa-circle-user"></i> Account</h2>
+                            <ul class="list-group list-group-flush">
+                                <li  class="list-group-item">
+                                    <a href="{% url 'account_edit_view' %}"><i class="fa-solid fa-user"></i> Your Details</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a href="{% url 'dashboard_participations_view' %}"><i class="fa-solid fa-trophy"></i> Your Event Participations</a>
+                                </li>
+                                <li  class="list-group-item">
+                                    <a href="{% url 'dashboard_club:select_view' %}"><i class="fa-solid fa-house-flag"></i> Your clubs</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a href="{% url 'account_email_list' %}"><i class="fa-solid fa-envelope"></i> Email Addresses</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a href="{% url 'account_password_change_view' %}"><i class="fa-solid fa-key"></i> Password</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a href="{% url 'kagi:two-factor-settings' %}"><i class="fa-solid fa-shield-halved"></i> Two-Factor Authentication</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a href="{% url 'account_session:list_view' %}"><i class="fa-regular fa-window-restore"></i> Sessions</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-12 col-lg-8 mb-lg-0 mb-3 border-start-0 border-lg-start-1">
+                            <h2><i class="fa-solid fa-house-flag"></i> <span>Clubs</span></h2>
 
-                                {% if clubs %}
-                                <small class="ms-3"><b>Your clubs</b></small>
-                                <ul class="list-group list-group-flush">
-                                    {% for club in clubs %}
-                                    <li class="list-group-item">
-                                        <div class="card flex-row flex-no-wrap club-card border-0">
-                                            <div class="border-0">
-                                                <img class="card-img-left rounded" src="{% if club.logo %}{{ club.logo_url_www }}{% else %}{% static "/img/club-default.png" %}{% endif %}" height="80" width="80" alt="Club {{ club.name }} Logo">
-                                            </div>
-                                            <div class="card-body px-2 py-1" style="word-break: break-word">
-                                                <div class="d-flex flex-row bd-highlight justify-content-between">
-                                                    <div class="p-2 bd-highlight">
-                                                        <div>
-                                                            <a class="link-primary-alt stretched-link text-decoration-none fw-bold"
-                                                               style="font-size: 1.2rem"
-                                                               href="{% url 'dashboard_club:edit_view' club_slug=club.slug %}?next={{ next }}">{{ club.name }}</a>
-                                                        </div>
-                                                        <div>
-                                                            <small class="text-muted">
-                                                                {% if club.upgraded %}
-                                                                    Paid Plan{% if club.subscription_paused %} (Paused){% endif %}
-                                                                {% else %}
-                                                                    Free Trial{% if not club.free_trial_active %} Expired{% endif %}
-                                                                {% endif %}
-                                                            </small>
-                                                        </div>
+                            {% if clubs %}
+                            <small class="ms-3"><b>Your clubs</b></small>
+                            <ul class="list-group list-group-flush">
+                                {% for club in clubs %}
+                                <li class="list-group-item">
+                                    <div class="card flex-row flex-no-wrap club-card border-0">
+                                        <div class="border-0">
+                                            <img class="card-img-left rounded" src="{% if club.logo %}{{ club.logo_url_www }}{% else %}{% static "/img/club-default.png" %}{% endif %}" height="80" width="80" alt="Club {{ club.name }} Logo">
+                                        </div>
+                                        <div class="card-body px-2 py-1" style="word-break: break-word">
+                                            <div class="d-flex flex-row bd-highlight justify-content-between">
+                                                <div class="p-2 bd-highlight">
+                                                    <div>
+                                                        <a class="link-primary-alt stretched-link text-decoration-none fw-bold"
+                                                            style="font-size: 1.2rem"
+                                                            href="{% url 'dashboard_club:edit_view' club_slug=club.slug %}?next={{ next }}">{{ club.name }}</a>
+                                                    </div>
+                                                    <div>
+                                                        <small class="text-muted">
+                                                            {% if club.upgraded %}
+                                                                Paid Plan{% if club.subscription_paused %} (Paused){% endif %}
+                                                            {% else %}
+                                                                Free Trial{% if not club.free_trial_active %} Expired{% endif %}
+                                                            {% endif %}
+                                                        </small>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </li>
-                                    {% endfor %}
-                                </ul>
-                                {% else %}
-                                <div class="jumbotron">
-                                    <p>It seems you don't manage any club yet! No worries...</p>
-                                    <p>
-                                        <span>You can create a club.</span><br/><a href="{% url 'dashboard_club:create_view' %}" class="btn btn-primary dashboard-link"><i class="fa-solid fa-circle-plus"></i> Create a Club</a>
-                                    </p>
-                                    <p>
-                                        <span>Or ask to join the list of managers of an existing club.</span><br><a href="{% url 'dashboard_request_club_invite_view' %}" class="btn btn-primary dashboard-link"><i class="fa-solid fa-hand"></i> Request an invite</a>
-                                    </p>
-                                </div>
-                                {% endif %}
+                                    </div>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            <div class="jumbotron">
+                                <p>
+                                    It seems you don't manage any club yet! No worries...
+                                </p>
+                                <p>
+                                    <span>You can create a club.</span><br/>
+                                    <a href="{% url 'dashboard_club:create_view' %}" class="btn btn-primary dashboard-link"><i class="fa-solid fa-circle-plus"></i> Create a Club</a>
+                                </p>
+                                <p>
+                                    <span>Or ask to join the list of managers of an existing club.</span><br>
+                                    <a href="{% url 'dashboard_request_club_invite_view' %}" class="btn btn-primary dashboard-link"><i class="fa-solid fa-hand"></i> Request an invite</a>
+                                </p>
                             </div>
-                        <!--/.col-12.col-sm-9-->
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
-                <!--/row-->
             </div>
         </div>
     </div>
+</div>
 {% endblock content %}
