@@ -539,7 +539,7 @@ Follow our events live or replay them later.
 
     @property
     def logo_url_www(self):
-        return f"https://{reverse("site:landing_page", host="www")}{self.slug}/logo?v{self.logo_hash}"
+        return f"https:{reverse("site:landing_page", host="www")}{self.slug}/logo?v{self.logo_hash}"
 
     @property
     def banner_url(self):

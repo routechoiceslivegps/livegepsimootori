@@ -186,11 +186,48 @@
 .logo-trustees {
 	background-color: var(--bs-body-bg);
 	background-color: #fff;
-    width: 120px;
-    height: 120px;
-    vertical-align: middle;
-    text-align: center;
+	width: 120px;
+	height: 120px;
+	vertical-align: middle;
+	text-align: center;
+	filter: grayscale(1);
+	mix-blend-mode: luminosity;
 }
+
 .logo-trustees img {
-	margin-top: 10px
+	margin-top: 10px;
+}
+
+.marquee-container {
+	width: 100%;
+	padding: 15px 0;
+}
+
+@keyframes marquee {
+	0% {
+		transform: translateX(100%);
+	}
+
+	100% {
+		transform: translateX(-100%);
+	}
+}
+
+.marquee-content {
+	display: flex;
+	animation: marquee 20s linear infinite;
+}
+
+.marquee-item {
+	flex: 0 0 auto;
+	padding: 0 20px;
+	font-size: 0.75rem;
+}
+
+/* Optional: Pause animation on hover */
+.marquee-container:hover .marquee-content {
+	animation-play-state: paused;
+}
+.marquee-content:hover .logo-trustees {
+	filter: initial;
 }
