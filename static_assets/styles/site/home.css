@@ -190,7 +190,7 @@
 	height: 120px;
 	vertical-align: middle;
 	text-align: center;
-	filter: grayscale(1);
+	filter: grayscale(0.6);
 	mix-blend-mode: luminosity;
 }
 
@@ -199,7 +199,8 @@
 }
 
 .marquee-container {
-	width: 100%;
+	width: auto;
+	overflow-x: visible;
 	padding: 15px 0;
 }
 
@@ -214,7 +215,8 @@
 }
 
 .marquee-content {
-	display: flex;
+	width: auto;
+	display: inline-flex !important;
 	animation: marquee 20s linear infinite;
 }
 
