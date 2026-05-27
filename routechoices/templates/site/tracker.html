@@ -83,13 +83,13 @@
                             <div class="col-12 col-md-7">
                                 <h2 class="fw-bold">Sharing your position</h2>
                                 <p>
-                                    Sharing your position on <b>Routechoices</b> is easy and can be done with many different devices.
+                                    Sharing your position on this platform is easy and can be done with many different devices.
                                 </p>
                                 <p>
                                     We support android and iOS smartphones, Apple watches, modern Garmin watches &mdash; each with a dedicated application &mdash; as well as countless dedicated GPS trackers that speaks one of the many supported protocols.
                                 </p>
                                 <p>
-                                    We assign each device a unique "Tracker ID" that is used to identify your device anonymously on <b>Routechoices</b>. Those "Tracker IDs" can then be linked to participants in events hosted on our platform.
+                                    We assign each device a unique "Tracker ID" that is used to identify your device anonymously on our platform. Those "Tracker IDs" can then be linked to participants in live event pages we host.
                                 </p>
                                 <p class="fw-bold">
                                     Read below specific instructions for your type of device.
@@ -124,7 +124,7 @@
                                         aria-controls="garmin-pane"
                                         aria-selected="true"
                                     >
-                                        <svg width="15px" height="15px" viewBox="0 0 24 24" role="img" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M22.017 22.67H1.984c-.77 0-1.388-.383-1.694-1.002-.387-.61-.387-1.39 0-2.002L10.304 2.33c.385-.615 1.002-1 1.695-1 .77 0 1.386.385 1.69 1l10.02 17.336c.387.617.387 1.39 0 2.002-.31.695-.927 1.002-1.693 1.002z"/></svg> Garmin
+                                        <svg width="15px" height="15px" viewBox="0 0 24 24" role="img" xmlns="http://www.w3.org/2000/svg"><path fill="currentColor" d="M22.017 22.67H1.984c-.77 0-1.388-.383-1.694-1.002-.387-.61-.387-1.39 0-2.002L10.304 2.33c.385-.615 1.002-1 1.695-1 .77 0 1.386.385 1.69 1l10.02 17.336c.387.617.387 1.39 0 2.002-.31.695-.927 1.002-1.693 1.002z"/></svg> Garmin Watches
                                     </button>
                                 </li>
                                 <li class="nav-item" role="presentation">
@@ -219,15 +219,13 @@
                                     <h3 class="fw-bold">Garmin Watches App</h3>
                                     <div class="mb-3">
                                         <h5>Instalation:</h5>
+
+                                        <p>
+                                            Download the <a href="https://apps.garmin.com/apps/89f2f5e6-0885-4549-baf0-415eb502f59a"><i><b>Routechoices Tracker data field</b></i></a> for Garmin watches from the Garmin Connect IQ App Store.
+                                        </p>
                                         <p>
                                             <a href="https://apps.garmin.com/apps/89f2f5e6-0885-4549-baf0-415eb502f59a" class="me-1 text-decoration-none"><img src="{% static 'img/connectiq.jpg' %}" width="128" height="128" class="rounded" alt="Connect IQ"></a>
                                         </p>
-                                        <p>
-                                            Install the data field for Garmin watches from the <a href="https://apps.garmin.com/apps/89f2f5e6-0885-4549-baf0-415eb502f59a">Garmin Connect IQ App Store</a>
-                                            <br>
-                                            "Routechoices Tracker", by OneHertz.
-                                        </p>
-
                                     </div>
                                     <div class="mb-3">
                                         <h5>How It Works:</h5>
@@ -241,11 +239,16 @@
                                             <li>
                                                 The data field do displays your 8 digits Tracker ID next to the status of connection with the server (OFFLINE/LIVE).
                                             </li>
+                                            <ul>
+                                                <li>
+                                                    "LIVE" means that you are sending location data to our server. Your watch has good GPS signal and has an Internet connection, possibly over bluetooth through your phone loaded with the "Garmin Mobile" App. The data field does not need to be visible to work.
+                                                </li>
+                                                <li>
+                                                    "OFFLINE" means that you have either no Internet connection or no GPS signal.
+                                                </li>
+                                            </ul>
                                             <li>
-                                                You will be sending location data to Routechoices.com server as soon, and as long, as your watch connects with bluetooth to the Garmin Mobile App on a phone that has network data, this no matter if the data field is visible or not.
-                                            </li>
-                                            <li>
-                                                Stop the activity and return to the main screen to stop sending your location data.
+                                                Stop the activity and return to the main screen to stop sending data to our server.
                                             </li>
                                         </ol>
                                     </div>
@@ -253,25 +256,24 @@
                                 <div id="dedicated-trackers-pane" class="tab-pane" role="tabpanel" aria-labelledby="dedicated-trackers-tab" tabindex="0">
                                     <h3 class="fw-bold">Dedicated GPS Trackers</h3>
                                     <div class="mb-3">
-                                        <h5>Supported GPS Trackers:</h5>
+                                        <h5>Supported Protocols:</h5>
                                         <ul>
-                                            <li>GT06 protocol trackers</li>
-                                            <li>H02 protocol trackers</li>
-                                            <li>Mictrack trackers</li>
-                                            <li>Queclink trackers <small class="text-muted">(@Track protocol)</small></li>
-                                            <li>Teltonika trackers <small class="text-muted">(Codec 8 or Codec 8 Extended protocols)</small></li>
-                                            <li>Tracktape trackers</li>
-                                            <li>Xexun protocol trackers</li>
-                                            <li>Xexun2 protocol trackers</li>
+                                            <li>@Track <small class="text-muted">(Queclink)</small></li>
+                                            <li>Codec 8 and Codec 8 Extended <small class="text-muted">(Teltonika)</small></li>
+                                            <li>GT06</li>
+                                            <li>H02</li>
+                                            <li>Mictrack</li>
+                                            <li>Xexun</li>
+                                            <li>Xexun2</li>
                                         </ul>
                                         <p class="text-muted">
-                                            Own a product not listed above? <a href="mailto:info@routechoices.com?subject=Protocol">Enquire us</a> about adding support for its protocol!
+                                            Do you own a product that does not speak one of the protocols listed above? <a href="mailto:info@routechoices.com?subject=Protocol">Enquire us</a> about adding it!
                                         </p>
                                     </div>
                                     <div class="mb-3">
                                         <h5>Get a Tracker ID:</h5>
-                                        <p>Tracker must be registered with us.</p>
-                                        <p>We let you get a Routechoices "Tracker ID" that is unique to your device's IMEI.</p>
+                                        <p>The trackers must be identify with us before being able to use on our platform.</p>
+                                        <p>Get a unique 8 digits <i><b>RouteChoices</b></i> identifier for your tracker by entering its IMEI number in the form below.</p>
                                         <form id="imeiForm">
                                             <div class="form-group">
                                                 <label for="IMEI" class="fw-bold">Tracker's IMEI</label>
@@ -292,8 +294,6 @@
                                         <br />
                                         <div id="imeiDevId" class="well d-none">
                                             <p>
-                                                <b>IMEI:</b> <code id="imeiRes"></code>
-                                                <br />
                                                 <b>Tracker ID:</b>
                                                 <button type="button" class="btn btn-sm btn-secondary" id="copyDevIdBtn">
                                                     <span class="imeiDevId roboto"></span> <i class="fa-regular fa-copy fa-fw"></i>
@@ -304,22 +304,22 @@
                                     <div class="mb-3">
                                         <h5>Configuration:</h5>
                                          <p>
-                                            Configure the tracker to share data over TCP with the server at address <code>routechoices.com</code> on the following port:
+                                            Configure your trackers to share data over TCP with the server at address <code>routechoices.com</code> on the following ports:
                                             <ul>
+                                                <li>
+                                                    <code>5004</code>: @Track
+                                                </li>
+                                                <li>
+                                                    <code>5027</code>: Codec 8 and Codec 8 Extended
+                                                </li>
                                                 <li>
                                                     <code>5023</code>: GT06
                                                 </li>
                                                 <li>
-                                                    <code>5013</code>: H02<sup>*</sup>
+                                                    <code>5013</code>: H02 <sup>*</sup>
                                                 </li>
                                                 <li>
                                                     <code>5191</code>: Mictrack
-                                                </li>
-                                                <li>
-                                                    <code>5004</code>: Queclink
-                                                </li>
-                                                <li>
-                                                    <code>5027</code>: Teltonika
                                                 </li>
                                                 <li>
                                                     <code>2003</code>: TrackTape
@@ -332,7 +332,7 @@
                                                 </li>
                                             </ul>
                                         </p>
-                                        <p><small class="text-muted">* H02 protocol &mdash; If your tracker transmit a 10 digits number instead of an IMEI, <a href="mailto:info@routechoices.com?subject=IMEI">Contact us</a> to get a Tracker ID.</small></p>
+                                        <p><small class="text-muted">* H02 protocol specificity &mdash; If your tracker transmit a 10 digits number instead of an IMEI, <a href="mailto:info@routechoices.com?subject=IMEI">Contact us</a> to get a Tracker ID.</small></p>
                                         <p>The recommended data push interval is 5 seconds, and the recommended GPS data acquisition interval is 1 second, but feel free to adjust the settings depending on your usage as this settings affect the battery life.</p>
                                         <p><a target="_blank" href="https://github.com/routechoiceslivegps/trackers-config" aria-label="Config file download page">Repository of configuration files</a> for most common trackers.</p>
                                     </div>

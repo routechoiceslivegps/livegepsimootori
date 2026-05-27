@@ -6,7 +6,6 @@
 		const submitBtn = u("#submit-btn-imei");
 		submitBtn.attr({ disabled: true });
 
-		u("#imeiRes").text(u("#IMEI").val());
 		reqwest({
 			url: `${window.local.apiRoot}device/`,
 			method: "post",
