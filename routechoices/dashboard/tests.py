@@ -568,7 +568,7 @@ class TestDashboard(EssentialDashboardBase):
 
         # test validations errors
         # event outside free trial period
-        self.club.creation_date = arrow.now().shift(days=-5).datetime
+        self.club.creation_date = arrow.now().shift(days=-1).datetime
         self.club.save()
         res = self.client.post(
             url,
