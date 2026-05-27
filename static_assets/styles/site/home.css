@@ -228,6 +228,6 @@
 .marquee-container:hover .marquee-content {
 	animation-play-state: paused;
 }
-.marquee-content:hover .logo-trustees {
+.marquee-content .logo-trustees:hover {
 	filter: initial;
 }
