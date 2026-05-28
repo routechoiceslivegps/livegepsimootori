@@ -2234,6 +2234,21 @@ function RCEvent(infoURL, clockURL, locale) {
 			resetMassStartContextMenuItem = null;
 		}
 
+		if (window.local.mapBestZoom) {
+			map.setZoom(Math.min(17, parseInt(window.local.mapBestZoom, 10)), {
+				animate: false,
+			});
+		}
+		const bound = new L.LatLngBounds();
+		for (const route of Object.values(competitorRoutes)) {
+			const pos = route?.getByTime(currentTime);
+			if (pos) {
+				bound.extend([pos[1], pos[2]]);
+			}
+		}
+		if (bound.isValid()) {
+			map.panTo(bound.getCenter(), { animate: false });
+		}
 		u("#synced-starts-check").attr("checked", true);
 
 		computeSplitTimes();

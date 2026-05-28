@@ -288,7 +288,10 @@
             data-event-id="{{ event.aid }}"
             data-static-root="{% static '' %}"
             data-token="{{ token }}"
-            data-is-private="{% if event.privacy == 'private' %}1{% else %}{% endif %}">
+            data-is-private="{% if event.privacy == 'private' %}1{% else %}{% endif %}"
+            {% if event.map %}data-map-best-zoom="{{ event.map.max_zoom }}"{% endif %}
+"
+            >
     </script>
     {% compress js %}
         <script src="{% static 'vendor/dayjs-1.11.7/dayjs.min.js' %}?langs=en-es-fi-fr-nl-pl-sv"></script>
