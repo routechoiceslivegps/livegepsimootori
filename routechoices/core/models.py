@@ -943,18 +943,18 @@ class Map(models.Model, SomewhereOnEarth):
 
     @cached_property
     def resolution(self):
-        """Return map image resolution in pixels/meters"""
+        """Return map image resolution in meters/pixel."""
         width, height = self.quick_size
-        return (width * height / self.area) ** 0.5
+        return max(
+            distance_between_locations(self.bound[0], self.bound[3]) / width,
+            distance_between_locations(self.bound[0], self.bound[1]) / height,
+        )
 
     @property
     def max_zoom(self):
         center_latitude = self.center.latitude
-        meters_per_pixel_at_zoom_18 = (
-            40_075_016.686 * math.cos(center_latitude * math.pi / 180) / (2 ** (18 + 8))
-        )
-        r = self.resolution / meters_per_pixel_at_zoom_18
-        return math.floor(math.log2(r)) + 18
+        meters_per_pixel = 40_075_016.686 * math.cos(center_latitude * math.pi / 180)
+        return math.floor(math.log2(meters_per_pixel / self.resolution))
 
     @cached_property
     def rotation(self):

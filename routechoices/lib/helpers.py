@@ -533,7 +533,7 @@ def distance_between_locations(a, b):
         math.sin(dlat / 2) ** 2
         + math.cos(a_lat) * math.cos(b_lat) * math.sin(dlon / 2) ** 2
     )
-    return R * 2 * math.atan2(math.sqrt(angle), math.sqrt(1 - angle))
+    return abs(R * 2 * math.atan2(math.sqrt(angle), math.sqrt(1 - angle)))
 
 
 def simplify_line(points, tolerance=11):
