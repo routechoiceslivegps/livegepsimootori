@@ -2360,13 +2360,30 @@ function RCEvent(infoURL, clockURL, locale) {
 			return;
 		}
 		competitor.focusing = true;
-		const latLon = competitor.mapMarker.getLatLng();
-		map.setView(latLon, map.getZoom(), {
-			animate: true,
-		});
-		setTimeout(() => {
-			competitor.focusing = false;
-		}, 250);
+		let viewedTime = currentTime;
+		if (!isLive && !isRealTime && !isCustomStart && competitor.start_time) {
+			viewedTime += new Date(competitor.start_time) - getCompetitionStartDate();
+		} else if (
+			!isLive &&
+			!isRealTime &&
+			isCustomStart &&
+			competitor.custom_offset
+		) {
+			viewedTime += Math.max(
+				0,
+				competitor.custom_offset - getCompetitorsMinCustomOffset(),
+			);
+		}
+
+		const latLon = competitorRoutes[competitor.id]?.getByTime(viewedTime);
+		if (latLon) {
+			map.setView(latLon.slice(1), map.getZoom(), {
+				animate: true,
+			});
+			setTimeout(() => {
+				competitor.focusing = false;
+			}, 250);
+		}
 	}
 
 	function redrawCompetitorMarker(competitor, location, faded) {
