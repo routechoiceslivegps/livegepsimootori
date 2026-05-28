@@ -119,6 +119,16 @@ body {
 	padding-top: 15px;
 }
 
+.club-footer {
+	background-color: #3a3f46;
+	color: white;
+}
+
+.club-footer a {
+	color: #fff;
+	text-decoration: none;
+}
+
 #myFooter {
 	background-color: #3a3f46;
 	color: white;
