@@ -2213,7 +2213,7 @@ function RCEvent(infoURL, clockURL, locale) {
 				resetMassStartContextMenuItem = map.contextmenu.insertItem(
 					{
 						text: banana.i18n("reset-mass-start"),
-						callback: onPressResetMassStart,
+						callback: () => onPressResetMassStart(true),
 					},
 					2,
 				);
@@ -2222,32 +2222,32 @@ function RCEvent(infoURL, clockURL, locale) {
 		}
 	}
 
-	function onPressResetMassStart() {
+	function onPressResetMassStart(customStart = false) {
 		isRealTime = false;
-		isCustomStart = false;
+		isCustomStart = customStart;
 
 		currentTime = getCompetitionStartDate();
 		prevShownTime = currentTime;
-
-		if (resetMassStartContextMenuItem) {
-			map.contextmenu.removeItem(resetMassStartContextMenuItem);
-			resetMassStartContextMenuItem = null;
-		}
-
-		if (window.local.mapBestZoom) {
-			map.setZoom(Math.min(17, parseInt(window.local.mapBestZoom, 10)), {
-				animate: false,
-			});
-		}
-		const bound = new L.LatLngBounds();
-		for (const route of Object.values(competitorRoutes)) {
-			const pos = route?.getByTime(currentTime);
-			if (pos) {
-				bound.extend([pos[1], pos[2]]);
+		if (!customStart) {
+			if (resetMassStartContextMenuItem) {
+				map.contextmenu.removeItem(resetMassStartContextMenuItem);
+				resetMassStartContextMenuItem = null;
 			}
-		}
-		if (bound.isValid()) {
-			map.setView(bound.getCenter(), map.getZoom(), { animate: false });
+			if (window.local.mapBestZoom) {
+				map.setZoom(Math.min(17, parseInt(window.local.mapBestZoom, 10)), {
+					animate: false,
+				});
+			}
+			const bound = new L.LatLngBounds();
+			for (const route of Object.values(competitorRoutes)) {
+				const pos = route?.getByTime(currentTime);
+				if (pos) {
+					bound.extend([pos[1], pos[2]]);
+				}
+			}
+			if (bound.isValid()) {
+				map.setView(bound.getCenter(), map.getZoom(), { animate: false });
+			}
 		}
 		u("#synced-starts-check").attr("checked", true);
 
@@ -2360,21 +2360,8 @@ function RCEvent(infoURL, clockURL, locale) {
 			return;
 		}
 		competitor.focusing = true;
-		const route = competitorRoutes[competitor.id];
-		if (!route) {
-			competitor.focusing = false;
-			return;
-		}
-		let timeT = currentTime;
-		if (!isRealTime) {
-			if (isCustomStart) {
-				timeT += competitor.custom_offset - getCompetitionStartDate();
-			} else {
-				timeT += +new Date(competitor.start_time) - getCompetitionStartDate();
-			}
-		}
-		const loc = route.getByTime(timeT);
-		map.setView([loc[1], loc[2]], map.getZoom(), {
+		const latLon = competitor.mapMarker.getLatLng();
+		map.setView(latLon, map.getZoom(), {
 			animate: true,
 		});
 		setTimeout(() => {

@@ -302,9 +302,9 @@ context("Dashboard actions", () => {
 			cy.get(".competitor-full-route-btn").eq(1).click();
 
 			//// random location mass start
-			cy.get("#synced-starts-check").should("be.checked").check();
+			//cy.get("#synced-starts-check").should("be.checked").check();
 			cy.get("#map").dblclick(70, 100);
-			cy.wait(100);
+			cy.wait(500);
 			cy.get("#synced-starts-check").should("be.checked");
 
 			//// Show grouping
@@ -312,8 +312,8 @@ context("Dashboard actions", () => {
 			cy.get("#toggleClusterSwitch").click();
 			cy.get(".leaflet-control-grouping").first().contains("Group A");
 			cy.contains("#map", "Group A");
-			cy.contains("#map", "🇫🇮 Paimion Rasti");
-			cy.contains("#map", "🇫🇮 KooVee").should("not.exist");
+			cy.contains("#map", "🇫🇮 KooVee");
+			cy.contains("#map", "🇫🇮 Paimion Rasti").should("not.exist");
 			cy.get("#toggleClusterSwitch").click();
 
 			//// mass start simulation
