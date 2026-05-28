@@ -125,42 +125,41 @@
                                             type="button">Switch to Replay</button>
                                 </div>
                             </div>
-                            <div class="replay_mode_buttons flex-row justify-content-between flex-nowrap flex-grow-1 me-1">
+                            <div class="replay_mode_buttons flex-row justify-content-between flex-nowrap flex-grow-1 me-2">
                                 <div class="btn-group mb-1 text-nowrap"
                                     role="group"
                                     >
-                                    <button class="btn btn-xs btn-secondary"
+                                    <button class="btn btn-xs"
                                             id="prev_button"
-                                            aria-label="slower"
+                                            aria-label="back"
                                             type="button">
                                         <i class="fa-solid fa-backward"></i>
                                     </button>
-                                    <button class="btn btn-xs btn-secondary"
+                                    <button class="btn btn"
                                             id="play_pause_button"
                                             aria-label="play/pause"
-                                            type="button"
-                                            style="font-variant-numeric: tabular-nums">
-                                        <i class="fa-solid fa-fw fa-play"></i><small>x8</small>
+                                            type="button">
                                     </button>
-                                    <button class="btn btn-xs btn-secondary"
+                                    <button class="btn btn-xs"
                                             id="next_button"
-                                            aria-label="faster"
+                                            aria-label="forward"
                                             type="button">
                                         <i class="fa-solid fa-forward"></i>
                                     </button>
                                 </div>
+                                <span> &nbsp; </span>
                                 <div class="replay_mode_buttons flex-row flex-nowrap d-inline-block ms-1">
-                                    <button type="button" class="mb-1 btn btn-link btn-xs" disabled>
+                                    <button type="button" class="mb-1 btn btn-link btn-xs text-primary" disabled style="--bs-text-opacity: .9;" aria-label="Playback Speed">
                                         <i class="fa-solid fa-gauge-high"></i>
                                     </button>
                                     <div class="btn-group mb-1 text-nowrap me-1"
                                         role="group">
-                                        <button class="btn btn-xs btn-secondary text-nowrap px-2"
+                                        <button class="btn btn-xs text-nowrap px-2"
                                                 id="slower_button"
                                                 type="button">
                                             <span>-</span>
                                         </button>
-                                        <button class="btn btn-xs btn-secondary text-nowrap px-2"
+                                        <button class="btn btn-xs text-nowrap px-2"
                                                 id="faster_button"
                                                 type="button">
                                             <span>+</span>
@@ -169,7 +168,7 @@
                                 </div>
                             </div>
                             <div class="replay_mode_buttons flex-row flex-nowrap">
-                                <button type="button" class="mb-1 btn btn-link btn-xs" disabled>
+                                <button type="button" class="mb-1 btn btn-link btn-xs text-primary" disabled style="--bs-text-opacity: .9;" aria-label="Clocks">
                                         <i class="fa-solid fa-stopwatch"></i>
                                 </button>
                                 <div class="btn-group mb-1 text-nowrap me-1"
