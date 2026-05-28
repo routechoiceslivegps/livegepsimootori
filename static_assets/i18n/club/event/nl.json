@@ -63,5 +63,6 @@
 	"unit-metric": "Metrisch",
 	"unit-imperial": "Imperiaal",
 	"preview": "Voorbeeld",
-	"sync-start": "Gesynct start"
+	"sync-start": "Gesynct start",
+	"state-synced": "Gesynct"
 }

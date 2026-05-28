@@ -63,5 +63,6 @@
 	"unit-metric": "Metriska",
 	"unit-imperial": "Imperiala",
 	"preview": "Förhandsvisning",
-	"sync-start": "Synk startar"
+	"sync-start": "Synk startar",
+	"state-synced": "Synkad"
 }

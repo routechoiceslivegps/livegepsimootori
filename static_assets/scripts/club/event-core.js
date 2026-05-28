@@ -465,7 +465,7 @@ const banana = new Banana();
 function updateText(locale) {
 	banana.setLocale(locale);
 	const langFile = `${window.local.staticRoot}i18n/club/event/${locale}.json`;
-	return fetch(`${langFile}?v=2026040600`)
+	return fetch(`${langFile}?v=2026052800`)
 		.then((response) => response.json())
 		.then((messages) => {
 			banana.load(messages, banana.locale);

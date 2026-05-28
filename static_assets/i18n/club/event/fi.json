@@ -63,5 +63,6 @@
 	"unit-metric": "Metrinen",
 	"unit-imperial": "Imperiaalinen",
 	"preview": "Ennakkokatsaus",
-	"sync-start": "Synkattu aloitus"
+	"sync-start": "Synkattu aloitus",
+	"state-synced": "Synkattu"
 }

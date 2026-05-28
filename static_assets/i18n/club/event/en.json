@@ -63,5 +63,6 @@
 	"unit-metric": "Metric",
 	"unit-imperial": "Imperial",
 	"preview": "Preview",
-	"sync-start": "Synced starts"
+	"sync-start": "Synced starts",
+	"state-synced": "Synced"
 }
