@@ -1725,6 +1725,7 @@ function RCEvent(infoURL, clockURL, locale) {
 	}
 
 	function onLayerChange(event) {
+		// TODO: Set Zoom with event.layer.options.maxNativeZoom
 		map.setBearing(event.layer.data.rotation, { animate: false });
 		fitRasterMapLayerBounds(event.layer.options.bounds);
 		rasterMapLayer = event.layer;
