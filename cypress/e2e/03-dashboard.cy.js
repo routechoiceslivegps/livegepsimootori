@@ -301,9 +301,9 @@ context("Dashboard actions", () => {
 			cy.get(".competitor-full-route-btn").eq(1).click();
 
 			//// random location mass start
-			cy.get("#synced-starts-check").should("not.be.checked");
+			cy.get("#synced-starts-check").should("be.checked").check();
 			cy.get("#map").dblclick(70, 100);
-			cy.wait(1000);
+			cy.wait(100);
 			cy.get("#synced-starts-check").should("be.checked");
 
 			//// Show grouping
@@ -316,8 +316,8 @@ context("Dashboard actions", () => {
 			cy.get("#toggleClusterSwitch").click();
 
 			//// mass start simulation
-			cy.get("#synced-starts-check").should("not.be.checked").click();
-			cy.wait(1000);
+			cy.get("#synced-starts-check").should("be.checked").check();
+			cy.wait(100);
 		});
 
 		// Create second event with all fields info
