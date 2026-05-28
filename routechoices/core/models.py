@@ -952,9 +952,13 @@ class Map(models.Model, SomewhereOnEarth):
 
     @property
     def max_zoom(self):
-        center_latitude = self.center.latitude
-        meters_per_pixel = 40_075_016.686 * math.cos(center_latitude * math.pi / 180)
-        return math.floor(math.log2(meters_per_pixel / self.resolution))
+        return math.floor(
+            math.log2(
+                40_075_016.686
+                * math.cos(self.center.latitude * math.pi / 180)
+                / self.resolution
+            )
+        )
 
     @cached_property
     def rotation(self):
