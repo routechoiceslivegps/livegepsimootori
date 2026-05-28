@@ -274,6 +274,7 @@ context("Dashboard actions", () => {
 			cy.get(".competitor-switch").eq(2).uncheck();
 			cy.contains("#map", "🇫🇮 KooVee").should("not.exist");
 			cy.get(".competitor-switch").eq(1).check();
+			cy.get('[aria-label="Center"]').eq(1).click();
 			cy.contains("#map", "🇫🇮 Paimion Rasti");
 
 			cy.get("#toggleAllSwitch").check();

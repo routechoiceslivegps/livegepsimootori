@@ -2247,7 +2247,7 @@ function RCEvent(infoURL, clockURL, locale) {
 			}
 		}
 		if (bound.isValid()) {
-			map.panTo(bound.getCenter(), { animate: false });
+			map.setView(bound.getCenter(), map.getZoom(), { animate: false });
 		}
 		u("#synced-starts-check").attr("checked", true);
 
