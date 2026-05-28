@@ -521,20 +521,6 @@ class EventForm(ModelForm):
         ).exists():
             self.add_error("slug", "URL already used by a bundle.")
 
-    def clean_start_date(self):
-        result = self.cleaned_data.get("start_date")
-        timezone = self.data.get("timezone", "UTC")
-        if result and timezone:
-            result = from_timezone_to_utc(result, timezone)
-        return result
-
-    def clean_end_date(self):
-        result = self.cleaned_data.get("end_date")
-        timezone = self.data.get("timezone", "UTC")
-        if result and timezone:
-            result = from_timezone_to_utc(result, timezone)
-        return result
-
     def clean_acceptable_tags(self):
         acceptable_tags = self.cleaned_data.get("acceptable_tags")
         open_registration = self.data.get("open_registration")
@@ -687,29 +673,19 @@ class CompetitorForm(ModelForm):
         return short_name
 
     def clean_start_time(self):
-        result = self.cleaned_data.get("start_time")
-        timezone = self.data.get("timezone", "UTC")
-        if result and timezone:
-            result = from_timezone_to_utc(result, timezone)
-        start = result
+        start = self.cleaned_data.get("start_time")
 
         orig_event = self.cleaned_data.get("event")
         if self.data.get("start_date"):
             try:
-                event_start = from_timezone_to_utc(
-                    get_aware_datetime(self.data.get("start_date")),
-                    timezone,
-                )
+                event_start = get_aware_datetime(self.data.get("start_date"))
             except Exception:
                 event_start = orig_event.start_date
         else:
             event_start = orig_event.start_date
         if self.data.get("end_date"):
             try:
-                event_end = from_timezone_to_utc(
-                    get_aware_datetime(self.data.get("end_date")),
-                    timezone,
-                )
+                event_end = get_aware_datetime(self.data.get("end_date"))
             except Exception:
                 event_end = orig_event.end_date
         else:

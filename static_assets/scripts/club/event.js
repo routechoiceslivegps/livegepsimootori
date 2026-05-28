@@ -9,11 +9,11 @@ function RCEvent(infoURL, clockURL, locale) {
 	let coordsUsed = "wgs84";
 	let locateControl;
 	let eventStateControl;
-	let coordsControl;
+	// let coordsControl;
 	let panControl;
 	let zoomControl;
 	let rotateControl;
-	let scaleControl;
+	// let scaleControl;
 	let runnerIconScale = 1;
 	let isLive = false;
 	let isPreview = false;
@@ -1042,22 +1042,19 @@ function RCEvent(infoURL, clockURL, locale) {
 						e.preventDefault();
 						playbackRate = Math.max(playbackRate / 2, 1);
 					});
-					u("#real_time_button").on("click", (e) => {
+					u("#synced-starts-check").on("change", (e) => {
 						e.preventDefault();
-						isRealTime = true;
-						computeSplitTimes();
-						if (resetMassStartContextMenuItem) {
-							map.contextmenu.removeItem(resetMassStartContextMenuItem);
-							resetMassStartContextMenuItem = null;
+						if (e.target.checked) {
+							onPressResetMassStart();
+						} else {
+							isRealTime = true;
+							computeSplitTimes();
+							if (resetMassStartContextMenuItem) {
+								map.contextmenu.removeItem(resetMassStartContextMenuItem);
+								resetMassStartContextMenuItem = null;
+							}
 						}
-						u("#real_time_button").addClass("active");
-						u("#mass_start_button").removeClass("active");
 					});
-					u("#mass_start_button").on("click", (e) => {
-						e.preventDefault();
-						onPressResetMassStart();
-					});
-					u("#mass_start_text").text(banana.i18n("mass-start"));
 					u("#options_show_button").on("click", displayOptions);
 					u("#full_progress_bar").parent().on("click", pressProgressBar);
 					u("#share_button").on("click", shareURL);
@@ -1195,8 +1192,7 @@ function RCEvent(infoURL, clockURL, locale) {
 		u("#live_button").off("click").removeClass("btn-info", "disabled");
 		u("#live_button").parent().addClass("d-none");
 		u("#replay_button").parent().removeClass("d-none");
-		u("#real_time_button").removeClass("active");
-		u("#mass_start_button").removeClass("active");
+		u("#synced-starts-check").attr("checked", false);
 		u(".replay_mode_buttons").hide();
 		u("#replay_control_buttons")
 			.addClass("d-none")
@@ -1539,8 +1535,8 @@ function RCEvent(infoURL, clockURL, locale) {
 		u(".if-live").addClass("d-none");
 		u("#bottom-div").removeClass("d-none");
 		u("#full_progress_bar").parent().removeClass("d-none");
-		u("#real_time_button").addClass("active");
-		u("#mass_start_button").removeClass("active");
+		u("#synced-starts-check").attr("checked", true);
+		u(".replay_mode_buttons");
 		u("#runners_show_button").removeClass("d-none");
 
 		eventStateControl.setReplay();
@@ -1571,6 +1567,7 @@ function RCEvent(infoURL, clockURL, locale) {
 		prevMeterDisplayRefresh = performance.now();
 		prevShownTime = getCompetitionStartDate();
 		playbackRate = 64;
+		onPressResetMassStart();
 
 		function renderReplay(ts) {
 			if (
@@ -2207,8 +2204,8 @@ function RCEvent(infoURL, clockURL, locale) {
 			isRealTime = false;
 			isCustomStart = true;
 
-			u("#real_time_button").removeClass("active");
-			u("#mass_start_button").removeClass("active");
+			u("#synced-starts-check").nodes[0].checked = true;
+
 			setCustomStart(e.latlng);
 			currentTime = getCompetitorsMinCustomOffset();
 			prevShownTime = currentTime;
@@ -2237,8 +2234,7 @@ function RCEvent(infoURL, clockURL, locale) {
 			resetMassStartContextMenuItem = null;
 		}
 
-		u("#real_time_button").removeClass("active");
-		u("#mass_start_button").addClass("active");
+		u("#synced-starts-check").attr("checked", true);
 
 		computeSplitTimes();
 	}
@@ -3408,12 +3404,12 @@ function RCEvent(infoURL, clockURL, locale) {
 		u("#export-text").text(banana.i18n("export"));
 		u("#event-start-list-link").text(banana.i18n("start-list"));
 		u("#loading-text").text(banana.i18n("loading-text"));
-		u(".cancel-text").text(banana.i18n("cancel"));
-		u(".save-text").text(banana.i18n("save"));
+		u("#synced-start-text").text(banana.i18n("sync-start"));
 		u("#club-events-link-text").text(
 			banana.i18n("club-events-link-text", window.local.clubName),
 		);
-		u("#real_time_text").text(banana.i18n("real-time"));
+		u(".cancel-text").text(banana.i18n("cancel"));
+		u(".save-text").text(banana.i18n("save"));
 
 		document.querySelector(".navbar").addEventListener("touchmove", (e) => {
 			e.preventDefault();

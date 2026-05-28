@@ -301,10 +301,10 @@ context("Dashboard actions", () => {
 			cy.get(".competitor-full-route-btn").eq(1).click();
 
 			//// random location mass start
-			cy.get("#real_time_button").should("have.class", "active");
+			cy.get("#synced-starts-check").should("not.be.checked");
 			cy.get("#map").dblclick(70, 100);
 			cy.wait(1000);
-			cy.get("#real_time_button").should("not.have.class", "active");
+			cy.get("#synced-starts-check").should("be.checked");
 
 			//// Show grouping
 			cy.get("#options_show_button").click();
@@ -316,7 +316,7 @@ context("Dashboard actions", () => {
 			cy.get("#toggleClusterSwitch").click();
 
 			//// mass start simulation
-			cy.get("#mass_start_button").click();
+			cy.get("#synced-starts-check").should("not.be.checked").click();
 			cy.wait(1000);
 		});
 

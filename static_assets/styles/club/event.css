@@ -76,7 +76,9 @@ body {
 	padding-left: 2px;
 	padding-right: 2px;
 }
-
+body {
+	background-color: var(--bs-secondary-bg);
+}
 #permanent-sidebar.no-sidebar {
 	border-left: 1px solid rgba(0, 0, 0, 0.125);
 }
@@ -139,6 +141,7 @@ body {
 	height: calc(var(--footer-size) + var(--ctrl-height));
 	background-color: var(--bs-secondary-bg);
 	border-top: 1px solid rgba(0, 0, 0, 0.125);
+	width: calc(100% - var(--sidebar-size));
 }
 
 #full_progress_bar {

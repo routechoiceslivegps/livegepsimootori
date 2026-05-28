@@ -380,11 +380,16 @@ function showLocalTime(el) {
 	u("#id_backdrop_map").parent().before(announcementForm);
 	u("#id_backdrop_map").parent().before("<h3>Maps</h3>");
 	// set timezone to local
+	const timezoneInput = document.getElementById("id_timezone");
 	const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 	console.log(`User timezone: ${userTimezone}`);
-	const timezoneInput = document.getElementById("id_timezone");
 	u(timezoneInput).parent().addClass("d-none");
 	if (timezoneInput && timezoneInput.value !== userTimezone) {
+		console.log(
+			"User timezone differs from input",
+			timezoneInput.value,
+			userTimezone,
+		);
 		timezoneInput.value = userTimezone;
 	}
 	u(".datetimepicker").each((el) => {
@@ -696,6 +701,12 @@ function showLocalTime(el) {
 	}
 
 	u("form").on("submit", (e) => {
+		u(".datetimepicker").each((el) => {
+			const val = el.value;
+			if (val) {
+				el.value = dayjs.tz(el.value, userTimezone).toISOString();
+			}
+		});
 		u("#submit-btn").attr({ disabled: true });
 		u("button[name='save_continue']").addClass("disabled");
 		u(e.submitter)

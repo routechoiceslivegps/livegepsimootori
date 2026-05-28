@@ -62,5 +62,6 @@
 	"units": "Eenheden",
 	"unit-metric": "Metrisch",
 	"unit-imperial": "Imperiaal",
-	"preview": "Voorbeeld"
+	"preview": "Voorbeeld",
+	"sync-start": "Gesynct start"
 }

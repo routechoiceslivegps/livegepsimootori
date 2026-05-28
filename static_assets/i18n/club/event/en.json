@@ -62,5 +62,6 @@
 	"units": "Units",
 	"unit-metric": "Metric",
 	"unit-imperial": "Imperial",
-	"preview": "Preview"
+	"preview": "Preview",
+	"sync-start": "Synced starts"
 }

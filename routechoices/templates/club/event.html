@@ -44,8 +44,92 @@
     <div id="main-div" class="container-fluid">
         <noscript>You need to enable Javascript to display this page</noscript>
         <div class="row">
-            <div id="map"
-                 class="col-12 d-sm-block col-sm-7 col-lg-9 col-xxl-10 main loading"></div>
+            <div id="map" class="col-12 d-sm-block col-sm-7 col-lg-9 col-xxl-10 main loading">
+            </div>
+            <div class="row" id="bottom-div">
+                <div class="col-12 time_bar loading" style="z-index: 110001">
+                    <div id="ctrl-wrapper">
+                        <div class="event-tool mb-1">
+                            <div id="full_progress_bar" class="progress" style="cursor: pointer;font-size: 1em;height: 1.3em;">
+                                <div id="progress_bar"
+                                     class="progress-bar progress-bar-info"
+                                     role="progressbar"
+                                     aria-label="time"
+                                     aria-valuenow="0"
+                                     aria-valuemin="0"
+                                     aria-valuemax="100"
+                                     style="transition: unset">
+                                    <span id="progress_bar_text" class="p-2"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="event-tool">
+                            <div class="d-flex flex-wrap">
+                                <div class="d-inline-flex flex-row flex-nowrap">
+                                    <div class="btn-group mb-1 text-nowrap me-1 d-none" role="group">
+                                        <button class="btn btn-xs btn-secondary text-nowrap fw-bold"
+                                                id="live_button"
+                                                type="button" style="height: 1.8em;margin-top: 0.4em;"></button>
+                                    </div>
+                                    <div class="btn-group mb-1 text-nowrap me-1" role="group">
+                                        <button class="btn btn-xs btn-secondary text-nowrap"
+                                                id="replay_button"
+                                                type="button">Switch to Replay</button>
+                                    </div>
+                                </div>
+                                <div class="replay_mode_buttons flex-row justify-content-between flex-nowrap flex-grow-1 me-2">
+                                    <div class="btn-group mb-1 text-nowrap"
+                                        role="group"
+                                        >
+                                        <button class="btn btn-xs"
+                                                id="prev_button"
+                                                aria-label="back"
+                                                type="button">
+                                            <i class="fa-solid fa-backward"></i>
+                                        </button>
+                                        <button class="btn btn"
+                                                id="play_pause_button"
+                                                aria-label="play/pause"
+                                                type="button">
+                                        </button>
+                                        <button class="btn btn-xs"
+                                                id="next_button"
+                                                aria-label="forward"
+                                                type="button">
+                                            <i class="fa-solid fa-forward"></i>
+                                        </button>
+                                    </div>
+                                    <span> &nbsp; </span>
+                                    <div class="replay_mode_buttons flex-row flex-nowrap d-inline-block ms-1">
+                                        <button type="button" class="mb-1 btn btn-link btn-xs text-primary" disabled style="--bs-text-opacity: .9;" aria-label="Playback Speed">
+                                            <i class="fa-solid fa-gauge-high"></i>
+                                        </button>
+                                        <div class="btn-group mb-1 text-nowrap me-1"
+                                            role="group">
+                                            <button class="btn btn-xs text-nowrap px-2"
+                                                    id="slower_button"
+                                                    type="button">
+                                                <span>-</span>
+                                            </button>
+                                            <button class="btn btn-xs text-nowrap px-2"
+                                                    id="faster_button"
+                                                    type="button">
+                                                <span>+</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="replay_mode_buttons flex-row flex-nowrap">
+                                    <div class="form-check form-switch" style="margin-top: 0.45em;">
+                                        <input class="form-check-input" type="checkbox" role="switch" id="synced-starts-check">
+                                        <label class="form-check-label" for="synced-starts-check"><span id="synced-starts-text">Synced Starts</span></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div id="sidebar"
                  class="d-none d-sm-block col-sm-5 offset-sm-7 col-lg-3 offset-lg-9 col-xxl-2 offset-xxl-10 sidebar loading">
             </div>
@@ -94,102 +178,7 @@
                 </div>
             </div>
         </div>
-        <div class="row" id="bottom-div">
-            <div class="col-12 time_bar loading" style="z-index: 110001">
-                <div id="ctrl-wrapper">
-                    <div class="event-tool mb-1">
-                        <div id="full_progress_bar" class="progress" style="cursor: pointer;font-size: 1em;height: 1.3em;">
-                            <div id="progress_bar"
-                                 class="progress-bar progress-bar-info"
-                                 role="progressbar"
-                                 aria-label="time"
-                                 aria-valuenow="0"
-                                 aria-valuemin="0"
-                                 aria-valuemax="100"
-                                 style="transition: unset">
-                                <span id="progress_bar_text" class="p-2"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="event-tool">
-                        <div class="d-flex flex-wrap">
-                            <div class="d-inline-flex flex-row flex-nowrap">
-                                <div class="btn-group mb-1 text-nowrap me-1 d-none" role="group">
-                                    <button class="btn btn-xs btn-secondary text-nowrap fw-bold"
-                                            id="live_button"
-                                            type="button"></button>
-                                </div>
-                                <div class="btn-group mb-1 text-nowrap me-1" role="group">
-                                    <button class="btn btn-xs btn-secondary text-nowrap"
-                                            id="replay_button"
-                                            type="button">Switch to Replay</button>
-                                </div>
-                            </div>
-                            <div class="replay_mode_buttons flex-row justify-content-between flex-nowrap flex-grow-1 me-2">
-                                <div class="btn-group mb-1 text-nowrap"
-                                    role="group"
-                                    >
-                                    <button class="btn btn-xs"
-                                            id="prev_button"
-                                            aria-label="back"
-                                            type="button">
-                                        <i class="fa-solid fa-backward"></i>
-                                    </button>
-                                    <button class="btn btn"
-                                            id="play_pause_button"
-                                            aria-label="play/pause"
-                                            type="button">
-                                    </button>
-                                    <button class="btn btn-xs"
-                                            id="next_button"
-                                            aria-label="forward"
-                                            type="button">
-                                        <i class="fa-solid fa-forward"></i>
-                                    </button>
-                                </div>
-                                <span> &nbsp; </span>
-                                <div class="replay_mode_buttons flex-row flex-nowrap d-inline-block ms-1">
-                                    <button type="button" class="mb-1 btn btn-link btn-xs text-primary" disabled style="--bs-text-opacity: .9;" aria-label="Playback Speed">
-                                        <i class="fa-solid fa-gauge-high"></i>
-                                    </button>
-                                    <div class="btn-group mb-1 text-nowrap me-1"
-                                        role="group">
-                                        <button class="btn btn-xs text-nowrap px-2"
-                                                id="slower_button"
-                                                type="button">
-                                            <span>-</span>
-                                        </button>
-                                        <button class="btn btn-xs text-nowrap px-2"
-                                                id="faster_button"
-                                                type="button">
-                                            <span>+</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="replay_mode_buttons flex-row flex-nowrap">
-                                <button type="button" class="mb-1 btn btn-link btn-xs text-primary" disabled style="--bs-text-opacity: .9;" aria-label="Clocks">
-                                        <i class="fa-solid fa-stopwatch"></i>
-                                </button>
-                                <div class="btn-group mb-1 text-nowrap me-1"
-                                    role="group">
-                                    <button class="btn btn-xs btn-secondary active text-nowrap"
-                                            id="real_time_button"
-                                            type="button">
-                                        <span id="real_time_text">Actual</span>
-                                    </button>
-                                    <button class="btn btn-xs btn-secondary text-nowrap"
-                                            id="mass_start_button"
-                                            type="button">
-                                        <span id="mass_start_text">Synced</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+
     </div>
     {% with is_event_page=True %}
         {% include "club/footer.html" %}

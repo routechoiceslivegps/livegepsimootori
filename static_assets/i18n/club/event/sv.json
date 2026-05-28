@@ -62,5 +62,6 @@
 	"units": "Enheter",
 	"unit-metric": "Metriska",
 	"unit-imperial": "Imperiala",
-	"preview": "Förhandsvisning"
+	"preview": "Förhandsvisning",
+	"sync-start": "Synk startar"
 }
