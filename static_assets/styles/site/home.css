@@ -107,8 +107,17 @@
 }
 
 .image-trustee {
-	background-color: #000;
-	/* background-image: url("../../img/backgrounds/kiila.jpg"); */ /* fallback for non image-set browser */
+	background-image: url("../../img/backgrounds/kiila.jpg"); /* fallback for non image-set browser */
+	background-image: -webkit-image-set(
+		url("../../img/backgrounds/kiila.avif") 1x /* type("image/avif") */,
+		url("../../img/backgrounds/kiila.webp") 1x /* type("image/webp") */,
+		url("../../img/backgrounds/kiila.jpg") 1x /* type("image/png") */
+	);
+	background-image: image-set(
+		url("../../img/backgrounds/kiila.avif") 1x,
+		url("../../img/backgrounds/kiila.webp") 1x,
+		url("../../img/backgrounds/kiila.jpg") 1x
+	);
 }
 
 .image-tv {
