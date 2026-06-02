@@ -1600,7 +1600,7 @@ class EventSet(models.Model):
         return ""
 
     def can_edit(self, user=None):
-        return self.external_id != ""
+        return not self.external_id
 
     @property
     def shortcut(self):
@@ -1901,7 +1901,7 @@ class Event(models.Model, SomewhereOnEarth):
             raise ValidationError("A Bundle with this URL already exists.")
 
     def can_edit(self, user=None):
-        return self.external_id != ""
+        return not self.external_id
 
     def could_display_maps(self, user=None):
         t = now()
