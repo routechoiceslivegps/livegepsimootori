@@ -75,7 +75,6 @@
                     New Event
                 {% endif %}
             </h2>
-            {% if not event.id or event.can_edit %}
             <h4 class="text-muted">
                 <span class="utc-offset"></span>
             </h4>
@@ -219,9 +218,6 @@
                        class="btn btn-danger dashboard-link"><i class="fa-solid fa-trash"></i> <span>Delete</span></a>
                 {% endif %}
             </form>
-        {% else %}
-            <i>Event is externally managed you can not edit it.</i>
-        {% endif %}
         </div>
     </div>
     <div class="modal"
