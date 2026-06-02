@@ -75,7 +75,7 @@
                     New Event
                 {% endif %}
             </h2>
-            {% if event.id && event.can_edit %}
+            {% if not event.id or event.can_edit %}
             <h4 class="text-muted">
                 <span class="utc-offset"></span>
             </h4>
