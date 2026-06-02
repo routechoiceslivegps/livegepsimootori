@@ -957,7 +957,6 @@ class Map(models.Model, SomewhereOnEarth):
                 40_075_016.686
                 * math.cos(self.center.latitude * math.pi / 180)
                 / self.resolution
-                / 256
             )
         )
 
@@ -1535,6 +1534,14 @@ class EventSet(models.Model):
         unique=True,
         db_index=True,
     )
+    external_id = models.CharField(
+        max_length=128,
+        editable=False,
+        blank=True,
+        default="",
+        null=False,
+        db_index=True,
+    )
     creation_date = models.DateTimeField(auto_now_add=True)
     modification_date = models.DateTimeField(auto_now=True)
     club = models.ForeignKey(
@@ -1591,6 +1598,9 @@ class EventSet(models.Model):
         if self.create_page:
             return f"{self.club.nice_url}{self.slug}"
         return ""
+
+    def can_edit(self, user=None):
+        return not self.external_id
 
     @property
     def shortcut(self):
@@ -1687,6 +1697,14 @@ class Event(models.Model, SomewhereOnEarth):
         max_length=12,
         editable=False,
         unique=True,
+        db_index=True,
+    )
+    external_id = models.CharField(
+        max_length=128,
+        editable=False,
+        blank=True,
+        default="",
+        null=False,
         db_index=True,
     )
     creation_date = models.DateTimeField(auto_now_add=True)
@@ -1881,6 +1899,9 @@ class Event(models.Model, SomewhereOnEarth):
         qs = EventSet.objects.filter(club_id=self.club_id, slug__iexact=self.slug)
         if qs.exists():
             raise ValidationError("A Bundle with this URL already exists.")
+
+    def can_edit(self, user=None):
+        return not self.external_id
 
     def could_display_maps(self, user=None):
         t = now()

@@ -382,6 +382,15 @@ class EventSetForm(ModelForm):
         except ValidationError as e:
             self._update_errors(e)
 
+    def clean(self):
+        super().clean()
+        if self.instance.external_id:
+            self.add_error(
+                None,
+                "You can not edit this bundle as it is externally managed.",
+            )
+            return
+
     def clean_name(self):
         name = self.cleaned_data.get("name")
         qs = EventSet.objects.filter(club=self.club, name__iexact=name)
@@ -478,6 +487,13 @@ class EventForm(ModelForm):
                     None,
                     "Your 2 days free trial has now expired, you cannot create or edit events anymore.",
                 )
+
+        if self.instance.external_id:
+            self.add_error(
+                None,
+                "You can not edit this event as it is externally managed.",
+            )
+            return
 
         # Check that start date is before end date
         start_date = self.cleaned_data.get("start_date")

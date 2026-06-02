@@ -2235,7 +2235,7 @@ function RCEvent(infoURL, clockURL, locale) {
 				resetMassStartContextMenuItem = null;
 			}
 			if (window.local.mapBestZoom) {
-				map.setZoom(Math.min(17, parseInt(window.local.mapBestZoom, 10)), {
+				map.setZoom(Math.min(17, parseInt(window.local.mapBestZoom, 10) - 4), {
 					animate: false,
 				});
 			}
