@@ -3,6 +3,7 @@ import os.path
 import tempfile
 import zipfile
 from io import BytesIO
+from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import arrow
@@ -873,12 +874,16 @@ class UploadKmzForm(Form):
                 try:
                     zf = zipfile.ZipFile(file)
                     zf.extractall(tmp_extract_dir)
-                    if os.path.exists(os.path.join(tmp_extract_dir, "Doc.kml")):
-                        doc_file = "Doc.kml"
-                    elif os.path.exists(os.path.join(tmp_extract_dir, "doc.kml")):
-                        doc_file = "doc.kml"
-                    else:
+                    path = Path(tmp_extract_dir, "doc.kml")
+                    pattern = path.name
+                    parent = path.parent
+                    # Check if any matching file exists in the parent directory
+                    matches = list(parent.glob(pattern, case_sensitive=False))
+                    print(matches[0], flush=True)
+                    if len(matches) != 1:
                         raise Exception("No valid doc.kml file")
+                    doc_path = matches[0]
+                    doc_file = doc_path.name
                     with open(
                         os.path.join(tmp_extract_dir, doc_file), "r", encoding="utf-8"
                     ) as f:

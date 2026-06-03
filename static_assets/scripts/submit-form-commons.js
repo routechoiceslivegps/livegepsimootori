@@ -15,7 +15,7 @@
 			submitBtn.attr({ disabled: true });
 		}
 	});
-	if (u("input[name=type-confirmation]").nodes) {
+	if (u("input[name=type-confirmation]").nodes.length > 0) {
 		u("input[name=type-confirmation]").nodes[0].focus();
 	}
 })();
