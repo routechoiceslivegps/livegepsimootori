@@ -15,4 +15,7 @@
 			submitBtn.attr({ disabled: true });
 		}
 	});
+	if (u("input[name=type-confirmation]").nodes) {
+		u("input[name=type-confirmation]").nodes[0].focus();
+	}
 })();
