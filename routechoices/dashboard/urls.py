@@ -204,11 +204,6 @@ urlpatterns = [
                                                     name="draw_view",
                                                 ),
                                                 path(
-                                                    "upload-kmz",
-                                                    views.map_kmz_upload_view,
-                                                    name="upload_kmz_view",
-                                                ),
-                                                path(
                                                     "upload-gpx",
                                                     views.map_gpx_upload_view,
                                                     name="upload_gpx_view",

@@ -230,14 +230,6 @@ function enableBtnToPreview() {
 		u("#main").removeClass("d-none");
 	}
 
-	function show3pointsWarning() {
-		u("#three-points-helper").removeClass("d-none");
-	}
-
-	function hide3pointsWarning() {
-		u("#three-points-helper").addClass("d-none");
-	}
-
 	function closePreview() {
 		u("#calibration-viewer").addClass("d-none");
 		u("#main").removeClass("d-none");
@@ -361,15 +353,6 @@ function enableBtnToPreview() {
 	}
 
 	function checkCalib() {
-		if (
-			markersWorld.length >= 3 &&
-			markersRaster.length >= 3 &&
-			!(markersWorld.length === 4 && markersRaster.length === 4)
-		) {
-			show3pointsWarning();
-		} else {
-			hide3pointsWarning();
-		}
 		if (markersWorld.length >= 3 && markersRaster.length >= 3) {
 			enableBtnToPreview();
 		} else {
@@ -402,6 +385,7 @@ function enableBtnToPreview() {
 			rasterCalibMap = null;
 			u("#raster-map").html("");
 		}
+
 		rasterCalibMap = L.map("raster-map", {
 			crs: L.CRS.Simple,
 			minZoom: -5,
@@ -665,14 +649,12 @@ function enableBtnToPreview() {
 	let cornersLatLng = [];
 	let calibString = null;
 	const calibHelpTexts = [
-		"Select 4 distinct locations on the raster map and match their locations on the world map. The best is to select four points as much apart from each other as possible.",
-		"Check that the raster map is aligned with the world map.",
+		"Select at least 3 distinct locations on the raster map and match their locations on the World map. 4 points calibration is recommended if your image is perspective distorted.",
 	];
 
-	u("#id_image").attr(
-		"accept",
-		"image/png,image/jpeg,image/gif,image/webp,application/pdf",
-	);
+	u("#id_calibration_string_raw").closest("div").addClass("d-none");
+
+	u("#id_image").attr("accept", "image/*,application/pdf");
 
 	u("#id_image").on("change", function () {
 		if (
@@ -706,12 +688,13 @@ function enableBtnToPreview() {
 			if (bounds && !u("#id_calibration_string_raw").val()) {
 				u("#id_calibration_string_raw").val(bounds);
 			}
-			u("#calibration_help").removeClass("d-none");
+			u("#calibration_help button").removeClass("disabled");
 			u("#id_calibration_string_raw").trigger("change");
 		} else {
 			if (!u("#main-form").hasClass("edit-form")) {
-				u("#calibration_help").addClass("d-none");
-				u("#calibration_preview").addClass("d-none");
+				u("#calibration_help button").addClass("disabled");
+				u("#calibration_preview button").addClass("disabled");
+				u("#submit-btn").addClass("disabled");
 			}
 		}
 	});
@@ -723,11 +706,14 @@ function enableBtnToPreview() {
 			found &&
 			(u("#id_image").val() || u("#main-form").hasClass("edit-form"))
 		) {
-			u("#calibration_preview").removeClass("d-none");
+			u("#calibration_preview button").removeClass("disabled");
+			u("#submit-btn").removeClass("disabled");
 		} else {
-			u("#calibration_preview").addClass("d-none");
+			u("#calibration_preview button").addClass("disabled");
 		}
 	});
+
+	u("#id_image").trigger("change");
 
 	u("#calibration-helper-opener").on("click", (e) => {
 		e.preventDefault();
@@ -788,4 +774,89 @@ function enableBtnToPreview() {
 	});
 
 	u("#back-from-preview-button").on("click", closePreview);
+
+	const kmzSubmitBtn = u("#kmz-submit-btn");
+	const keyholeFileField = u("#id_keyhole_file");
+	keyholeFileField.attr("accept", ".kml, .kmz");
+	keyholeFileField.on("change", async function () {
+		if (this.files.length > 0 && this.files[0].size > 2 * 1e7) {
+			keyholeFileField.removeClass("is-valid").addClass("is-invalid");
+			keyholeFileField.parent().find(".valid-feedback").remove();
+			keyholeFileField.parent().find(".invalid-feedback").remove();
+			keyholeFileField.after(
+				'<div class="invalid-feedback">File is too big, maximum size: 20MB</div>',
+			);
+			kmzSubmitBtn.addClass("disabled");
+			return;
+		}
+		if (this.files.length > 0) {
+			let kml;
+			let zip;
+			try {
+				zip = await JSZip.loadAsync(this.files[0]);
+			} catch {
+				kml = await this.files[0].text();
+			}
+			if (
+				!kml &&
+				zip &&
+				zip.files &&
+				Object.keys(zip.files)
+					.map((x) => x.toUpperCase())
+					.includes("DOC.KML")
+			) {
+				const kmlDocFilename = Object.keys(zip.files).find(
+					(x) => x.toUpperCase() === "DOC.KML",
+				);
+				kml = await zip.file(kmlDocFilename).async("string");
+			}
+			if (!kml) {
+				keyholeFileField.removeClass("is-valid").addClass("is-invalid");
+				keyholeFileField.parent().find(".valid-feedback").remove();
+				keyholeFileField.parent().find(".invalid-feedback").remove();
+				keyholeFileField.after(
+					'<div class="invalid-feedback">Invalid file format!</div>',
+				);
+				kmzSubmitBtn.addClass("disabled");
+				return;
+			}
+			let parsedText;
+			try {
+				const parser = new DOMParser();
+				parsedText = parser.parseFromString(kml, "text/xml");
+				const errorNode = parsedText.querySelector("parsererror");
+				if (errorNode) {
+					console.log(errorNode);
+					throw Error(errorNode);
+				}
+			} catch {
+				keyholeFileField.removeClass("is-valid").addClass("is-invalid");
+				keyholeFileField.parent().find(".valid-feedback").remove();
+				keyholeFileField.parent().find(".invalid-feedback").remove();
+				keyholeFileField.after(
+					'<div class="invalid-feedback">Invalid file format!</div>',
+				);
+				kmzSubmitBtn.addClass("disabled");
+				return;
+			}
+			const nLayers = parsedText.getElementsByTagName("GroundOverlay").length;
+			if (nLayers === 0) {
+				keyholeFileField.removeClass("is-valid").addClass("is-invalid");
+				keyholeFileField.parent().find(".valid-feedback").remove();
+				keyholeFileField.parent().find(".invalid-feedback").remove();
+				keyholeFileField.after(
+					'<div class="invalid-feedback">Invalid file format!</div>',
+				);
+				kmzSubmitBtn.addClass("disabled");
+				return;
+			}
+			keyholeFileField.addClass("is-valid").removeClass("is-invalid");
+			keyholeFileField.parent().find(".valid-feedback").remove();
+			keyholeFileField.parent().find(".invalid-feedback").remove();
+			keyholeFileField.after(
+				'<div class="valid-feedback">File ready to upload!</div>',
+			);
+		}
+	});
+	keyholeFileField.trigger("change");
 })();

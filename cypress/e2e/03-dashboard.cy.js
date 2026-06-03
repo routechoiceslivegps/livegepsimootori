@@ -125,13 +125,11 @@ context("Dashboard actions", () => {
 			"maps/multiground.kml",
 			"maps/tiled.kmz",
 		]) {
-			cy.visit(
-				"https://dashboard.routechoices.dev/clubs/kimito-sk/maps/upload-kmz",
-			);
-			cy.get("#id_file").selectFile(`cypress/fixtures/${kmzFileName}`);
-			cy.get("button:not([type]),button[type=submit]").click();
+			cy.visit("https://dashboard.routechoices.dev/clubs/kimito-sk/maps/new");
+			cy.get("#id_keyhole_file").selectFile(`cypress/fixtures/${kmzFileName}`);
+			cy.get("#kmz-form button:not([type]),button[type=submit]").click();
 			cy.get("#django-messages", { timeout: 10_000 }).contains(
-				"The import of the map was successful!",
+				"Map successfully imported!",
 			);
 		}
 	});

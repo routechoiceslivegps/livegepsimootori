@@ -326,14 +326,14 @@ class DeviceClubOwnerShipForm(ModelForm):
 class MapForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["image"].help_text = (
-            "Image of map as a PNG, JPEG, GIF, WEBP, or PDF file"
-        )
+        self.fields["image"].help_text = "Image or PDF file"
         self.fields["image"].widget.attrs["accept"] = "image/*, .pdf"
+        self.fields["image"].label = "Select Image"
+        self.fields["name"].label = "Map name"
 
     class Meta:
         model = Map
-        fields = ["name", "image", "calibration_string_raw"]
+        fields = ["image", "name", "calibration_string_raw"]
 
     def clean_calibration_string_raw(self):
         cc = self.cleaned_data["calibration_string_raw"]
@@ -853,14 +853,18 @@ class UploadMapGPXForm(Form):
 
 
 class UploadKmzForm(Form):
-    file = FileField(
-        label="KML/KMZ file",
+    keyhole_file = FileField(
+        label="Import KML/KMZ file",
         max_length=255,
         validators=[FileExtensionValidator(allowed_extensions=["kmz", "kml"])],
     )
 
-    def clean_file(self):
-        file = self.cleaned_data["file"]
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["keyhole_file"].widget.attrs["accept"] = ".kml, .kmz"
+
+    def clean_keyhole_file(self):
+        file = self.cleaned_data["keyhole_file"]
         is_compressed = False
         new_maps = []
         with tempfile.TemporaryDirectory(suffix="_kmz") as tmp_extract_dir:
