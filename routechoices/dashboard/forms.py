@@ -53,7 +53,7 @@ from routechoices.lib.helpers import (
     is_valid_pil_image,
     is_valid_svg,
 )
-from routechoices.lib.kmz import extract_ground_overlay_info
+from routechoices.lib.kmz import extract_ground_overlays_info
 from routechoices.lib.validators import validate_domain_name, validate_nice_slug
 
 
@@ -894,7 +894,7 @@ class UploadKmzForm(Form):
                 kml = file.read()
 
             try:
-                overlays = extract_ground_overlay_info(kml)
+                overlays = extract_ground_overlays_info(kml)
             except Exception:
                 raise ValidationError("Invalid File")
 

@@ -1,29 +1,9 @@
-import os
-import os.path
-import zipfile
-from io import BytesIO
-
-from curl_cffi import requests
 from defusedxml import minidom
 
 from routechoices.lib.helpers import (
     Wgs84Coordinate,
     wgs84_bound_from_latlon_box,
 )
-
-
-def extract_kml(file, root_dir):
-    zf = zipfile.ZipFile(file)
-    zf.extractall(root_dir)
-    if os.path.exists(os.path.join(root_dir, "Doc.kml")):
-        doc_file = "Doc.kml"
-    elif os.path.exists(os.path.join(root_dir, "doc.kml")):
-        doc_file = "doc.kml"
-    else:
-        raise ValueError("No valid doc.kml file")
-    with open(os.path.join(root_dir, doc_file), "r", encoding="utf-8") as f:
-        kml = f.read().encode("utf8")
-    return kml
 
 
 def extract_wgs84_bound_from_kml_ground_overlay(go):
@@ -52,28 +32,7 @@ def extract_wgs84_bound_from_kml_ground_overlay(go):
     return (nw, ne, se, sw)
 
 
-def extract_kml_image_buffer(image_path, root_dir=None):
-    file_data = None
-    if image_path.startswith("http://") or image_path.startswith("https://"):
-        try:
-            r = requests.get(image_path, timeout=10)
-            r.raise_for_status()
-        except Exception:
-            raise ValueError("File contains an unreachable image URL")
-        else:
-            file_data = r.content
-    elif root_dir:
-        image_path = os.path.abspath(os.path.join(root_dir, image_path))
-        if not image_path.startswith(root_dir):
-            raise ValueError("File contains an illegal image path")
-        with open(image_path, "rb") as fp:
-            file_data = fp.read()
-    else:
-        raise ValueError("File contains an illegal image path")
-    return BytesIO(file_data)
-
-
-def extract_ground_overlay_info(kml):
+def extract_ground_overlays_info(kml):
     doc = minidom.parseString(kml)
     out = []
     main_name = name = "Untitled"

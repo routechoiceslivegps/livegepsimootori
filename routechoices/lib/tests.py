@@ -11,7 +11,7 @@ from .helpers import (
     get_image_mime_from_request,
     simplify_periods,
 )
-from .kmz import extract_ground_overlay_info
+from .kmz import extract_ground_overlays_info
 
 # from .mtb_decoder import MtbDecoder
 from .slippy_tiles import latlon_to_tile_xy, tile_xy_to_north_west_latlon
@@ -114,7 +114,7 @@ class HelperTestCase(TestCase):
 
     def test_import_kml(self):
         kml = '<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2"><Folder><name>Ground Overlays</name><description>Examples of ground overlays</description><GroundOverlay><name>Large-scale overlay on terrain</name><description>Overlay shows Mount Etna erupting on July 13th, 2001.</description><Icon><href>https://developers.google.com/kml/documentation/images/etna.jpg</href></Icon><LatLonBox><north>37.91904192681665</north><south>37.46543388598137</south><east>15.35832653742206</east><west>14.60128369746704</west><rotation>-0.1556640799496235</rotation></LatLonBox></GroundOverlay></Folder></kml>'
-        name, url, coordinates = extract_ground_overlay_info(kml)[0]
+        name, url, coordinates = extract_ground_overlays_info(kml)[0]
         self.assertEqual(name, "Ground Overlays - Large-scale overlay on terrain")
         self.assertEqual(
             url, "https://developers.google.com/kml/documentation/images/etna.jpg"

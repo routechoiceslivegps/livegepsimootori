@@ -109,12 +109,15 @@ L.Control.GeoFileUploader = L.Control.extend({
 	onAdd: (map) => {
 		const onKmzLoaded = async (file) => {
 			const zip = await JSZip.loadAsync(file);
-			if (zip.files?.["doc.kml"] || zip.files["Doc.kml"]) {
-				let filename = "Doc.kml";
-				if (zip.files["doc.kml"]) {
-					filename = "doc.kml";
-				}
-				const kml = await zip.file(filename).async("string");
+			if (
+				Object.keys(zip.files)
+					.map((x) => x.toUpperCase())
+					.includes("DOC.KML")
+			) {
+				const kmlDocFilename = Object.keys(zip.files).find(
+					(x) => x.toUpperCase() === "DOC.KML",
+				);
+				const kml = await zip.file(kmlDocFilename).async("string");
 				const maps = await extractKMZInfo(kml, zip);
 				if (maps) {
 					for (const data of maps) {
