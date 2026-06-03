@@ -725,12 +725,18 @@ def map_delete_view(request, map_id):
         if link := request.GET.get("next"):
             return redirect(link)
         return redirect("dashboard_club:map:list_view", club_slug=request.club.slug)
+
+    used_in = Event.objects.filter(
+        Q(map_id=raster_map.id) | Q(map_assignations__map_id=raster_map.id)
+    ).distinct()
+
     return render(
         request,
         "dashboard/map_delete.html",
         {
             "club": club,
             "map": raster_map,
+            "used_in": used_in,
         },
     )
 

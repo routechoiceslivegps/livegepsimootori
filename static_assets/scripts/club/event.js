@@ -1578,6 +1578,7 @@ function RCEvent(infoURL, clockURL, locale) {
 				fetchCompetitorRoutes();
 			}
 			const actualPlaybackRate = playbackPaused ? 0 : playbackRate;
+
 			if (getCompetitionStartDate(true) === null) {
 				currentTime = 0;
 				maxCTime = 0;
@@ -1601,6 +1602,7 @@ function RCEvent(infoURL, clockURL, locale) {
 						(Math.min(+clock.now(), getCompetitionEndDate()) -
 							getCompetitionStartDate());
 				}
+				console.log(maxCTime, currentTime);
 				currentTime = Math.min(+clock.now(), currentTime, maxCTime);
 				const liveTime =
 					+clock.now() - (fetchPositionInterval + 5 + sendInterval + 5) * 1e3;
@@ -1620,7 +1622,6 @@ function RCEvent(infoURL, clockURL, locale) {
 				}
 				prevShownTime = currentTime;
 			}
-
 			const isStillLive = isLiveEvent && eventEnd >= clock.now();
 			const isBackLive = !isLiveEvent && eventEnd >= clock.now();
 			if (!isStillLive) {
@@ -3217,11 +3218,12 @@ function RCEvent(infoURL, clockURL, locale) {
 				timeShown -= getCompetitionStartDate();
 			}
 		}
+		const noData = getCompetitionStartDate(true) === null;
 		u("#progress_bar_text").text(
-			getProgressBarText(timeShown, false, false, !isRealTime),
+			getProgressBarText(timeShown, false, false, !isRealTime, false, noData),
 		);
 		eventStateControl.setClockEl(
-			getProgressBarText(timeShown, isLive, true, !isRealTime, true),
+			getProgressBarText(timeShown, isLive, true, !isRealTime, true, noData),
 		);
 
 		if (isMapMoving) return;

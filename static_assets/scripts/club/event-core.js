@@ -85,9 +85,10 @@ function getProgressBarText(
 	date = false,
 	relative = true,
 	split = false,
+	noData = false,
 ) {
 	let result = "";
-	if (hide) {
+	if (hide || noData) {
 		return "";
 	}
 	const viewedTime = currentTime;
