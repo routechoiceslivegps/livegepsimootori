@@ -145,7 +145,7 @@ context("Dashboard actions", () => {
 
 		cy.get("#id_image").selectFile("cypress/fixtures/Jukola2019/1/map.jpg");
 
-		cy.get("#calibration-preview-opener").should("not.be.visible");
+		cy.get("#calibration-preview-opener").should("have.class", "disabled");
 		cy.get("#calibration-helper-opener").click();
 		cy.wait(1000);
 
@@ -168,13 +168,13 @@ context("Dashboard actions", () => {
 
 		cy.get("#validate-calibration-button").click();
 
-		cy.get("#calibration-preview-opener").should("be.visible");
+		cy.get("#calibration-preview-opener").should("not.have.class", "disabled");
 		cy.get("#id_calibration_string_raw")
 			.invoke("val")
 			.then((val) => {
 				expect(/^[-]?\d+(\.\d+)?(,[-]?\d+(\.\d+)?){7}$/.test(val));
 			});
-		cy.get("button:not([type]),button[type=submit]").click();
+		cy.get("#main-form button:not([type]),button[type=submit]").click();
 
 		cy.get("#django-messages").contains("Map created successfully");
 	});
