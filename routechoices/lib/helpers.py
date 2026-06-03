@@ -14,6 +14,8 @@ from math import cos, pi, sin, sqrt
 
 import reverse_geocode
 from curl_cffi import requests
+from defusedxml import DefusedXmlException
+from defusedxml import ElementTree as DET
 from django.conf import settings
 from django.http.response import Http404
 from django.utils.dateparse import parse_datetime
@@ -496,6 +498,21 @@ def is_valid_pil_image(data):
             img.verify()
             return True
     except IOError, SyntaxError:
+        return False
+
+
+def is_valid_svg(binary_data):
+    try:
+        # Securely parse the binary data
+        root = DET.fromstring(binary_data)
+        # Strip XML namespaces if present
+        tag = root.tag
+        if "}" in tag:
+            tag = tag.split("}", 1)[1]
+        # Check if the root element is 'svg'
+        return tag.lower() == "svg"
+    except DET.ParseError, DefusedXmlException:
+        # Invalid XML or malicious exploit attempt blocked
         return False
 
 

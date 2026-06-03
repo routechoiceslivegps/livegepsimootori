@@ -5,34 +5,11 @@ from io import BytesIO
 
 from curl_cffi import requests
 from defusedxml import minidom
-from django.core.files import File
 
-from routechoices.core.models import Map
 from routechoices.lib.helpers import (
     Wgs84Coordinate,
-    is_valid_pil_image,
     wgs84_bound_from_latlon_box,
 )
-
-
-def get_maps_from_kml(kml, root_dir):
-    overlays = extract_ground_overlay_info(kml)
-    for name, image_path, bound in overlays:
-        if not name:
-            name = "Untitled"
-        try:
-            file_buffer = extract_kml_image_buffer(image_path, root_dir)
-        except ValueError:
-            continue
-        if not is_valid_pil_image(file_buffer):
-            continue
-        image_file = File(file_buffer)
-        new_map = Map(
-            name=name,
-        )
-        new_map.bound = bound
-        new_map.image.save("file", image_file, save=False)
-        yield new_map
 
 
 def extract_kml(file, root_dir):

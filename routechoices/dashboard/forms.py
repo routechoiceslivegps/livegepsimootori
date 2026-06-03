@@ -6,6 +6,7 @@ from io import BytesIO
 from zoneinfo import ZoneInfo
 
 import arrow
+import cairosvg
 import geojson_validator
 import gpxpy
 import orjson as json
@@ -49,6 +50,7 @@ from routechoices.lib.helpers import (
     get_aware_datetime,
     initial_of_name,
     is_valid_pil_image,
+    is_valid_svg,
 )
 from routechoices.lib.kmz import extract_ground_overlay_info
 from routechoices.lib.validators import validate_domain_name, validate_nice_slug
@@ -915,9 +917,19 @@ class UploadKmzForm(Form):
                         file_data = fp.read()
                 else:
                     raise ValidationError("File contains an illegal image path")
-                if not is_valid_pil_image(BytesIO(file_data)):
+
+                if is_valid_svg(file_data):
+                    # map is in SVG format, convert to image
+                    image_data = BytesIO()
+                    cairosvg.svg2png(
+                        bytestring=file_data, write_to=image_data, unsafe=True, scale=4
+                    )
+                    image_file = File(image_data)
+                elif is_valid_pil_image(BytesIO(file_data)):
+                    image_file = File(BytesIO(file_data))
+                else:
                     continue
-                image_file = File(BytesIO(file_data))
+
                 new_map = Map(
                     name=name,
                 )
