@@ -176,7 +176,7 @@ context("Dashboard actions", () => {
 			});
 		cy.get("#main-form button:not([type]),button[type=submit]").click();
 
-		cy.get("#django-messages").contains("Map created successfully");
+		cy.get("#django-messages").contains("Map successfully created!");
 	});
 
 	it("Create a club", () => {
