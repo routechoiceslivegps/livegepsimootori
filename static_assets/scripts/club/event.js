@@ -1745,7 +1745,6 @@ function RCEvent(infoURL, clockURL, locale) {
 
 	function updateCompetitorList(newList) {
 		newList.forEach(updateCompetitor);
-		const count = Object.keys(competitorList).length;
 	}
 
 	function computeSplitTimes() {
