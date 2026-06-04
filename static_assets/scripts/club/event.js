@@ -1746,9 +1746,6 @@ function RCEvent(infoURL, clockURL, locale) {
 	function updateCompetitorList(newList) {
 		newList.forEach(updateCompetitor);
 		const count = Object.keys(competitorList).length;
-		if (count === 1) {
-			competitorList[Object.keys(competitorList)[0]].focused = true;
-		}
 	}
 
 	function computeSplitTimes() {
