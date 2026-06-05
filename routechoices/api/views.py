@@ -65,6 +65,7 @@ from routechoices.lib.helpers import (
     git_master_hash,
     initial_of_name,
     random_device_id,
+    safe64encodedsha,
     set_content_disposition,
     short_random_key,
     short_random_slug,
@@ -695,7 +696,7 @@ def event_detail(request, event_id):
 
     output["maps"] = maps
 
-    headers = {}
+    headers = {"ETag": f'W/"{safe64encodedsha(json.dumps(output))}"'}
     if is_event_admin or event.privacy == PRIVACY_PRIVATE:
         headers["Cache-Control"] = "Private"
 
@@ -1216,6 +1217,7 @@ def event_data(request, event_id):
     cache_key = f"event:{event_id}:tag:{tag or ""}:data:{cache_ts}:live"
     if data := cache.get(cache_key):
         headers = {
+            "ETag": f'W/"{safe64encodedsha(json.dumps(data))}"',
             "X-Cache-Hit": 1,
         }
         return Response(data, headers=headers)
@@ -1232,6 +1234,7 @@ def event_data(request, event_id):
         cache_key = f"event:{event_id}:tag:{tag or ""}:data:{cache_ts}:archived"
         if data := cache.get(cache_key):
             headers = {
+                "ETag": f'W/"{safe64encodedsha(json.dumps(data))}"',
                 "X-Cache-Hit": 1,
             }
             return Response(data, headers=headers)
@@ -1278,7 +1281,7 @@ def event_data(request, event_id):
     )
     cache.set(cache_key, response, cache_duration)
 
-    headers = {}
+    headers = {"ETag": f'W/"{safe64encodedsha(json.dumps(response))}"'}
     if event.privacy == PRIVACY_PRIVATE:
         headers["Cache-Control"] = "Private"
 
@@ -1306,14 +1309,19 @@ def event_data_delta(request, event_id, previous_key):
             ),
             "partial": 1,
         }
-        return Response(response)
+        headers = {"ETag": f'W/"{safe64encodedsha(json.dumps(response))}"'}
+        return Response(response, headers=headers)
 
     tag = request.GET.get("category")
 
     # Retrieve straight from cache if possible
     cache_key = f"event:{event_id}:tag:{tag or ""}:data-diff:{previous_key}:{cache_ts}"
     if cached_resp := cache.get(cache_key):
-        return Response(cached_resp, headers={"X-Cache-Hit": 1})
+        headers = {
+            "ETag": f'W/"{safe64encodedsha(json.dumps(cached_resp))}"',
+            "X-Cache-Hit": 1,
+        }
+        return Response(cached_resp, headers=headers)
 
     # Retrieve previous state
     partial = False
@@ -1377,7 +1385,7 @@ def event_data_delta(request, event_id, previous_key):
         "partial": True,
     }
 
-    headers = {}
+    headers = {"ETag": f'W/"{safe64encodedsha(json.dumps(response))}"'}
     if cache_control := current_resp.headers.get("Cache-Control"):
         headers["Cache-Control"] = cache_control
 
@@ -1441,9 +1449,11 @@ def event_zip(request, event_id):
                     geojson_file.write(data)
 
     response_data = archive.getvalue()
-    headers = {}
+
+    headers = {"ETag": f'W/"{safe64encodedsha(response_data)}"'}
     if is_event_admin or event.privacy == PRIVACY_PRIVATE:
         headers["Cache-Control"] = "Private"
+
     response = StreamingHttpRangeResponse(
         request, response_data, content_type="application/zip", headers=headers
     )
