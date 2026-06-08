@@ -3092,9 +3092,8 @@ function RCEvent(infoURL, clockURL, locale) {
 			const widgetContent = u("<p/>")
 				.attr("id", "copyright-text")
 				.addClass("text-muted small")
-				.html(bgLayer.getAttribution());
+				.html(bgLayer?.getAttribution() ?? "-");
 			copyrightWidget.append(widgetContent);
-
 			optionsSidebar.append(copyrightWidget);
 		}
 
