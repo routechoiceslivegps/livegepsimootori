@@ -6,53 +6,55 @@ const backdropMaps = {
 		referrerPolicy: "origin",
 	}),
 	"gmap-street": L.tileLayer("https://mt0.google.com/vt/x={x}&y={y}&z={z}", {
-		attribution: "&copy; Google",
+		attribution: "Map data &copy; Google",
 		className: "wms256",
 	}),
 	"gmap-hybrid": L.tileLayer(
 		"https://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}",
 		{
-			attribution: "&copy; Google",
+			attribution: "Map data &copy; Google",
 			className: "wms256",
 		},
 	),
 	"gmap-terrain": L.tileLayer(
 		"https://mt0.google.com/vt/lyrs=p&hl=en&x={x}&y={y}&z={z}",
 		{
-			attribution: "&copy; Google",
+			attribution: "Map data &copy; Google",
 			className: "wms256",
 		},
 	),
 	"topo-fi": L.tileLayer.wms("https://tiles.kartat.kapsi.fi/peruskartta", {
-		attribution: "&copy; National Land Survey of Finland",
+		attribution: "Map data &copy; National Land Survey of Finland",
 		className: "wms256",
 		layers: "peruskartta",
 	}),
 	"mapant-ee": L.tileLayer(
 		"https://tiles.routechoices.com/proxy/ee/{z}/{x}/{y}.webp",
 		{
-			attribution: "&copy; mapantee.gokartor.se and Estonian Land Board",
+			attribution:
+				"Map data &copy; mapantee.gokartor.se and Estonian Land Board",
 			className: "wms256",
 		},
 	),
 	"mapant-fi": L.tileLayer(
 		"https://mapant.trailmap.fi/wmts_EPSG3857.php?z={z}&x={x}&y={y}",
 		{
-			attribution: "&copy; MapAnt.fi and National Land Survey of Finland",
+			attribution:
+				"Map data &copy; MapAnt.fi and National Land Survey of Finland",
 			className: "wms256",
 		},
 	),
 	"topo-no": L.tileLayer(
 		"https://cache.kartverket.no/v1/wmts/1.0.0/toporaster/default/webmercator/{z}/{y}/{x}.png",
 		{
-			attribution: "",
+			attribution: "Map data &copy; kartverket.no",
 			className: "wms256",
 		},
 	),
 	"topo-uk": L.tileLayer(
 		"https://tiles.routechoices.com/proxy/uk/{z}/{x}/{y}.webp",
 		{
-			attribution: "&copy; Ordnance Survey",
+			attribution: "Map data &copy; Ordnance Survey",
 			className: "wms256",
 			minZoom: 7,
 			maxNativeZoom: 15,
@@ -63,20 +65,20 @@ const backdropMaps = {
 		},
 	),
 	"mapant-no": L.tileLayer("https://mapant.no/osm-tiles/{z}/{x}/{y}.png", {
-		attribution: "&copy; MapAnt.no",
+		attribution: "Map data &copy; MapAnt.no",
 		className: "wms256",
 	}),
 	"mapant-ch": L.tileLayer(
 		"https://tiles.routechoices.com/proxy/ch/{z}/{x}/{y}.webp",
 		{
-			attribution: "&copy; MapAnt.ch",
+			attribution: "Map data &copy; MapAnt.ch",
 			className: "wms256",
 		},
 	),
 	"mapant-se": L.tileLayer(
 		"https://tiles.routechoices.com/proxy/se/{z}/{x}/{y}.webp",
 		{
-			attribution: "&copy; gokartor.se",
+			attribution: "Map data &copy; gokartor.se",
 			className: "wms256",
 		},
 	),
@@ -84,7 +86,7 @@ const backdropMaps = {
 		"https://data.geopf.fr/wmts?layer=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fpng&tilematrix={z}&tilecol={x}&tilerow={y}",
 		{
 			attribution:
-				'<a href="https://www.ign.fr/" target="_blank">&copy; IGN France</a>',
+				'Map data <a href="https://www.ign.fr/" target="_blank">&copy; IGN France</a>',
 			className: "wms256",
 		},
 	),
@@ -93,17 +95,17 @@ const backdropMaps = {
 		format: "image/png",
 		version: "1.3.0",
 		transparent: true,
-		attribution: "&copy; MapAnt.es",
+		attribution: "Map data &copy; MapAnt.es",
 		className: "wms256",
 	}),
 	"topo-world": L.tileLayer("https://tile.opentopomap.org/{z}/{x}/{y}.png", {
-		attribution: "&copy; OpenTopoMap (CC-BY-SA)",
+		attribution: "Map data &copy; OpenTopoMap (CC-BY-SA)",
 		className: "wms256",
 	}),
 	"topo-world-alt": L.tileLayer(
 		"https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
 		{
-			attribution: "&copy; ArcGIS Online",
+			attribution: "Map data &copy; ArcGIS Online",
 			className: "wms256",
 		},
 	),

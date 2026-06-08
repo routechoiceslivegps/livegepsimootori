@@ -663,6 +663,7 @@ function RCEvent(infoURL, clockURL, locale) {
 			worldCopyJump: true,
 			rotate: true,
 			touchRotate: true,
+			attributionControl: false,
 			rotateControl: false,
 			contextmenu: true,
 			contextmenuWidth: 140,
@@ -949,6 +950,7 @@ function RCEvent(infoURL, clockURL, locale) {
 						layer.addTo(map);
 						layer.nickname = response.event.backdrop;
 						bgLayer = layer;
+						u("#copyright-text").html(layer.getAttribution());
 					}
 				}
 
@@ -2718,6 +2720,7 @@ function RCEvent(infoURL, clockURL, locale) {
 						layer.setZIndex(-1);
 						layer.addTo(map);
 						bgLayer = layer;
+						u("#copyright-text").html(layer.getAttribution());
 					}
 				});
 
@@ -3081,6 +3084,18 @@ function RCEvent(infoURL, clockURL, locale) {
 			qrWidget.append(widgetContent);
 
 			optionsSidebar.append(qrWidget);
+		}
+		{
+			const copyrightWidget = u("<div/>").addClass(
+				"mb-2 border-top border-secondary",
+			);
+			const widgetContent = u("<p/>")
+				.attr("id", "copyright-text")
+				.addClass("text-muted small")
+				.html(bgLayer.getAttribution());
+			copyrightWidget.append(widgetContent);
+
+			optionsSidebar.append(copyrightWidget);
 		}
 
 		u("#sidebar").html("");
