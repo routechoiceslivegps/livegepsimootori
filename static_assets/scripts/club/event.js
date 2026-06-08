@@ -1727,8 +1727,11 @@ function RCEvent(infoURL, clockURL, locale) {
 
 	function onLayerChange(event) {
 		// TODO: Set Zoom with event.layer.options.maxNativeZoom
+		const center = map.getCenter();
 		map.setBearing(event.layer.data.rotation, { animate: false });
-		fitRasterMapLayerBounds(event.layer.options.bounds);
+		map.setView(center, Math.min(17, event.layer?.data?.max_zoom), {
+			animate: false,
+		});
 		rasterMapLayer = event.layer;
 		rasterMapLayer.setOpacity(mapOpacity);
 	}
@@ -2223,7 +2226,6 @@ function RCEvent(infoURL, clockURL, locale) {
 	function onPressResetMassStart(customStart = false) {
 		isRealTime = false;
 		isCustomStart = customStart;
-
 		currentTime = getCompetitionStartDate();
 		prevShownTime = currentTime;
 		if (!customStart) {
@@ -2231,8 +2233,8 @@ function RCEvent(infoURL, clockURL, locale) {
 				map.contextmenu.removeItem(resetMassStartContextMenuItem);
 				resetMassStartContextMenuItem = null;
 			}
-			if (window.local.mapBestZoom) {
-				map.setZoom(Math.min(17, parseInt(window.local.mapBestZoom, 10) - 4), {
+			if (rasterMapLayer?.data?.max_zoom) {
+				map.setZoom(Math.min(17, rasterMapLayer?.data?.max_zoom), {
 					animate: false,
 				});
 			}

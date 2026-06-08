@@ -165,7 +165,6 @@ class CustomCrsWmts2WebMercatorWmtsProxy:
             return cached
 
         url = self.url.format(x=x, y=y, z=z)
-
         try:
             res = self.session.get(url, timeout=10)
             res.raise_for_status()

@@ -946,15 +946,15 @@ class Map(models.Model, SomewhereOnEarth):
         """Return map image resolution in meters/pixel."""
         width, height = self.quick_size
         return max(
-            distance_between_locations(self.bound[0], self.bound[3]) / width,
-            distance_between_locations(self.bound[0], self.bound[1]) / height,
+            distance_between_locations(self.bound[0], self.bound[3]) / height,
+            distance_between_locations(self.bound[0], self.bound[1]) / width,
         )
 
     @property
     def max_zoom(self):
-        return math.floor(
+        return math.ceil(
             math.log2(
-                40_075_016.686
+                156543.03392804097
                 * math.cos(self.center.latitude * math.pi / 180)
                 / self.resolution
             )
