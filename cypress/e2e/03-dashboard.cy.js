@@ -310,7 +310,7 @@ context("Dashboard actions", () => {
 			cy.get("#toggleClusterSwitch").click();
 			cy.get(".leaflet-control-grouping").first().contains("Group A");
 			cy.contains("#map", "Group A");
-			cy.contains("#map", "🇫🇮 KooVee").should("exist");
+			cy.contains("#map", "🇫🇮 KooVee").should("not.exist");
 			cy.contains("#map", "🇫🇮 Paimion Rasti").should("not.exist");
 			cy.get("#toggleClusterSwitch").click();
 
