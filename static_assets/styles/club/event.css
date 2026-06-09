@@ -27,7 +27,8 @@ body {
 	font-family: "Twemoji Country Flags", var(--bs-body-font-family) !important;
 }
 
-.big-clock {
+.big-clock,
+.playback-rate {
 	font-family: "KodeMono", monospace;
 	font-variant-numeric: tabular-nums;
 	line-height: 1em;

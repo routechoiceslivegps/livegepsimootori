@@ -144,12 +144,17 @@ L.Control.EventState = L.Control.extend({
 		this._div = div;
 		this.t = "";
 		this.tl = 0;
+		this.pr = 1;
 		this.isLive = false;
 		return div;
 	},
 	setTailLength(v) {
 		this.tl = v;
 		u(this._div).find(".tail-length-display").text(printTime(v));
+	},
+	setPlaybackRate(r) {
+		this.pr = r;
+		u(this._div).find(".playback-rate").text(`x${r}`);
 	},
 	setClockEl(el) {
 		this.t = el;
@@ -198,7 +203,8 @@ L.Control.EventState = L.Control.extend({
 		</svg>
 	</span>
 	<span class="tail-length-display" style="text-transform: none;">${printTime(this.tl)}</span>
-</div>`;
+</div>
+`;
 		u(this._div).css({
 			display: "block",
 			fontSize: "20px",
@@ -217,8 +223,8 @@ L.Control.EventState = L.Control.extend({
 		${banana.i18n("replay-mode")}
 	</span>
 </div>
-<div class="big-clock py-0 px-2" style="font-size:1rem;color: #000;text-shadow: -1px -1px 0 #fff,-1px 0px 0 #fff,-1px 1px 0 #fff,0px -1px 0 #fff,0px 0px 0 #fff,0px 1px 0 #fff,1px -1px 0 #fff,1px 0px 0 #fff,1px 1px 0 #fff"">
-	${this.t}
+<div class="py-0 px-2" style="font-size:1rem;color: #000;text-shadow: -1px -1px 0 #fff,-1px 0px 0 #fff,-1px 1px 0 #fff,0px -1px 0 #fff,0px 0px 0 #fff,0px 1px 0 #fff,1px -1px 0 #fff,1px 0px 0 #fff,1px 1px 0 #fff"">
+	<span class="big-clock">${this.t}</span> <span class="small playback-rate" style="text-transform: lowercase;color: #777;text-shadow: -1px -1px 0 #fff,-1px 0px 0 #fff,-1px 1px 0 #fff,0px -1px 0 #fff,0px 0px 0 #fff,0px 1px 0 #fff,1px -1px 0 #fff,1px 0px 0 #fff,1px 1px 0 #fff">x${this.pr}</span>
 </div>
 <div class="m-0 py-0 px-2" style="font-size:0.7rem;color: #09F;text-shadow: -1px -1px 0 #fff,-1px 0px 0 #fff,-1px 1px 0 #fff,0px -1px 0 #fff,0px 0px 0 #fff,0px 1px 0 #fff,1px -1px 0 #fff,1px 0px 0 #fff,1px 1px 0 #fff">
 <span>
@@ -236,7 +242,8 @@ L.Control.EventState = L.Control.extend({
 		</svg>
 	</span>
 	<span class="tail-length-display" style="text-transform: none;">${printTime(this.tl)}</span>
-</div>`;
+</div>
+`;
 		u(this._div).css({
 			display: "block",
 			fontSize: "20px",

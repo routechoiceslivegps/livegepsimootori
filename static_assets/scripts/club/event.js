@@ -1039,10 +1039,12 @@ function RCEvent(infoURL, clockURL, locale) {
 					u("#faster_button").on("click", (e) => {
 						e.preventDefault();
 						playbackRate *= 2;
+						eventStateControl.setPlaybackRate(playbackRate);
 					});
 					u("#slower_button").on("click", (e) => {
 						e.preventDefault();
 						playbackRate = Math.max(playbackRate / 2, 1);
+						eventStateControl.setPlaybackRate(playbackRate);
 					});
 					u("#synced-starts-check").on("change", (e) => {
 						e.preventDefault();
@@ -1099,6 +1101,7 @@ function RCEvent(infoURL, clockURL, locale) {
 					sendInterval = response.event.send_interval;
 					tailLength = response.event.tail_length;
 					eventStateControl.setTailLength(tailLength);
+					eventStateControl.setPlaybackRate(playbackRate);
 
 					displayAnouncement(response.announcement);
 					displayMaps(response.maps, true);
