@@ -1607,7 +1607,6 @@ function RCEvent(infoURL, clockURL, locale) {
 						(Math.min(+clock.now(), getCompetitionEndDate()) -
 							getCompetitionStartDate());
 				}
-				console.log(maxCTime, currentTime);
 				currentTime = Math.min(+clock.now(), currentTime, maxCTime);
 				const liveTime =
 					+clock.now() - (fetchPositionInterval + 5 + sendInterval + 5) * 1e3;
