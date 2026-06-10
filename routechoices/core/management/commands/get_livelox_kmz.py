@@ -1,6 +1,7 @@
 import urllib.parse
 
 from django.core.management.base import BaseCommand
+from django.test import override_settings
 
 from routechoices.lib.other_gps_services.livelox import Livelox
 
@@ -12,6 +13,11 @@ class Command(BaseCommand):
         parser.add_argument("--url", dest="event_url", type=str)
         parser.add_argument("-o", "--output", dest="output", type=str)
 
+    @override_settings(
+        DATABASES={
+            "default": {"ENGINE": "django.db.backends.sqlite3", "NAME": ":memory:"}
+        }
+    )
     def handle(self, *args, **options):
         event_url = options["event_url"]
         prefix = "https://www.livelox.com/Viewer/"
