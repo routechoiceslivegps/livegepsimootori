@@ -342,6 +342,9 @@ PERMISSIONS_POLICY = {
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 100_000
 THUMBNAIL_URL_TEMPLATE = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
 
+COMPRESS_SRI_HASHES = ("sha512",)
+COMPRESS_SRI_CROSSORIGIN = "anonymous"
+
 try:
     from .settings_overrides import *  # noqa: F403, F401
 except ImportError:
