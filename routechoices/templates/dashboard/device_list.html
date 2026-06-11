@@ -50,13 +50,13 @@
                                 <td>
                                     {% if device.last_location %}
                                         <button type="button" class="btn btn-sm btn-info dashboard-link" disabled >
-                                            <i class="fa-solid fa-stopwatch"></i> <span class="date-utc text-nowrap" data-date="{{ device.last_location_datetime|date:'c' }}">{{ device.last_location_datetime|date:'Y-m-d H:i:s' }} UTC</span>
+                                            <i class="fa-solid fa-stopwatch"></i> <span class="date-utc text-nowrap" data-date="{{ device.last_location_datetime|date:'c' }}" style="font-variant-numeric: tabular-nums;font-feature-settings: 'tnum';">{{ device.last_location_datetime|date:'Y-m-d H:i:s' }} UTC</span>
                                         </button>
-                                        <a class="btn btn-success btn-sm dashboard-link" target="_blank" rel="nofollow noopener noreferrer" href="https://map.routechoices.com/?latlon={{ device.last_location.1 }},{{ device.last_location.2 }}">
+                                        <a class="btn btn-success btn-sm dashboard-link" target="_blank" rel="nofollow noopener noreferrer" href="https://map.routechoices.com/?latlon={{ device.last_location.1 }},{{ device.last_location.2 }}" style="font-variant-numeric: tabular-nums;font-feature-settings: 'tnum';">
                                             <i class="fa-solid fa-map-location-dot"></i> <span>{{ device.last_location.1 }}, {{ device.last_location.2 }}</span>
                                         </a>
                                         {% if device.battery_level != None and device.battery_level != '' %}
-                                            <button type="button" class="btn btn-sm dashboard-link" disabled>{{ device.battery_level }}% <i class="fa-solid fa-battery-{{ device.battery_level_text }}"></i></button>
+                                            <button type="button" class="btn btn-sm dashboard-link" disabled style="font-variant-numeric: tabular-nums;font-feature-settings: 'tnum';">{{ device.battery_level }}% <i class="fa-solid fa-battery-{{ device.battery_level_text }}"></i></button>
                                         {% endif %}
                                     {% else %}
                                         <button type="button" class="btn btn-muted dashboard-link" disabled><i class="fa-solid fa-eye-slash"></i> <span>Not data</span></button>
