@@ -312,7 +312,7 @@ CSP_WORKER_SRC = ("'self'", "blob:")
 CSP_CHILD_SRC = ("'self'", "blob:")
 CSRF_USE_SESSIONS = True
 COMPRESS_ENABLED = True
-COMPRESS_OFFLINE = False
+COMPRESS_OFFLINE = True
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_HSTS_SECONDS = 31536000
@@ -342,8 +342,6 @@ PERMISSIONS_POLICY = {
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 100_000
 THUMBNAIL_URL_TEMPLATE = "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
 
-COMPRESS_SRI_HASHES = ("sha512",)
-COMPRESS_SRI_CROSSORIGIN = "anonymous"
 
 try:
     from .settings_overrides import *  # noqa: F403, F401
