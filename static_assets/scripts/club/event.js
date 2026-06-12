@@ -1046,6 +1046,51 @@ function RCEvent(infoURL, clockURL, locale) {
 						playbackRate = Math.max(playbackRate / 2, 1);
 						eventStateControl.setPlaybackRate(playbackRate);
 					});
+
+					const speedBtn = document.querySelector("#speed-drag-button");
+					const speedBtnDraggingInfo = {
+						dragging: false,
+						startX: 0,
+						startT: 0,
+					};
+
+					speedBtn.addEventListener("mousedown", (e) => {
+						e.preventDefault();
+						speedBtnDraggingInfo.startX = e.clientX;
+						speedBtnDraggingInfo.dragging = true;
+						speedBtnDraggingInfo.startT = performance.now();
+						console.log(speedBtnDraggingInfo);
+						addEventListener("mouseup", (e) => {
+							e.preventDefault();
+							if (speedBtnDraggingInfo.dragging) {
+								speedBtnDraggingInfo.dragging = false;
+							}
+							removeEventListener("mouseup", (e) => {
+								e.preventDefault();
+							});
+							removeEventListener("mousemove", (e) => {
+								e.preventDefault();
+							});
+						});
+						addEventListener("mousemove", (e) => {
+							e.preventDefault();
+							if (speedBtnDraggingInfo.dragging) {
+								if (performance.now() - speedBtnDraggingInfo.startT > 500) {
+									const delta = e.clientX - speedBtnDraggingInfo.startX;
+									if (delta > 0) {
+										playbackRate *= 2;
+									} else if (delta < 0) {
+										playbackRate = Math.max(playbackRate / 2, 1);
+									}
+									eventStateControl.setPlaybackRate(playbackRate);
+									console.log(playbackRate);
+									speedBtnDraggingInfo.startT = performance.now();
+								}
+							}
+						});
+					});
+					speedBtn;
+
 					u("#synced-starts-check").on("change", (e) => {
 						e.preventDefault();
 						if (e.target.checked) {
