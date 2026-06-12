@@ -57,7 +57,7 @@ idna==3.18
 inflection==0.5.1
 jmespath==1.1.0
 jwcrypto==1.5.7
-kagi @ git+https://github.com/rphlo/kagi@e15c47bf2844af47c2a84b937767b0eb24d7309b
+kagi @ git+https://github.com/rphlo/kagi@9778b4ea93e8db7f68e3763c2f83e516c6ffd1b5
 loguru==0.7.3
 lxml==6.1.1
 markdown==3.10.2
