@@ -1059,7 +1059,6 @@ function RCEvent(infoURL, clockURL, locale) {
 						speedBtnDraggingInfo.startX = e.clientX;
 						speedBtnDraggingInfo.dragging = true;
 						speedBtnDraggingInfo.startT = performance.now();
-						console.log(speedBtnDraggingInfo);
 						addEventListener("mouseup", (e) => {
 							e.preventDefault();
 							if (speedBtnDraggingInfo.dragging) {
@@ -1083,7 +1082,6 @@ function RCEvent(infoURL, clockURL, locale) {
 										playbackRate = Math.max(playbackRate / 2, 1);
 									}
 									eventStateControl.setPlaybackRate(playbackRate);
-									console.log(playbackRate);
 									speedBtnDraggingInfo.startT = performance.now();
 								}
 							}
