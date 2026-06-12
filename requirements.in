@@ -34,7 +34,7 @@ geojson-validator
 gps-data-codec @ git+https://github.com/routechoiceslivegps/gps-data-codec
 gpxpy
 gunicorn
-kagi @ git+https://github.com/rphlo/kagi@9d02f068abf0963575819455f2e3f05888726153
+kagi @ git+https://github.com/rphlo/kagi@bdcad94cd451a3e2d1d5df6c7d23b10bd83b4e07
 lxml
 numpy
 opencv-python-headless
