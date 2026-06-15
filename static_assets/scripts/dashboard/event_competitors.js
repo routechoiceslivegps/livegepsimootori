@@ -178,4 +178,19 @@ function showLocalTime(el) {
 
 	u(".color-input").each(createColorWidget);
 	u(".tag-input").each(createTagWidget);
+
+	u("form").on("submit", (e) => {
+		u(".datetimepicker").each((el) => {
+			const val = el.value;
+			if (val) {
+				el.value = dayjs.tz(el.value, userTimezone).toISOString();
+			}
+		});
+		u("#submit-btn").attr({ disabled: true });
+		u("button[name='save_continue']").addClass("disabled");
+		u(e.submitter)
+			.find("i")
+			.removeClass("fa-floppy-disk")
+			.addClass("fa-spinner fa-spin");
+	});
 })();
