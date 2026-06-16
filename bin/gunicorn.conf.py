@@ -6,3 +6,4 @@ workers = 4
 threads = 2
 max_requests = 3000
 max_requests_jitter = 100
+timeout = 90
