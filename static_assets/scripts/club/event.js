@@ -3485,7 +3485,7 @@ function RCEvent(infoURL, clockURL, locale) {
 		u("#export-text").text(banana.i18n("export"));
 		u("#event-start-list-link").text(banana.i18n("start-list"));
 		u("#loading-text").text(banana.i18n("loading-text"));
-		u("#synced-starts-check").text(banana.i18n("sync-start"));
+		u("#synced-starts-text").text(banana.i18n("sync-start"));
 		u("#club-events-link-text").text(
 			banana.i18n("club-events-link-text", window.local.clubName),
 		);
