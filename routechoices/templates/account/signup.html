@@ -25,7 +25,7 @@
                                        name="{{ redirect_field_name }}"
                                        value="{{ redirect_field_value }}" />
                             {% endif %}
-                            {% if cf_site_key %}<div class="cf-turnstile" data-sitekey="{{ cf_site_key }}"></div>{% endif %}
+                            {% if cf_site_key %}<div class="cf-turnstile" data-sitekey="{{ cf_site_key }}" size="flexible"></div>{% endif %}
                             <div class="d-grid">
                                 <button type="submit" class="primaryAction btn btn-primary" id="submit-btn">
                                     <i class="fa-solid fa-user-plus"></i> {% translate "Sign Up" %}
