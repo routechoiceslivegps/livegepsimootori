@@ -3336,11 +3336,13 @@ function RCEvent(infoURL, clockURL, locale) {
 						viewedTime - 30_000,
 						viewedTime,
 					);
-					if (!hasPointInTail) {
-						competitor.speedometerValue = formatSpeed(Number.POSITIVE_INFINITY);
-						competitor.speedometer.textContent = competitor.speedometerValue;
-					} else {
-						if (checkVisible(competitor.speedometer)) {
+					if (checkVisible(competitor.speedometer)) {
+						if (!hasPointInTail) {
+							competitor.speedometerValue = formatSpeed(
+								Number.POSITIVE_INFINITY,
+							);
+							competitor.speedometer.textContent = competitor.speedometerValue;
+						} else {
 							const tail30s = route.extractInterval(
 								viewedTime - 30_000,
 								viewedTime,
