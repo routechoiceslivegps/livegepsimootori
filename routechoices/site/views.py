@@ -16,9 +16,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django_hosts.resolvers import reverse
 
 from routechoices.core.models import Club, Event, FrontPageFeedback
+from routechoices.lib.helpers import validate_cf_turnstile
 from routechoices.lib.s3 import serve_image_from_s3
 from routechoices.lib.streaming_response import StreamingHttpRangeResponse
-from routechoices.libs.helpers import validate_cf_turnstile
 from routechoices.site.forms import ContactForm
 
 
