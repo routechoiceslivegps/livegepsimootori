@@ -25,4 +25,5 @@ def site(request):
         "DEBUG": settings.DEBUG,
         "version": version,
         "sentry_dsn": settings.SENTRY_DSN if hasattr(settings, "SENTRY_DSN") else "",
+        "cf_site_key": settings.CF_SITE_KEY if hasattr(settings, "CF_SITE_KEY") else "",
     }
