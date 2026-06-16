@@ -174,12 +174,13 @@ class CustomLoginForm(LoginForm):
 
 class CustomSignupView(SignupView):
     def form_valid(self, form):
-        token = self.request.POST.get("cf-turnstile-response")
-        remoteip = self.request.META["REMOTE_ADDR"]
-        validation = validate_cf_turnstile(token, remoteip)
+        if settings.CF_SITE_KEY:
+            token = self.request.POST.get("cf-turnstile-response")
+            remoteip = self.request.META["REMOTE_ADDR"]
+            validation = validate_cf_turnstile(token, remoteip)
 
-        if not validation["success"]:
-            raise ValidationError(validation["error-codes"])
+            if not validation["success"]:
+                raise ValidationError(validation["error-codes"])
 
         return super().form_valid(form)
 
