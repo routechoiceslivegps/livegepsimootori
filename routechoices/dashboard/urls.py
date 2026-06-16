@@ -425,6 +425,6 @@ urlpatterns = [
     path("hijack/release/", views.MyReleaseUserView.as_view(), name="hijack_release"),
     path("login", site_views.CustomLoginView.as_view(), name="account_login"),
     path("logout", allauth_views.logout, name="account_logout"),
-    path("signup", allauth_views.signup, name="account_signup"),
+    path("signup", site_views.CustomSignupView.as_view(), name="account_signup"),
     path("map", TemplateView.as_view(template_name="site/map.html"), name="map"),
 ]

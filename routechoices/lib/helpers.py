@@ -711,3 +711,20 @@ def retry_with_backoff(func, *args, **kwargs):
         time.sleep(2**attempt)
         attempt += 1
     raise last_exception
+
+
+def validate_cf_turnstile(token, remoteip=None):
+    url = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
+
+    data = {"secret": settings.CF_SECRET_KEY, "response": token}
+
+    if remoteip:
+        data["remoteip"] = remoteip
+
+    try:
+        response = requests.post(url, data=data, timeout=10)
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException as e:
+        print(f"Turnstile validation error: {e}")
+        return {"success": False, "error-codes": ["internal-error"]}

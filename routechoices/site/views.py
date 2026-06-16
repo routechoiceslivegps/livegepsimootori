@@ -1,12 +1,12 @@
 import arrow
 from allauth.account.forms import LoginForm
 from allauth.account.models import EmailAddress
-from allauth.account.views import LoginView
+from allauth.account.views import LoginView, SignupView
 from curl_cffi import requests
 from django.conf import settings
 from django.contrib import auth, messages
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.mail import EmailMessage
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
@@ -18,6 +18,7 @@ from django_hosts.resolvers import reverse
 from routechoices.core.models import Club, Event, FrontPageFeedback
 from routechoices.lib.s3 import serve_image_from_s3
 from routechoices.lib.streaming_response import StreamingHttpRangeResponse
+from routechoices.libs.helpers import validate_cf_turnstile
 from routechoices.site.forms import ContactForm
 
 
@@ -169,6 +170,18 @@ def robots_txt(request):
 class CustomLoginForm(LoginForm):
     def get_user(self):
         return self.user
+
+
+class CustomSignupView(SignupView):
+    def form_valid(self, form):
+        token = self.request.POST.get("cf-turnstile-response")
+        remoteip = self.request.META["REMOTE_ADDR"]
+        validation = validate_cf_turnstile(token, remoteip)
+
+        if not validation["success"]:
+            raise ValidationError(validation["error-codes"])
+
+        return super().form_valid(form)
 
 
 class CustomLoginView(LoginView):
