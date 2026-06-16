@@ -87,7 +87,8 @@
 .leaflet-tile {
 	filter: inherit;
 	visibility: hidden;
-	}
+	backface-visibility: hidden;
+}
 .leaflet-tile-loaded {
 	visibility: inherit;
 	}
