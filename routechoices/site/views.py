@@ -174,7 +174,7 @@ class CustomLoginForm(LoginForm):
 
 class CustomSignupView(SignupView):
     def form_valid(self, form):
-        if settings.CF_SITE_KEY:
+        if hasattr(settings, "CF_SITE_KEY"):
             token = self.request.POST.get("cf-turnstile-response")
             remoteip = self.request.META["REMOTE_ADDR"]
             validation = validate_cf_turnstile(token, remoteip)
