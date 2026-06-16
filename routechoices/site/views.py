@@ -8,8 +8,12 @@ from django.contrib import auth, messages
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMessage
-from django.forms import ValidationError
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import (
+    Http404,
+    HttpResponse,
+    HttpResponseBadRequest,
+    HttpResponseRedirect,
+)
 from django.shortcuts import redirect, render
 from django.utils.http import url_has_allowed_host_and_scheme, urlencode
 from django.utils.timezone import now
@@ -181,7 +185,7 @@ class CustomSignupView(SignupView):
             validation = validate_cf_turnstile(token, remoteip)
 
             if not validation["success"]:
-                raise ValidationError(validation["error-codes"])
+                return HttpResponseBadRequest()
 
         return super().form_valid(form)
 
