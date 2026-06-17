@@ -731,6 +731,78 @@ function showLocalTime(el) {
 	u("#id_open_registration").on("change", onRegistrationTypeChange);
 	u("#id_open_registration").trigger("change");
 
+	u(".formset_row").each((el) => {
+		const row = u(el);
+		const compId = row.attr("data-competitor-id");
+		const deviceField = row.find('select[name$="-device"]').first();
+		if (deviceField.value) {
+			const cropBtn = u(
+				'<button type="button"class="btn btn-info btn-sm mt-1"><i class="fa-solid fa-scissors"></i> Crop GPS</button>',
+			);
+			cropBtn.on("click", () => {
+				swal(
+					{
+						title: "Enter end time",
+						text: "This will archive the device and crop data until the given end date.",
+						type: "input",
+						inputValue: u("#id_end_date").val(),
+						showCancelButton: true,
+					},
+					(inputValue) => {
+						if (inputValue === false) return false;
+						if (inputValue === "") {
+							return false;
+						}
+						const endDate = dayjs.tz(inputValue, userTimezone).toDate();
+						reqwest({
+							url: `/competitors/${compId}/gpx`,
+							method: "get",
+							success: (response) => {
+								const gpxText = new XMLSerializer().serializeToString(
+									response.documentElement,
+								);
+								const parser = new gpxParser();
+								parser.parse(gpxText);
+								const newRouteTs = [];
+								const newRouteLats = [];
+								const newRouteLons = [];
+								for (const track of parser.tracks) {
+									for (const point of track.points) {
+										console.log(point.time, endDate);
+										if (point.time < endDate) {
+											newRouteTs.push(Math.round(+point.time / 1000));
+											newRouteLats.push(point.lat);
+											newRouteLons.push(point.lon);
+										}
+									}
+								}
+								reqwest({
+									url: `/competitors/${compId}/route`,
+									method: "post",
+									type: "json",
+									data: {
+										latitudes: newRouteLats.join(","),
+										longitudes: newRouteLons.join(","),
+										timestamps: newRouteTs.join(","),
+									},
+									withCredentials: true,
+									crossOrigin: true,
+									headers: {
+										"X-CSRFToken": window.local.csrfToken,
+									},
+									success: () => {
+										window.location = location.href + "?d=" + +new Date();
+									},
+								});
+							},
+						});
+					},
+				);
+			});
+			u(deviceField.tomselect.wrapper).after(cropBtn);
+		}
+	});
+
 	if (window.performance) {
 		const navEntries = window.performance.getEntriesByType("navigation");
 		if (navEntries.length > 0 && navEntries[0].type === "back_forward") {

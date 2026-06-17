@@ -1167,6 +1167,7 @@ def competitor_route_upload(request, competitor_id):
         competitor.device = device
         competitor.start_time = epoch_to_datetime(start_time)
         competitor.save()
+        competitor.event.invalidate_cache()
 
     if len(loc_array) == 0:
         raise ValidationError("No locations within event's schedule were detected")

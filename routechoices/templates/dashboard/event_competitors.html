@@ -56,7 +56,7 @@
                                 </tr>
                             </thead>
                         {% endif %}
-                        <tr class="formset_row">
+                        <tr class="formset_row" data-competitor-id="{{ form.instance.aid }}">
                             {% for field in form.visible_fields %}
                                 <td>
                                     {# Include the hidden fields in the form #}
@@ -121,6 +121,7 @@
         <script src="{% static 'vendor/tom-select-2.0.1/tom-select.custom.js' %}"></script>
         <script src="{% static 'vendor/tempus-dominus-6/tempus-dominus.js' %}"></script>
         <script src="{% static 'vendor/umbrella-3.3.3/umbrella.min.js' %}"></script>
+        <script src="{% static 'vendor/gpxparser-3.0.8/GPXParser.min.js' %}"></script>
         <script src="{% static 'vendor/papaparse-5.3.2/papaparse.min.js' %}"></script>
         <script src="{% static 'vendor/dayjs-1.11.7/dayjs.min.js' %}"></script>
         <script src="{% static 'vendor/reqwest-2.0.5/reqwest.min.js' %}"></script>
