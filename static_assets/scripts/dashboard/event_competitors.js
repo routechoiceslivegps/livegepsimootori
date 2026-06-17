@@ -203,12 +203,17 @@ function showLocalTime(el) {
 				'<button type="button"class="btn btn-info btn-sm mt-1"><i class="fa-solid fa-scissors"></i> Crop GPS</button>',
 			);
 			cropBtn.on("click", () => {
+				const defaultEndDateIso = local.eventEndDate;
+				const defaultEndDate = new Date(
+					`${defaultEndDateIso.substring(0, 10)}T${defaultEndDateIso.substring(11, 19)}Z`,
+				);
+				const defaultEndDatePrompt = defaultEndDate.toLocaleString("sv");
 				swal(
 					{
 						title: "Enter end time",
 						text: "This will archive the device and crop data until the given end date.",
 						type: "input",
-						inputValue: u("#id_end_date").val(),
+						inputValue: defaultEndDatePrompt,
 						showCancelButton: true,
 					},
 					(inputValue) => {
@@ -231,7 +236,6 @@ function showLocalTime(el) {
 								const newRouteLons = [];
 								for (const track of parser.tracks) {
 									for (const point of track.points) {
-										console.log(point.time, endDate);
 										if (point.time < endDate) {
 											newRouteTs.push(Math.round(+point.time / 1000));
 											newRouteLats.push(point.lat);
@@ -262,7 +266,12 @@ function showLocalTime(el) {
 										"X-CSRFToken": window.local.csrfToken,
 									},
 									success: () => {
-										window.location = location.href + "?d=" + +new Date();
+										const urlParams = new URLSearchParams(
+											window.location.search,
+										);
+										urlParams.set("d", +new Date());
+										window.location.search = urlParams.toString();
+										return;
 									},
 								});
 							},

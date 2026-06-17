@@ -768,7 +768,6 @@ function showLocalTime(el) {
 								const newRouteLons = [];
 								for (const track of parser.tracks) {
 									for (const point of track.points) {
-										console.log(point.time, endDate);
 										if (point.time < endDate) {
 											newRouteTs.push(Math.round(+point.time / 1000));
 											newRouteLats.push(point.lat);
@@ -799,7 +798,12 @@ function showLocalTime(el) {
 										"X-CSRFToken": window.local.csrfToken,
 									},
 									success: () => {
-										window.location = location.href + "?d=" + +new Date();
+										const urlParams = new URLSearchParams(
+											window.location.search,
+										);
+										urlParams.set("d", +new Date());
+										window.location.search = urlParams.toString();
+										return;
 									},
 								});
 							},

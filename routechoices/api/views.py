@@ -1104,12 +1104,16 @@ def competitor_route_upload(request, competitor_id):
         return Response(res)
     event = competitor.event
 
-    is_event_admin_or_user = request.user.is_authenticated and (
-        event.club.admins.filter(id=request.user.id).exists()
-        or request.user == competitor.user
+    is_event_admin = (
+        request.user.is_authenticated
+        and event.club.admins.filter(id=request.user.id).exists()
     )
 
-    if not event.allow_route_upload:
+    is_event_admin_or_user = request.user.is_authenticated and (
+        is_event_admin or request.user == competitor.user
+    )
+
+    if not event.allow_route_upload and not is_event_admin:
         raise PermissionDenied()
 
     if not is_event_admin_or_user and competitor.locations:
