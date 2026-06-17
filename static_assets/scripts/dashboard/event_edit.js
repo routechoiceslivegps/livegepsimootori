@@ -776,6 +776,14 @@ function showLocalTime(el) {
 										}
 									}
 								}
+								if (newRouteTs.length === 0) {
+									swal({
+										text: "Cropped route must contain at least one point!",
+										title: "error",
+										type: "error",
+									});
+									return;
+								}
 								reqwest({
 									url: `/competitors/${compId}/route`,
 									method: "post",
