@@ -274,8 +274,8 @@ function RCEvent(infoURL, clockURL, locale) {
 			}
 			if (!competitor.color) {
 				competitor.color = getColor(i);
-				competitor.isColorDark = getContrastYIQ(competitor.color);
-			} else if (!competitor.isColorDark) {
+			}
+			if (!Oject.hasOwn(competitor, "isColorDark")) {
 				competitor.isColorDark = getContrastYIQ(competitor.color);
 			}
 			const div = u("<div/>");
