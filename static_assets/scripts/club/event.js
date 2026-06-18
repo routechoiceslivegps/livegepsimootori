@@ -272,8 +272,10 @@ function RCEvent(infoURL, clockURL, locale) {
 			if (typeof competitor.isShown === "undefined") {
 				competitor.isShown = true;
 			}
-			if (!competitor.isColorDark) {
+			if (!competitor.color) {
 				competitor.color = getColor(i);
+				competitor.isColorDark = getContrastYIQ(competitor.color);
+			} else if (!competitor.isColorDark) {
 				competitor.isColorDark = getContrastYIQ(competitor.color);
 			}
 			const div = u("<div/>");
@@ -3419,7 +3421,7 @@ function RCEvent(infoURL, clockURL, locale) {
 				if (d !== 0) {
 					const cluster = clusters[d] || {};
 					const clusterCenter = clustersCenter[d - 1];
-					if (!cluster.isColorDark) {
+					if (!cluster.color) {
 						cluster.color = getColor(d - 1);
 						cluster.isColorDark = getContrastYIQ(cluster.color);
 					}
