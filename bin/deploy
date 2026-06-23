@@ -28,10 +28,10 @@ echo -e "\e[96mCollecting static files\e[0m"
 uv run manage.py collectstatic --noinput
 echo -e "\e[96mCompressing assets\e[0m"
 uv run manage.py compress
-gzip -f --best --keep static/CACHE/js/*.js
-brotli -f --best --keep static/CACHE/js/*.js
-gzip -f --best --keep static/CACHE/css/*.css
-brotli -f --best --keep static/CACHE/css/*.css
+yes n | gzip --best --keep static/CACHE/js/*.js
+yes n | brotli --best --keep static/CACHE/js/*.js
+yes n | gzip --best --keep static/CACHE/css/*.css
+yes n | brotli --best --keep static/CACHE/css/*.css
 uv run manage.py migrate --noinput
 echo -e "\e[96mRestarting services\e[0m"
 ./bin/restart-all
