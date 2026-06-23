@@ -28,16 +28,20 @@ echo -e "\e[96mCollecting static files\e[0m"
 uv run manage.py collectstatic --noinput
 echo -e "\e[96mCompressing assets\e[0m"
 uv run manage.py compress
-gzip --best --keep static/CACHE/js/*.js </dev/null
-gzip --best --keep static/CACHE/css/*.css </dev/null
 find static/CACHE/js/ -type f -name "*.js" -print0 | while IFS= read -r -d '' file; do
   filename=$(basename "$file")
+  if [ ! -f "static/CACHE/js/$filename.gz" ]; then
+    gzip --best --keep static/CACHE/js/$filename
+  fi
   if [ ! -f "static/CACHE/js/$filename.br" ]; then
     brotli --best --keep static/CACHE/js/$filename
   fi
 done
 find static/CACHE/css/ -type f -name "*.css" -print0 | while IFS= read -r -d '' file; do
   filename=$(basename "$file")
+  if [ ! -f "static/CACHE/css/$filename.gz" ]; then
+    gzip --best --keep static/CACHE/css/$filename
+  fi
   if [ ! -f "static/CACHE/css/$filename.br" ]; then
     brotli --best --keep static/CACHE/css/$filename
   fi
