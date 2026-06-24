@@ -55,7 +55,7 @@ services:
     volumes:
       - ../static:/static:ro
       - ../letsencrypt/:/etc/nginx/ssl:ro
-      - ../nginx/routechoices.conf:/etc/nginx/conf.d/routechoices.conf:ro
+      - ../nginx/routechoices.conf:/etc/nginx/http.d/routechoices.conf:ro
     links:
       - minio
       - django
