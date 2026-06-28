@@ -1775,12 +1775,13 @@ function RCEvent(infoURL, clockURL, locale) {
 	}
 
 	function onLayerChange(event) {
-		// TODO: Set Zoom with event.layer.options.maxNativeZoom
+		/*
 		const center = map.getCenter();
 		map.setBearing(event.layer.data.rotation, { animate: false });
 		map.setView(center, Math.min(17, event.layer?.data?.max_zoom), {
 			animate: false,
 		});
+		*/
 		rasterMapLayer = event.layer;
 		rasterMapLayer.setOpacity(mapOpacity);
 	}
