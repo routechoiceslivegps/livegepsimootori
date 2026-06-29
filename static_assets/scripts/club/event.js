@@ -1320,7 +1320,7 @@ function RCEvent(infoURL, clockURL, locale) {
 					((customOffset
 						? competitor.custom_offset
 						: +new Date(competitor.start_time)) || getCompetitionStartDate());
-				res = res < dur ? dur : res;
+				res = res > dur ? res : dur;
 			}
 		}
 		return res;
@@ -1643,14 +1643,12 @@ function RCEvent(infoURL, clockURL, locale) {
 				if (isCustomStart) {
 					maxCTime =
 						getCompetitorsMinCustomOffset() + getCompetitorsMaxDuration(true);
-				} else {
-					maxCTime = getCompetitionStartDate() + getCompetitorsMaxDuration();
 				}
 				if (isRealTime) {
-					maxCTime =
-						getCompetitionStartDate() +
-						(Math.min(+clock.now(), getCompetitionEndDate()) -
-							getCompetitionStartDate());
+					maxCTime = Math.min(+clock.now(), getCompetitionEndDate());
+				}
+				if (isLiveEvent) {
+					maxCTime = +clock.now();
 				}
 				currentTime = Math.min(+clock.now(), currentTime, maxCTime);
 				const liveTime =
