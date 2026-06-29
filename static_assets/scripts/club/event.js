@@ -1654,7 +1654,8 @@ function RCEvent(infoURL, clockURL, locale) {
 
 				if (
 					getCompetitionStartDate(true) !== null &&
-					currentTime > +clock.now()
+					isLiveEvent &&
+					currentTime === maxCTime
 				) {
 					onSwitchToLive();
 					return;
