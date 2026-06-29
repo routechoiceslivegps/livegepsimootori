@@ -1651,10 +1651,11 @@ function RCEvent(infoURL, clockURL, locale) {
 					maxCTime = +clock.now();
 				}
 				currentTime = Math.min(+clock.now(), currentTime, maxCTime);
-				const liveTime =
-					+clock.now() - (fetchPositionInterval + 5 + sendInterval + 5) * 1e3;
 
-				if (getCompetitionStartDate(true) !== null && currentTime > liveTime) {
+				if (
+					getCompetitionStartDate(true) !== null &&
+					currentTime > +clock.now()
+				) {
 					onSwitchToLive();
 					return;
 				}
