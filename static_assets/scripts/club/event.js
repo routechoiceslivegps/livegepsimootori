@@ -1647,11 +1647,7 @@ function RCEvent(infoURL, clockURL, locale) {
 				if (isRealTime) {
 					maxCTime = Math.min(+clock.now(), getCompetitionEndDate());
 				}
-				if (isLiveEvent) {
-					maxCTime = +clock.now();
-				}
-				currentTime = Math.min(+clock.now(), currentTime, maxCTime);
-
+				currentTime = Math.min(currentTime, maxCTime);
 				if (
 					getCompetitionStartDate(true) !== null &&
 					isLiveEvent &&
