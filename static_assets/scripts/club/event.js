@@ -1096,7 +1096,7 @@ function RCEvent(infoURL, clockURL, locale) {
 						if (e.target.checked) {
 							onPressResetMassStart();
 						} else {
-							currentTime = getCompetitionStartDate();
+							prevShownTime = getCompetitionStartDate();
 							isRealTime = true;
 							computeSplitTimes();
 							if (resetMassStartContextMenuItem) {
