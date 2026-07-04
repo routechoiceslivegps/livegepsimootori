@@ -1097,6 +1097,7 @@ function RCEvent(infoURL, clockURL, locale) {
 							onPressResetMassStart();
 						} else {
 							isRealTime = true;
+							currentTime = getCompetitionStartDate();
 							computeSplitTimes();
 							if (resetMassStartContextMenuItem) {
 								map.contextmenu.removeItem(resetMassStartContextMenuItem);
