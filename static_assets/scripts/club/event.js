@@ -1093,11 +1093,23 @@ function RCEvent(infoURL, clockURL, locale) {
 
 					u("#synced-starts-check").on("change", (e) => {
 						e.preventDefault();
+						let perc;
+						if (isRealTime) {
+							perc =
+								(currentTime - getCompetitionStartDate()) /
+								(Math.min(clock.now(), getCompetitionEndDate()) -
+									getCompetitionStartDate());
+						} else {
+						}
+
 						if (e.target.checked) {
 							onPressResetMassStart();
 						} else {
-							prevShownTime = getCompetitionStartDate();
 							isRealTime = true;
+							onMoveProgressBar(
+								(currentTime - getCompetitionStartDate()) /
+									getCompetitorsMaxDuration(),
+							);
 							computeSplitTimes();
 							if (resetMassStartContextMenuItem) {
 								map.contextmenu.removeItem(resetMassStartContextMenuItem);
