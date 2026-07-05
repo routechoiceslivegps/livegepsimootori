@@ -1093,15 +1093,21 @@ function RCEvent(infoURL, clockURL, locale) {
 
 					u("#synced-starts-check").on("change", (e) => {
 						e.preventDefault();
-
 						if (e.target.checked) {
-							onPressResetMassStart();
+							onPressResetMassStart(false, true);
 						} else {
+							let perc;
+							if (isCustomStart) {
+								perc =
+									(currentTime - getCompetitorsMinCustomOffset()) /
+									getCompetitorsMaxDuration(true);
+							} else {
+								perc =
+									(currentTime - getCompetitionStartDate()) /
+									getCompetitorsMaxDuration();
+							}
 							isRealTime = true;
-							onMoveProgressBar(
-								(currentTime - getCompetitionStartDate()) /
-									getCompetitorsMaxDuration(),
-							);
+							onMoveProgressBar(perc);
 							computeSplitTimes();
 							if (resetMassStartContextMenuItem) {
 								map.contextmenu.removeItem(resetMassStartContextMenuItem);
@@ -2274,11 +2280,19 @@ function RCEvent(infoURL, clockURL, locale) {
 		}
 	}
 
-	function onPressResetMassStart(customStart = false) {
+	function onPressResetMassStart(customStart = false, keepProgress = false) {
 		isRealTime = false;
 		isCustomStart = customStart;
-		currentTime = getCompetitionStartDate();
-		prevShownTime = currentTime;
+		if (!keepProgress) {
+			prevShownTime = getCompetitionStartDate();
+			currentTime = prevShownTime;
+		} else {
+			const perc =
+				(currentTime - getCompetitionStartDate()) /
+				(Math.min(clock.now(), getCompetitionEndDate()) -
+					getCompetitionStartDate());
+			onMoveProgressBar(perc);
+		}
 		if (!customStart) {
 			if (resetMassStartContextMenuItem) {
 				map.contextmenu.removeItem(resetMassStartContextMenuItem);
