@@ -49,13 +49,15 @@ const onPDF = (ev, filenameRaw) => {
 						const container = new DataTransfer();
 						container.items.add(file);
 						if (container.files[0].size > 2 * 1e7) {
-							swal({
-								title: "Error!",
-								text: "File is too big!",
-								type: "error",
-								confirmButtonText: "OK",
-							});
-							u("#id_image").nodes[0].value = "";
+							const imgSubmitBtn = u("#submit-btn");
+							const imgFileField = u("#id_image");
+							imgFileField.removeClass("is-valid").addClass("is-invalid");
+							imgFileField.parent().find(".valid-feedback").remove();
+							imgFileField.parent().find(".invalid-feedback").remove();
+							imgFileField.after(
+								'<div class="invalid-feedback">File is too big, maximum size: 20MB</div>',
+							);
+							imgSubmitBtn.addClass("disabled");
 							return;
 						}
 						u("#id_image").nodes[0].files = container.files;
@@ -654,22 +656,27 @@ function enableBtnToPreview() {
 
 	u("#id_calibration_string_raw").closest("div").addClass("d-none");
 
-	u("#id_image").attr("accept", "image/*,application/pdf");
-
-	u("#id_image").on("change", function () {
+	const imgSubmitBtn = u("#submit-btn");
+	const imgFileField = u("#id_image");
+	imgFileField.attr("accept", "image/*,application/pdf");
+	imgFileField.on("change", function () {
 		if (
 			this.files.length > 0 &&
 			this.files[0].size > 2 * 1e7 &&
 			this.files[0].type !== "application/pdf"
 		) {
-			swal({
-				title: "Error!",
-				text: "File is too big!",
-				type: "error",
-				confirmButtonText: "OK",
-			});
-			this.value = "";
+			imgFileField.removeClass("is-valid").addClass("is-invalid");
+			imgFileField.parent().find(".valid-feedback").remove();
+			imgFileField.parent().find(".invalid-feedback").remove();
+			imgFileField.after(
+				'<div class="invalid-feedback">File is too big, maximum size: 20MB</div>',
+			);
+			imgSubmitBtn.addClass("disabled");
+			return;
 		}
+		imgFileField.removeClass("is-invalid");
+		imgFileField.parent().find(".valid-feedback").remove();
+		imgFileField.parent().find(".invalid-feedback").remove();
 		if (this.files.length > 0 && this.value) {
 			if (!isNameEdited) {
 				u("#id_name").val(this.files[0].name.replace(/\.[^/.]+$/, ""));
@@ -683,6 +690,22 @@ function enableBtnToPreview() {
 				};
 				pdfFileReader.readAsArrayBuffer(pdfFile);
 				return;
+			} else {
+				const img = new Image();
+				img.onload = function () {
+					URL.revokeObjectURL(img.src);
+					if (this.width * this.height > 89_478_485) {
+						imgFileField.removeClass("is-valid").addClass("is-invalid");
+						imgFileField.parent().find(".valid-feedback").remove();
+						imgFileField.parent().find(".invalid-feedback").remove();
+						imgFileField.after(
+							'<div class="invalid-feedback">File is too large, maximum size: 89,478,485 pixels</div>',
+						);
+						imgSubmitBtn.addClass("disabled");
+						return;
+					}
+				};
+				img.src = URL.createObjectURL(this.files[0]);
 			}
 			const bounds = extractCornersCoordsFromFilename(this.files[0].name);
 			if (bounds && !u("#id_calibration_string_raw").val()) {
@@ -694,7 +717,7 @@ function enableBtnToPreview() {
 			if (!u("#main-form").hasClass("edit-form")) {
 				u("#calibration_help button").addClass("disabled");
 				u("#calibration_preview button").addClass("disabled");
-				u("#submit-btn").addClass("disabled");
+				imgSubmitBtn.addClass("disabled");
 			}
 		}
 	});
