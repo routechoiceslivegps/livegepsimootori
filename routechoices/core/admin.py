@@ -677,9 +677,11 @@ class ClubAdmin(admin.ModelAdmin):
 
     def links(self, obj):
         return format_html(
-            '<a href="/admin/core/map/?club__id__exact={}">Maps</a> - <a href="/admin/core/event/?club__id__exact={}">Events</a>',
+            '<a href="/admin/core/map/?club__id__exact={}">Maps ({})</a> - <a href="/admin/core/event/?club__id__exact={}">Events ({})</a>',
             obj.id,
+            obj.map_count,
             obj.id,
+            obj.event_count,
         )
 
     event_count.admin_order_field = "event_count"
