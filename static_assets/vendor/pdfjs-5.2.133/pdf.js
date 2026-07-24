@@ -22,6 +22,7 @@
 
 
 ;// ./src/shared/util.js
+Promise.withResolvers||(Promise.withResolvers=function(){var r,j,p=new this(function(a,b){r=a,j=b});return{resolve:r,reject:j,promise:p}});
 const isNodeJS = typeof process === "object" && process + "" === "[object process]" && !process.versions.nw && !(process.versions.electron && process.type && process.type !== "browser");
 const FONT_IDENTITY_MATRIX = [0.001, 0, 0, 0.001, 0, 0];
 const LINE_FACTOR = 1.35;
