@@ -84,3 +84,8 @@ Label the data
 .fa-battery-full {
 	color: green;
 }
+
+.gpsseuranta-set-btn input:checked {
+	background-color: rgba(var(--bs-success-rgb)) !important;
+	border-color: rgba(var(--bs-success-rgb)) !important;
+}
