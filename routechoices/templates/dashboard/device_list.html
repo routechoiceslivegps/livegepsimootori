@@ -67,7 +67,7 @@
                                     <div>
                                         <div class="btn dashboard-link d-inline-block border rounded p-2 gpsseuranta-set-btn me-1" data-dev-id="{{ device.aid }}">
                                             <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" role="switch" id="gpsseuranta-{{ device.aid }}" {% if device.should_relay_to_gpsseuranta %}checked{% endif %}>
+                                            <input class="form-check-input" type="checkbox" role="switch" id="gpsseuranta-{{ device.aid }}" {% if device.should_relay_to_gpsseuranta %}checked{% endif %}/>
                                             <label class="form-check-label" for="gpsseuranta-{{ device.aid }}"><i>GPSSeuranta.net</i> <span>Proxy</span>
                                             <div class="{% if not device.should_relay_to_gpsseuranta %}d-none {% endif %}until-date">
                                                 <small class="text-muted">(Until <span class="date-utc text-nowrap" data-date="{% if device.gpsseuranta_relay_until %}{{ device.gpsseuranta_relay_until|date:'c' }}{% else %}2000-01-01T00:00:00Z{% endif %}"></span>)</small>

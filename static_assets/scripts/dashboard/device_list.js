@@ -42,12 +42,12 @@
 		navigator.clipboard.writeText($el.data("value"));
 	});
 
-	u(".gpsseuranta-set-btn").on("click", function (ev) {
+	u(".gpsseuranta-set-btn").on("click", function (e) {
+		e.preventDefault();
 		const el = u(this).closest(".gpsseuranta-set-btn");
 		const devId = el.attr("data-dev-id");
-		const activate = u(this).find("input.form-check-input").first().checked;
-		console.log(activate);
-		const property = `${activate ? "" : "de"}activate-gpsseuranta-relay`;
+		const isActive = !el.find(".until-date").hasClass("d-none");
+		const property = `${isActive ? "de" : ""}activate-gpsseuranta-relay`;
 		reqwest({
 			url: `/clubs/${window.local.clubSlug}/devices/${devId}/`,
 			data: { [property]: 1 },
@@ -59,14 +59,16 @@
 			method: "patch",
 			type: "json",
 			success: (data) => {
-				const gpsSeurantaUntil = new Date(data.gpsseuranta_until).toISOString();
-				const $el = u(el).find(".date-utc").attr("data-date", gpsSeurantaUntil);
-				const until = dayjs($el.attr("data-date"))
+				const activeUntilDate = new Date(data.gpsseuranta_until).toISOString();
+				const activeUntilHuman = dayjs(activeUntilDate)
 					.local()
 					.format("YYYY-MM-DD HH:mm:ss");
-				$el.text(until);
-				const dateDiv = u(this).find(".until-date");
-				if (until <= dayjs().local().format("YYYY-MM-DD HH:mm:ss")) {
+				el.find(".date-utc")
+					.attr("data-date", activeUntilDate)
+					.text(activeUntilHuman);
+				el.find("input").first().checked = !isActive;
+				const dateDiv = el.find(".until-date");
+				if (isActive) {
 					dateDiv.addClass("d-none");
 				} else {
 					dateDiv.removeClass("d-none");
