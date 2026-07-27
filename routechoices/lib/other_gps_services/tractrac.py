@@ -91,7 +91,7 @@ class Tractrac(ThirdPartyTrackingSolution):
             else:
                 map_obj.is_main = map_data.get("is_default_loaded")
                 maps.append(map_obj)
-        sorted_maps = list(sorted(maps, key=lambda obj: (not obj.is_main, obj.name)))
+        sorted_maps = sorted(maps, key=lambda obj: (not obj.is_main, obj.name))
         return sorted_maps
 
     def get_or_create_event_competitors(self, event):

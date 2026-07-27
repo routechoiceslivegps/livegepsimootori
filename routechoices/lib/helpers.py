@@ -316,7 +316,7 @@ def derive_affine_transform(ref_a_points, ref_b_points):
 
 
 def wgs84_bound_from_3_ref_points(coords, image_points, image_size):
-    coords_xy_meters = list((val.xy_meters for val in coords))
+    coords_xy_meters = list(val.xy_meters for val in coords)
     image_xy_to_meters = derive_affine_transform(coords_xy_meters, image_points)
 
     def image_xy_to_wgs84(xy):
@@ -418,7 +418,7 @@ def wgs84_bound_from_latlon_box(n, e, s, w, rot):
 
 def calibration_string_from_wgs84_bound(bound):
     return ",".join(
-        (f"{corner.latitude:.5f},{corner.longitude:.5f}" for corner in bound)
+        f"{corner.latitude:.5f},{corner.longitude:.5f}" for corner in bound
     )
 
 
@@ -497,7 +497,7 @@ def is_valid_pil_image(data):
         with Image.open(data) as img:
             img.verify()
             return True
-    except IOError, SyntaxError:
+    except (OSError, SyntaxError):
         return False
 
 
@@ -705,7 +705,6 @@ def retry_with_backoff(func, *args, **kwargs):
             result = func(*args, **kwargs)
         except Exception as e:
             last_exception = e
-            pass
         else:
             return result
         time.sleep(2**attempt)

@@ -64,8 +64,7 @@ def import_single_event_from_loggator(event_id, club=None):
 @background(schedule=0)
 def import_single_event_from_tractrac(event_id, club=None):
     prefix = "https://live.tractrac.com/viewer/index.html?target="
-    if event_id.startswith(prefix):
-        event_id = event_id[len(prefix) :]
+    event_id = event_id.removeprefix(prefix)
     solution = Tractrac()
     if club:
         solution.club = Club.objects.get(slug=club)
@@ -76,8 +75,7 @@ def import_single_event_from_tractrac(event_id, club=None):
 @background(schedule=0)
 def import_single_event_from_otracker(event_id, club=None):
     prefix = "https://otracker.lt/events/"
-    if event_id.startswith(prefix):
-        event_id = event_id[len(prefix) :]
+    event_id = event_id.removeprefix(prefix)
     solution = OTracker()
     if club:
         solution.club = Club.objects.get(slug=club)
@@ -88,8 +86,7 @@ def import_single_event_from_otracker(event_id, club=None):
 @background(schedule=0)
 def import_single_event_from_sportrec(event_id, club=None):
     prefix = "https://sportrec.eu/gps/"
-    if event_id.startswith(prefix):
-        event_id = event_id[len(prefix) :]
+    event_id = event_id.removeprefix(prefix)
     solution = SportRec()
     if club:
         solution.club = Club.objects.get(slug=club)

@@ -140,7 +140,7 @@ class Command(BaseCommand):
                     shell=True,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
-                    universal_newlines=True,
+                    text=True,
                     check=False,
                 )
             sys.exit(0)
@@ -234,7 +234,7 @@ class Command(BaseCommand):
                     shell=True,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
-                    universal_newlines=True,
+                    text=True,
                     check=False,
                 )
             sys.exit(0)

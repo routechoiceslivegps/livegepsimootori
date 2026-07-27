@@ -31,7 +31,7 @@ class QueclinkConnection(GenericConnection):
                     imei = parts[2]
             except Exception as e:
                 print(
-                    f"Queclink - Error parsing initial message ({str(e)})", flush=True
+                    f"Queclink - Error parsing initial message ({e!s})", flush=True
                 )
                 self.stream.close()
                 return
@@ -106,7 +106,7 @@ class QueclinkConnection(GenericConnection):
                     ).int_timestamp
                 except Exception as e:
                     print(
-                        f"Queclink - {self.imei} Error parsing position ({str(e)})",
+                        f"Queclink - {self.imei} Error parsing position ({e!s})",
                         flush=True,
                     )
                     continue
@@ -143,7 +143,7 @@ class QueclinkConnection(GenericConnection):
                 )
             except Exception as e:
                 print(
-                    f"Queclink - {self.imei} Error parsing battery level ({str(e)})",
+                    f"Queclink - {self.imei} Error parsing battery level ({e!s})",
                     flush=True,
                 )
             if batt is not None and 0 < batt < 100:

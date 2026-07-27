@@ -79,7 +79,7 @@ def serve_from_s3(
     url = url[len(settings.AWS_S3_ENDPOINT_URL) :]
 
     response = HttpResponse("", headers=headers, content_type=mime)
-    response["X-Accel-Redirect"] = urllib.parse.quote(f"/s3{url}".encode("utf-8"))
+    response["X-Accel-Redirect"] = urllib.parse.quote(f"/s3{url}".encode())
     response["X-Accel-Buffering"] = "no"
     response["Content-Disposition"] = set_content_disposition(filename, dl=dl)
     return response

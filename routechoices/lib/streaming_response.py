@@ -7,7 +7,7 @@ import magic
 from django.http import StreamingHttpResponse
 from rest_framework import status
 
-range_re = re.compile(r"bytes\s*=\s*(\d+)\s*-\s*(\d*)", re.I)
+range_re = re.compile(r"bytes\s*=\s*(\d+)\s*-\s*(\d*)", re.IGNORECASE)
 
 
 class RangeFileWrapper:

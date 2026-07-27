@@ -308,7 +308,7 @@ class ClubDomainForm(ModelForm):
 
 class DeviceForm(Form):
     device = ModelChoiceField(
-        label="Tracker ID",  #
+        label="Tracker ID",
         queryset=Device.objects.all(),
         to_field_name="aid",
     )
@@ -945,7 +945,7 @@ class UploadKmzForm(Form):
                 # WE DO NOT USE THE BOUND PROPERTY SETTER AS IT IS LOSSY
                 # IT WOULD CREATE WHITE STRIPES ON OUTPUT MAP
                 new_map.calibration_string_raw = ",".join(
-                    (f"{corner.latitude},{corner.longitude}" for corner in bound)
+                    f"{corner.latitude},{corner.longitude}" for corner in bound
                 )
                 new_map.image.save("file", image_file, save=False)
                 new_maps.append(new_map)

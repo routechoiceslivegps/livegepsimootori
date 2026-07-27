@@ -223,7 +223,6 @@ class Xexun2Connection(GenericConnection):
                                 offset += dlen2
                 except Exception as e:
                     print(f"Xexun2 - Error parsing partial data ({e})", flush=True)
-                    pass
                 current_index += length
 
             if locs:

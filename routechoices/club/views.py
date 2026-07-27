@@ -44,7 +44,7 @@ def club_favicon(request, icon_name):
         "icon-192.png": {"size": 192, "format": "PNG", "mime": "image/png"},
         "icon-512.png": {"size": 512, "format": "PNG", "mime": "image/png"},
     }
-    if icon_name not in icon_infos.keys():
+    if icon_name not in icon_infos:
         raise Http404()
     icon_info = icon_infos.get(icon_name)
 
