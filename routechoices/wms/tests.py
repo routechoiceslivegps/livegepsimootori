@@ -46,19 +46,19 @@ class MapApiTestCase(EssentialApiBase):
         query_junk = "styles=&transparent=false&version=1.1.1&"
         def_query = f"{query_junk}{query_espg}{query_size}{query_bbox}"
         res = client.get(
-            (
+            
                 f"{url}?service=WMS&request=GetMap&layers={event.aid}&"
                 f"format=image%2Fjpeg&{def_query}"
-            )
+            
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
         # requesting 2nd non existing map of event
         res = client.get(
-            (
+            
                 f"{url}?service=WMS&request=GetMap&layers={event.aid}%2F2&"
                 f"format=image%2Fjpeg&{def_query}"
-            )
+            
         )
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -82,10 +82,10 @@ class MapApiTestCase(EssentialApiBase):
 
         # requesting 2nd existing map of event
         res = client.get(
-            (
+            
                 f"{url}?service=WMS&request=GetMap&layers={event.aid}%2F2&"
                 f"format=image%2Fjpeg&{def_query}"
-            )
+            
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res["content-type"], "image/jpeg")
@@ -103,59 +103,59 @@ class MapApiTestCase(EssentialApiBase):
 
         # requesting 3rd non existing map of event
         res = client.get(
-            (
+            
                 f"{url}?service=WMS&request=GetMap&layers={event.aid}%2F3&"
                 f"format=image%2Fjpeg&{def_query}"
-            )
+            
         )
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
         # serve png if asked
         res = client.get(
-            (
+            
                 f"{url}?service=WMS&request=GetMap&layers={event.aid}&"
                 f"format=image%2Fpng&{def_query}"
-            )
+            
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res["content-type"], "image/png")
 
         # serve webp if asked
         res = client.get(
-            (
+            
                 f"{url}?service=WMS&request=GetMap&layers={event.aid}&"
                 f"format=image%2Fwebp&{def_query}"
-            )
+            
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res["content-type"], "image/webp")
 
         # serve avif if asked
         res = client.get(
-            (
+            
                 f"{url}?service=WMS&request=GetMap&layers={event.aid}&"
                 f"format=image%2Favif&{def_query}"
-            )
+            
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res["content-type"], "image/avif")
 
         # return error if gif is asked
         res = client.get(
-            (
+            
                 f"{url}?service=WMS&request=GetMap&layers={event.aid}&"
                 f"format=image%2Fgif&{def_query}"
-            )
+            
         )
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
         # return ok if srs is CRS:84
         def_query = f"{query_junk}srs=CRS%3A84&{query_size}bbox=61.40,24.18,61.5,24.25"
         res = client.get(
-            (
+            
                 f"{url}?service=WMS&request=GetMap&layers={event.aid}&"
                 f"format=image%2Fjpeg&{def_query}"
-            )
+            
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
@@ -164,10 +164,10 @@ class MapApiTestCase(EssentialApiBase):
             f"{query_junk}srs=EPSG%3A4326&{query_size}bbox=24.18,61.40,24.25,61.5"
         )
         res = client.get(
-            (
+            
                 f"{url}?service=WMS&request=GetMap&layers={event.aid}&"
                 f"format=image%2Fjpeg&{def_query}"
-            )
+            
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
@@ -176,20 +176,20 @@ class MapApiTestCase(EssentialApiBase):
             f"{query_junk}srs=EPSG%3A4327&{query_size}bbox=24.18,61.40,24.25,61.5"
         )
         res = client.get(
-            (
+            
                 f"{url}?service=WMS&request=GetMap&layers={event.aid}&"
                 f"format=image%2Fjpeg&{def_query}"
-            )
+            
         )
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
         # return 400 if bound is invalid
         def_query = f"{query_junk}{query_espg}{query_size}{query_bbox}invalid"
         res = client.get(
-            (
+            
                 f"{url}?service=WMS&request=GetMap&layers={event.aid}&"
                 f"format=image%2Fjpeg&{def_query}"
-            )
+            
         )
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 

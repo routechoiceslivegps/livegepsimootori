@@ -666,12 +666,12 @@ class ClubAdmin(admin.ModelAdmin):
     def admin_list(self, obj):
         return mark_safe(
             ", ".join(
-                (
+                
                     format_html(
                         '<a href="/admin/auth/user/{}/change">{}</a>', a.id, a.username
                     )
                     for a in obj.admins.all()
-                )
+                
             )
         )
 
@@ -1253,12 +1253,12 @@ class MyUserAdmin(HijackUserAdminMixin, UserAdmin):
     def clubs(self, obj):
         return mark_safe(
             ", ".join(
-                (
+                
                     format_html(
                         '<a href="/admin/core/club/{}/change">{}</a>', c.id, c.name
                     )
                     for c in obj.club_set.all()
-                )
+                
             )
         )
 

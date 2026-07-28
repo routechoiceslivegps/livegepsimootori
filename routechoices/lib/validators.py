@@ -10,7 +10,7 @@ from django.core.validators import (
 )
 from django.utils.translation import gettext_lazy as _
 
-import routechoices.lib.luhn as luhn
+from routechoices.lib import luhn
 
 FLOAT_RE = re.compile(r"^(\-?[0-9]+(\.[0-9]+)?)$")
 

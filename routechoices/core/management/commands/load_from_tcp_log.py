@@ -68,7 +68,7 @@ def process_file(file_path):
                                 parts[13 + i * len_points], "YYYYMMDDHHmmss"
                             ).int_timestamp
                         except Exception as e:
-                            print(f"Error parsing position: {str(e)}", flush=True)
+                            print(f"Error parsing position: {e!s}", flush=True)
                             continue
                         else:
                             new_locs[imei].append((tim, lat, lon))

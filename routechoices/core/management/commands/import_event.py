@@ -161,7 +161,7 @@ class Command(BaseCommand):
                         event_id, club=options["club"]
                     )
             except EventImportError as e:
-                self.stderr.write(f"Could not import event {event_id}: {str(e)}")
+                self.stderr.write(f"Could not import event {event_id}: {e!s}")
                 continue
 
     def tractrac(self, *args, **options):

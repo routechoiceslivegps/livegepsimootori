@@ -3,7 +3,6 @@
 import datetime
 import re
 import uuid
-from datetime import timezone
 
 import django.core.validators
 import django.db.migrations.operations.special
@@ -633,7 +632,7 @@ class Migration(migrations.Migration):
             name="end_date",
             field=models.DateTimeField(
                 default=datetime.datetime(
-                    2099, 12, 31, 23, 59, 59, 999, tzinfo=timezone.utc
+                    2099, 12, 31, 23, 59, 59, 999, tzinfo=datetime.UTC
                 ),
                 verbose_name="End Date (UTC) (*)",
             ),

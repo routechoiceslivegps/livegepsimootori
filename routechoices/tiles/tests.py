@@ -41,16 +41,16 @@ class MapApiTestCase(EssentialApiBase):
             map=raster_map,
         )
         res = client.get(
-            (f"{url}?z=17&x=74352&y=36993&layers={event.aid}&" f"format=image%2Fjpeg")
+            f"{url}?z=17&x=74352&y=36993&layers={event.aid}&" f"format=image%2Fjpeg"
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
         # requesting 2nd non existing map of event
         res = client.get(
-            (
+            
                 f"{url}?z=17&x=74352&y=36993&layers={event.aid}%2F2&"
                 f"format=image%2Fjpeg"
-            )
+            
         )
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -74,10 +74,10 @@ class MapApiTestCase(EssentialApiBase):
 
         # requesting 2nd existing map of event
         res = client.get(
-            (
+            
                 f"{url}?z=17&x=74352&y=36993&layers={event.aid}%2F2&"
                 f"format=image%2Fjpeg"
-            )
+            
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res["content-type"], "image/jpeg")
@@ -92,56 +92,56 @@ class MapApiTestCase(EssentialApiBase):
 
         # requesting 3rd non existing map of event
         res = client.get(
-            (
+            
                 f"{url}?z=17&x=74352&y=36993&layers={event.aid}%2F3&"
                 f"format=image%2Fjpeg"
-            )
+            
         )
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
         # serve png if asked
         res = client.get(
-            (f"{url}?z=17&x=74352&y=36993&layers={event.aid}&format=image%2Fpng")
+            f"{url}?z=17&x=74352&y=36993&layers={event.aid}&format=image%2Fpng"
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res["content-type"], "image/png")
 
         # serve png if asked apng
         res = client.get(
-            (f"{url}?z=17&x=74352&y=36993&layers={event.aid}&format=image%2Fapng")
+            f"{url}?z=17&x=74352&y=36993&layers={event.aid}&format=image%2Fapng"
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res["content-type"], "image/png")
 
         # serve webp if asked
         res = client.get(
-            (f"{url}?z=17&x=74352&y=36993&layers={event.aid}&format=image%2Fwebp")
+            f"{url}?z=17&x=74352&y=36993&layers={event.aid}&format=image%2Fwebp"
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res["content-type"], "image/webp")
 
         # serve avif if asked
         res = client.get(
-            (f"{url}?z=17&x=74352&y=36993&layers={event.aid}&format=image%2Favif")
+            f"{url}?z=17&x=74352&y=36993&layers={event.aid}&format=image%2Favif"
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res["content-type"], "image/avif")
 
         # return error if invalid tiles is asked
-        res = client.get((f"{url}?z=17&x=hello&y=36993&layers={event.aid}"))
+        res = client.get(f"{url}?z=17&x=hello&y=36993&layers={event.aid}")
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
         # return error if invalid layer
-        res = client.get((f"{url}?z=17&x=74352&y=36993&layers={event.aid}/0"))
+        res = client.get(f"{url}?z=17&x=74352&y=36993&layers={event.aid}/0")
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
         # return error if param is missing
-        res = client.get((f"{url}?z=17&y=36993&layers={event.aid}"))
+        res = client.get(f"{url}?z=17&y=36993&layers={event.aid}")
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
         # return error if mime is not supported
         res = client.get(
-            (f"{url}?z=17&x=74352&y=36993&layers={event.aid}&format=image%2Fpdf")
+            f"{url}?z=17&x=74352&y=36993&layers={event.aid}&format=image%2Fpdf"
         )
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 

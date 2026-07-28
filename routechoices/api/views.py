@@ -477,8 +477,7 @@ def event_list(request):
         else:
             events.filter(club__domain__iexact=domain)
         event_slug = url.path[1:]
-        if event_slug.endswith("/"):
-            event_slug = event_slug[:-1]
+        event_slug = event_slug.removesuffix("/")
         events = events.filter(slug__iexact=event_slug)
     output = []
     for event in events:
