@@ -30,9 +30,7 @@ class QueclinkConnection(GenericConnection):
                 ):
                     imei = parts[2]
             except Exception as e:
-                print(
-                    f"Queclink - Error parsing initial message ({e!s})", flush=True
-                )
+                print(f"Queclink - Error parsing initial message ({e!s})", flush=True)
                 self.stream.close()
                 return
 

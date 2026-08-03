@@ -2672,7 +2672,9 @@ class Device(models.Model, SomewhereOnEarth):
                 self.save()
             return
 
-        sorted_new_locations = sorted(new_locations, key=itemgetter(LOCATION_TIMESTAMP_INDEX))
+        sorted_new_locations = sorted(
+            new_locations, key=itemgetter(LOCATION_TIMESTAMP_INDEX)
+        )
         freshness_cutoff = None
         if self._last_location_datetime:
             freshness_cutoff = self._last_location_datetime.timestamp()
@@ -2724,7 +2726,9 @@ class Device(models.Model, SomewhereOnEarth):
                 existing_ts.add(ts)
             if cleaned_old_new_locs:
                 locations += cleaned_old_new_locs
-                sorted_locations = sorted(locations, key=itemgetter(LOCATION_TIMESTAMP_INDEX))
+                sorted_locations = sorted(
+                    locations, key=itemgetter(LOCATION_TIMESTAMP_INDEX)
+                )
                 self.locations_encoded = gps_data_codec.encode(sorted_locations)
         if fresh_new_locs:
             # Only fresher points, can append string
