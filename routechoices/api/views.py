@@ -1334,10 +1334,12 @@ def event_data_delta(request, event_id, previous_key):
     if prev_data:
         partial = True
     # Retrieve current state
-    req = request
+    req = HttpRequest()
     req.method = "GET"
     req.user = request.user
     req.session = request.session
+    req.META["SERVER_NAME"] = request.META["SERVER_NAME"]
+    req.META["SERVER_PORT"] = request.META["SERVER_PORT"]
     if tag:
         req.GET.update({"category": tag})
     current_resp = event_data(req, event_id)
