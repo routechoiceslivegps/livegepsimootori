@@ -29,7 +29,9 @@ LATLON_FMT3_RE = re.compile(r"(\d+)(\d\d)(\d{4})")
 
 def parse_h02_latlon(lat_raw, lon_raw, ns, ew):
     lat = None
-    if (match := LATLON_FMT1_RE.match(lat_raw)) or (match := LATLON_FMT2_RE.match(lat_raw)):
+    if (match := LATLON_FMT1_RE.match(lat_raw)) or (
+        match := LATLON_FMT2_RE.match(lat_raw)
+    ):
         lat_deg, lat_min = match.groups()
         lat_deg = int(lat_deg)
         lat_min = float(lat_min)
@@ -41,7 +43,9 @@ def parse_h02_latlon(lat_raw, lon_raw, ns, ew):
         lat = lat_deg + (lat_min / 60)
 
     lon = None
-    if (match := LATLON_FMT1_RE.match(lon_raw)) or (match := LATLON_FMT2_RE.match(lon_raw)):
+    if (match := LATLON_FMT1_RE.match(lon_raw)) or (
+        match := LATLON_FMT2_RE.match(lon_raw)
+    ):
         lon_deg, lon_min = match.groups()
         lon_deg = int(lon_deg)
         lon_min = float(lon_min)

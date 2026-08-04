@@ -417,9 +417,7 @@ def wgs84_bound_from_latlon_box(n, e, s, w, rot):
 
 
 def calibration_string_from_wgs84_bound(bound):
-    return ",".join(
-        f"{corner.latitude:.5f},{corner.longitude:.5f}" for corner in bound
-    )
+    return ",".join(f"{corner.latitude:.5f},{corner.longitude:.5f}" for corner in bound)
 
 
 def initial_of_name(name):
@@ -497,7 +495,7 @@ def is_valid_pil_image(data):
         with Image.open(data) as img:
             img.verify()
             return True
-    except (OSError, SyntaxError):
+    except OSError, SyntaxError:
         return False
 
 

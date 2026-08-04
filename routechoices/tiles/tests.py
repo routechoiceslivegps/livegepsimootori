@@ -47,10 +47,7 @@ class MapApiTestCase(EssentialApiBase):
 
         # requesting 2nd non existing map of event
         res = client.get(
-            
-                f"{url}?z=17&x=74352&y=36993&layers={event.aid}%2F2&"
-                f"format=image%2Fjpeg"
-            
+            f"{url}?z=17&x=74352&y=36993&layers={event.aid}%2F2&" f"format=image%2Fjpeg"
         )
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -74,10 +71,7 @@ class MapApiTestCase(EssentialApiBase):
 
         # requesting 2nd existing map of event
         res = client.get(
-            
-                f"{url}?z=17&x=74352&y=36993&layers={event.aid}%2F2&"
-                f"format=image%2Fjpeg"
-            
+            f"{url}?z=17&x=74352&y=36993&layers={event.aid}%2F2&" f"format=image%2Fjpeg"
         )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res["content-type"], "image/jpeg")
@@ -92,10 +86,7 @@ class MapApiTestCase(EssentialApiBase):
 
         # requesting 3rd non existing map of event
         res = client.get(
-            
-                f"{url}?z=17&x=74352&y=36993&layers={event.aid}%2F3&"
-                f"format=image%2Fjpeg"
-            
+            f"{url}?z=17&x=74352&y=36993&layers={event.aid}%2F3&" f"format=image%2Fjpeg"
         )
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
