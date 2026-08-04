@@ -6,6 +6,7 @@ import time
 from datetime import UTC, datetime
 
 import arrow
+import time_machine
 from allauth.account.models import EmailAddress
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -237,7 +238,7 @@ class EssentialApiTestCase1(EssentialApiBase):
             club=club,
             name="test1",
             slug="abc",
-            start_date=datetime.utcfromtimestamp(-1).replace(tzinfo=UTC),
+            start_date=datetime.fromtimestamp(-1, tz=UTC),
             end_date=epoch_to_datetime(1),
         )
         c = Competitor.objects.create(
@@ -827,60 +828,63 @@ class EventApiTestCase(EssentialApiBase):
 
     def test_live_event_data(self):
         cache.clear()
-        club = Club.objects.create(name="Test club", slug="club")
-        event = Event.objects.create(
-            club=club,
-            name="Test event",
-            open_registration=True,
-            start_date=arrow.get().shift(minutes=-1).datetime,
-            end_date=arrow.get().shift(hours=1).datetime,
-        )
-        url = self.reverse_and_check(
-            "event_data", f"/events/{event.aid}/data/", "api", {"event_id": event.aid}
-        )
+        with time_machine.travel("2010-01-01 15:10 +0300", tick=False) as traveller:
+            club = Club.objects.create(name="Test club", slug="club")
+            event = Event.objects.create(
+                club=club,
+                name="Test event",
+                open_registration=True,
+                start_date=arrow.get().shift(minutes=-1).datetime,
+                end_date=arrow.get().shift(hours=1).datetime,
+            )
+            url = self.reverse_and_check(
+                "event_data",
+                f"/events/{event.aid}/data/",
+                "api",
+                {"event_id": event.aid},
+            )
 
-        device = Device.objects.create()
+            device = Device.objects.create()
 
-        Competitor.objects.create(
-            name="Alice A",
-            short_name="A",
-            event=event,
-            device=device,
-            start_time=arrow.get().shift(seconds=-2).datetime,
-        )
+            Competitor.objects.create(
+                name="Alice A",
+                short_name="A",
+                event=event,
+                device=device,
+                start_time=arrow.get().shift(seconds=-2).datetime,
+            )
 
-        device.add_location(
-            arrow.get().shift(seconds=-1).timestamp(), 12.34567, 123.45678
-        )
+            device.add_location(
+                arrow.get().shift(seconds=-1).timestamp(), 12.34567, 123.45678
+            )
 
-        res = self.client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertNotEqual(res.data["competitors"][0]["encoded_data"], "")
-        self.assertIsNone(res.headers.get("X-Cache-Hit"))
-        res = self.client.get(url)
-        self.assertEqual(res.headers.get("X-Cache-Hit"), "1")
-        next_url = res.data["next"]
-        cache_ts = int(time.time() // EVENT_CACHE_INTERVAL_LIVE)
-        device.add_location(arrow.get().timestamp(), 12.34568, 123.45677)
+            res = self.client.get(url)
+            self.assertEqual(res.status_code, status.HTTP_200_OK)
+            self.assertNotEqual(res.data["competitors"][0]["encoded_data"], "")
+            self.assertIsNone(res.headers.get("X-Cache-Hit"))
+            res = self.client.get(url)
+            self.assertEqual(res.headers.get("X-Cache-Hit"), "1")
+            next_url = res.data["next"]
+            cache_ts = int(time.time() // EVENT_CACHE_INTERVAL_LIVE)
+            device.add_location(arrow.get().timestamp(), 12.34568, 123.45677)
+            traveller.shift(5)
+            url_delta = self.reverse_and_check(
+                "event_data_delta",
+                next_url[len("api.routechoices.dev") + 2 :],
+                "api",
+                {"event_id": event.aid, "previous_key": cache_ts},
+            )
+            res = self.client.get(url_delta)
+            self.assertEqual(res.status_code, status.HTTP_200_OK)
+            self.assertIsNone(res.headers.get("X-Cache-Hit"))
+            self.assertNotEqual(res.data["competitors"][0]["encoded_data"], "")
+            self.assertEqual(res.data["partial"], True)
+            res = self.client.get(url_delta)
+            self.assertEqual(res.headers.get("X-Cache-Hit"), "1")
 
-        time.sleep((time.time() // 5 + 1) * 5 - time.time() + 0.1)
-        url_delta = self.reverse_and_check(
-            "event_data_delta",
-            next_url[len("api.routechoices.dev") + 2 :],
-            "api",
-            {"event_id": event.aid, "previous_key": cache_ts},
-        )
-        res = self.client.get(url_delta)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertIsNone(res.headers.get("X-Cache-Hit"))
-        self.assertNotEqual(res.data["competitors"][0]["encoded_data"], "")
-        self.assertEqual(res.data["partial"], True)
-        res = self.client.get(url_delta)
-        self.assertEqual(res.headers.get("X-Cache-Hit"), "1")
-
-        event.save()
-        res = self.client.get(url)
-        self.assertIsNone(res.headers.get("X-Cache-Hit"))
+            event.save()
+            res = self.client.get(url)
+            self.assertIsNone(res.headers.get("X-Cache-Hit"))
 
 
 class LocationApiTestCase(EssentialApiBase):
@@ -1053,7 +1057,7 @@ class LocationApiTestCase(EssentialApiBase):
                 port = server_sock.getsockname()[1]
                 settings.GPSSEURANTA_SERVER_ADDR = f"tcp://127.0.0.1:{port}"
                 server_sock.listen(0)
-                client, addr = server_sock.accept()
+                client, _ = server_sock.accept()
                 self.data_recv = client.recv(1024)
                 client.close()
 

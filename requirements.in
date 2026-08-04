@@ -50,4 +50,5 @@ setuptools
 sewer @ git+https://github.com/rphlo/sewer@0.8.4b
 shapely
 staticmap
+time-machine[dateutil]
 tornado
