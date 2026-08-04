@@ -15,7 +15,7 @@ from django.contrib.gis.geoip2 import GeoIP2
 from django.core.exceptions import PermissionDenied
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db.models import Prefetch, Q
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpResponse
 from django.http.response import Http404
 from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
@@ -31,7 +31,6 @@ from rest_framework.throttling import UserRateThrottle
 
 from routechoices.core.models import (
     BOTTOM_LEFT,
-    EVENT_CACHE_INTERVAL_ARCHIVED,
     EVENT_CACHE_INTERVAL_LIVE,
     LOCATION_LATITUDE_INDEX,
     LOCATION_LONGITUDE_INDEX,
@@ -56,6 +55,7 @@ from routechoices.core.models import (
     ImeiDevice,
     Map,
     MapAssignation,
+    TooEarly,
 )
 from routechoices.lib import cache
 from routechoices.lib.duration_constants import DURATION_ONE_MINUTE
@@ -1214,79 +1214,20 @@ def competitor_route_upload(request, competitor_id):
 )
 @api_GET_view
 def event_data(request, event_id):
-    t0 = time.time()
-
     tag = request.GET.get("category")
-    cache_ts = int(t0 // EVENT_CACHE_INTERVAL_LIVE)
-    cache_key = f"event:{event_id}:tag:{tag or ""}:data:{cache_ts}:live"
-    if data := cache.get(cache_key):
-        headers = {
-            "ETag": f'W/"{safe64encodedsha(json.dumps(data))}"',
-            "X-Cache-Hit": 1,
-        }
-        return Response(data, headers=headers)
-
-    event = Event.objects.select_related("club").filter(aid=event_id).first()
-    if not event:
+    try:
+        response, was_cached, is_public = Event.get_current_data(
+            event_id, tag, request.user
+        )
+    except Event.DoesNotExist:
         raise Http404()
-
-    if event.start_date > now() or not event.could_display_maps():
+    except TooEarly:
         return Response(status=status.HTTP_425_TOO_EARLY)
 
-    if not event.is_live:
-        cache_ts = int(t0 // EVENT_CACHE_INTERVAL_ARCHIVED)
-        cache_key = f"event:{event_id}:tag:{tag or ""}:data:{cache_ts}:archived"
-        if data := cache.get(cache_key):
-            headers = {
-                "ETag": f'W/"{safe64encodedsha(json.dumps(data))}"',
-                "X-Cache-Hit": 1,
-            }
-            return Response(data, headers=headers)
-
-    event.check_user_permission(request.user)
-
-    total_nb_pts = 0
-    competitors_data = []
-
-    for competitor, from_date, end_date in event.iterate_competitors(tag):
-        encoded_data = ""
-        if competitor.device_id:
-            encoded_data, nb_pts = competitor.device.get_locations_between_dates(
-                from_date, end_date, encode=True
-            )
-            total_nb_pts += nb_pts
-        competitor_data = {
-            "id": competitor.aid,
-            "encoded_data": encoded_data,
-            "name": competitor.name,
-            "short_name": competitor.short_name,
-            "start_time": competitor.start_time,
-        }
-        if competitor.tags:
-            competitor_data["categories"] = competitor.categories
-        if competitor.color:
-            competitor_data["color"] = competitor.color
-        if event.is_live and competitor.device_id:
-            competitor_data["battery_level"] = competitor.device.battery_level
-        competitors_data.append(competitor_data)
-
-    response = {
-        "competitors": competitors_data,
-    }
-    if event.is_live:
-        response["next"] = reverse(
-            "event_data_delta",
-            host="api",
-            kwargs={"event_id": event.aid, "previous_key": cache_ts},
-        )
-
-    cache_duration = DURATION_ONE_MINUTE + (
-        EVENT_CACHE_INTERVAL_LIVE if event.is_live else EVENT_CACHE_INTERVAL_ARCHIVED
-    )
-    cache.set(cache_key, response, cache_duration)
-
     headers = {"ETag": f'W/"{safe64encodedsha(json.dumps(response))}"'}
-    if event.privacy == PRIVACY_PRIVATE:
+    if was_cached:
+        headers["X-Cache-Hit"] = 1
+    if not is_public:
         headers["Cache-Control"] = "Private"
 
     return Response(response, headers=headers)
@@ -1298,10 +1239,20 @@ def event_data(request, event_id):
 )
 @api_GET_view
 def event_data_delta(request, event_id, previous_key):
+    # check if event is public, if not do the checks
+    event = None
+    is_public_cache_key = f"event:{event_id}:is_public"
+    if (is_public := cache.get(is_public_cache_key)) is None:
+        event = Event.objects.select_related("club").get(aid=event_id)
+        is_public = event.privacy != PRIVACY_PRIVATE
+        cache.set(is_public_cache_key, is_public, DURATION_ONE_MONTH)
+    if not is_public:
+        if not event:
+            event = Event.objects.select_related("club").get(aid=event_id)
+        event.check_user_permission(viewer)
+
     t0 = time.time()
-
     cache_ts = int(t0 // EVENT_CACHE_INTERVAL_LIVE)
-
     # If previous key is same as current key, diff is empty
     if cache_ts == previous_key:
         response = {
@@ -1314,10 +1265,11 @@ def event_data_delta(request, event_id, previous_key):
             "partial": 1,
         }
         headers = {"ETag": f'W/"{safe64encodedsha(json.dumps(response))}"'}
+        if not is_public:
+            headers["Cache-Control"] = "Private"
         return Response(response, headers=headers)
 
     tag = request.GET.get("category")
-
     # Retrieve straight from cache if possible
     cache_key = f"event:{event_id}:tag:{tag or ""}:data-diff:{previous_key}:{cache_ts}"
     if cached_resp := cache.get(cache_key):
@@ -1325,6 +1277,8 @@ def event_data_delta(request, event_id, previous_key):
             "ETag": f'W/"{safe64encodedsha(json.dumps(cached_resp))}"',
             "X-Cache-Hit": 1,
         }
+        if not is_public:
+            headers["Cache-Control"] = "Private"
         return Response(cached_resp, headers=headers)
 
     # Retrieve previous state
@@ -1333,28 +1287,27 @@ def event_data_delta(request, event_id, previous_key):
     prev_data = cache.get(src_cache_key)
     if prev_data:
         partial = True
-    # Retrieve current state
-    req = HttpRequest()
-    req.method = "GET"
-    req.user = request.user
-    req.session = request.session
-    req.META = request.META
-    if tag:
-        req.GET.update({"category": tag})
-    current_resp = event_data(req, event_id)
-    if not current_resp.status_code // 100 == 2:
-        return Response(status=current_resp.status_code)
-    elif not partial:
-        return Response(current_resp.data)
 
-    current_data = current_resp.data
+    try:
+        current_data, _, _ = Event.get_current_data(event_id, tag, request.user)
+    except Event.DoesNotExist:
+        raise Http404()
+    except TooEarly:
+        return Response(status=status.HTTP_425_TOO_EARLY)
+
+    if not partial:
+        response = current_data
+        headers = {"ETag": f'W/"{safe64encodedsha(json.dumps(response))}"'}
+        if not is_public:
+            headers["Cache-Control"] = "Private"
+        return Response(response)
+
     # Do the diff
     prev_competitors = {}
     for competitor in prev_data.get("competitors", []):
         prev_competitors[competitor["id"]] = competitor
 
     competitors_data = []
-
     for competitor in current_data.get("competitors", []):
         if categories := competitor.get("categories"):
             competitor["categories"] = TAGS_SEPARATOR.join(categories)
@@ -1391,8 +1344,8 @@ def event_data_delta(request, event_id, previous_key):
     }
 
     headers = {"ETag": f'W/"{safe64encodedsha(json.dumps(response))}"'}
-    if cache_control := current_resp.headers.get("Cache-Control"):
-        headers["Cache-Control"] = cache_control
+    if not is_public:
+        headers["Cache-Control"] = "Private"
 
     cache.set(cache_key, response, DURATION_ONE_MINUTE)
 

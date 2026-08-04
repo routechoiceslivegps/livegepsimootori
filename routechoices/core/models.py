@@ -45,7 +45,7 @@ from shapely.geometry import LinearRing, Polygon
 from staticmap import CircleMarker, StaticMap
 
 from routechoices.lib import cache, plausible
-from routechoices.lib.duration_constants import DURATION_ONE_MONTH
+from routechoices.lib.duration_constants import DURATION_ONE_MINUTE, DURATION_ONE_MONTH
 from routechoices.lib.geojson import get_geojson_coordinates
 from routechoices.lib.globalmaptiles import GlobalMercator
 from routechoices.lib.helpers import (
@@ -115,6 +115,10 @@ BOTTOM_LEFT = 3
 TAGS_SEPARATOR = "\u2063"
 
 GLOBAL_MERCATOR = GlobalMercator()
+
+
+class TooEarly(Exception):
+    """Raised when an query is made too early."""
 
 
 def list_events_sets(qs, decreasing_order=True):
@@ -2294,6 +2298,11 @@ class Event(models.Model, SomewhereOnEarth):
                 for tag in self.categories + [""]:
                     cache_key = f"event:{self.aid}:tag:{tag}:data:{cache_ts + offset}:{cache_suffix}"
                 cache.delete(cache_key)
+        cache.set(
+            f"event:{self.aid}:is_public",
+            self.privacy != PRIVACY_PRIVATE,
+            DURATION_ONE_MONTH,
+        )
 
     @property
     def has_notice(self):
@@ -2425,6 +2434,82 @@ class Event(models.Model, SomewhereOnEarth):
                         device._last_location_longitude,
                     ]
         return None
+
+    @classmethod
+    def get_current_data(cls, event_id, tag, viewer):
+        """Return event data at current time, alond with cache_status"""
+        event = None
+        # check if event is public, if not do the checks
+        is_public_cache_key = f"event:{event_id}:is_public"
+        if (is_public := cache.get(is_public_cache_key)) is None:
+            event = Event.objects.select_related("club").get(aid=event_id)
+            is_public = event.privacy != PRIVACY_PRIVATE
+            cache.set(is_public_cache_key, is_public, DURATION_ONE_MONTH)
+        if not is_public:
+            if not event:
+                event = Event.objects.select_related("club").get(aid=event_id)
+            event.check_user_permission(viewer)
+
+        # permissions are checked, check for cache
+        t0 = time.time()
+        cache_ts = int(t0 // EVENT_CACHE_INTERVAL_LIVE)
+        cache_key = f"event:{event_id}:tag:{tag or ""}:data:{cache_ts}:live"
+        if data := cache.get(cache_key):
+            return data, True, is_public
+            cache_ts = int(t0 // EVENT_CACHE_INTERVAL_LIVE)
+
+        if not event:
+            event = Event.objects.select_related("club").get(aid=event_id)
+
+        if event.start_date > now() or not event.could_display_maps():
+            raise TooEarly()
+
+        if not event.is_live:
+            cache_ts = int(t0 // EVENT_CACHE_INTERVAL_ARCHIVED)
+            cache_key = f"event:{event_id}:tag:{tag or ""}:data:{cache_ts}:archived"
+            if data := cache.get(cache_key):
+                return data, True, is_public
+
+        # No cache, fetch the data
+        total_nb_pts = 0
+        competitors_data = []
+        for competitor, from_date, end_date in event.iterate_competitors(tag):
+            encoded_data = ""
+            if competitor.device_id:
+                encoded_data, nb_pts = competitor.device.get_locations_between_dates(
+                    from_date, end_date, encode=True
+                )
+                total_nb_pts += nb_pts
+            competitor_data = {
+                "id": competitor.aid,
+                "encoded_data": encoded_data,
+                "name": competitor.name,
+                "short_name": competitor.short_name,
+                "start_time": competitor.start_time,
+            }
+            if competitor.tags:
+                competitor_data["categories"] = competitor.categories
+            if competitor.color:
+                competitor_data["color"] = competitor.color
+            if event.is_live and competitor.device_id:
+                competitor_data["battery_level"] = competitor.device.battery_level
+            competitors_data.append(competitor_data)
+
+        response = {"competitors": competitors_data}
+        if event.is_live:
+            response["next"] = reverse(
+                "event_data_delta",
+                host="api",
+                kwargs={"event_id": event.aid, "previous_key": cache_ts},
+            )
+
+        cache_duration = DURATION_ONE_MINUTE + (
+            EVENT_CACHE_INTERVAL_LIVE
+            if event.is_live
+            else EVENT_CACHE_INTERVAL_ARCHIVED
+        )
+        cache.set(cache_key, response, cache_duration)
+        return response, False, is_public
 
 
 class Notice(models.Model):
