@@ -84,7 +84,7 @@ class WebHookTestCase(EssentialApiBase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.club.refresh_from_db()
         self.assertTrue(self.club.upgraded)
-        self.assertEqual(self.club.order_id, "123456")
+        self.assertEqual(self.club.order_id, "LS-123456")
         self.assertTrue(self.club.can_modify_events)
 
     def test_downgrade_club(self):
@@ -92,7 +92,7 @@ class WebHookTestCase(EssentialApiBase):
             "webhooks:lemonsqueezy_webhook", "/webhooks/lemonsqueezy"
         )
         self.club.upgraded = True
-        self.club.order_id = "123456"
+        self.club.order_id = "LS-123456"
         self.club.save()
         res = self.ls_client.post(
             url,
@@ -111,7 +111,7 @@ class WebHookTestCase(EssentialApiBase):
             "webhooks:lemonsqueezy_webhook", "/webhooks/lemonsqueezy"
         )
         self.club.upgraded = True
-        self.club.order_id = "123456"
+        self.club.order_id = "LS-123456"
         self.club.save()
         self.assertFalse(self.club.subscription_paused)
         self.assertTrue(self.club.can_modify_events)
@@ -139,7 +139,7 @@ class WebHookTestCase(EssentialApiBase):
             "webhooks:lemonsqueezy_webhook", "/webhooks/lemonsqueezy"
         )
         self.club.upgraded = True
-        self.club.order_id = "123456"
+        self.club.order_id = "LS-123456"
         self.club.subscription_paused_at = now() - timedelta(days=2)
         self.club.save()
         self.assertTrue(self.club.subscription_paused)

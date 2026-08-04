@@ -9,6 +9,7 @@ from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
 
 from routechoices.core.models import Club
+from routechoices.lib.lemonsqueezy import LEMONSQUEEZY_PREFIX
 
 
 @csrf_exempt
@@ -55,7 +56,7 @@ def lemonsqueezy_webhook(request):
 
         club.upgraded = True
         club.upgraded_date = now()
-        club.order_id = order_id
+        club.order_id = f"{LEMONSQUEEZY_PREFIX}{order_id}"
         club.save()
         return HttpResponse(f"Upgraded {club}")
 
@@ -70,7 +71,7 @@ def lemonsqueezy_webhook(request):
         except KeyError:
             # Could not find order_id info
             raise BadRequest("Missing order id")
-        club = Club.objects.filter(order_id=order_id).first()
+        club = Club.objects.filter(order_id=f"{LEMONSQUEEZY_PREFIX}{order_id}").first()
         if club:
             club.upgraded = False
             club.upgraded_date = None
@@ -89,7 +90,7 @@ def lemonsqueezy_webhook(request):
         except KeyError:
             # Could not find order_id info
             raise BadRequest("Missing order id")
-        club = Club.objects.filter(order_id=order_id).first()
+        club = Club.objects.filter(order_id=f"{LEMONSQUEEZY_PREFIX}{order_id}").first()
         if club and data["data"]["attributes"]["pause"]["mode"] == "void":
             club.subscription_paused_at = now()
             club.save()
@@ -106,7 +107,7 @@ def lemonsqueezy_webhook(request):
         except KeyError:
             # Could not find order_id info
             raise BadRequest("Missing order id")
-        club = Club.objects.filter(order_id=order_id).first()
+        club = Club.objects.filter(order_id=f"{LEMONSQUEEZY_PREFIX}{order_id}").first()
         if club:
             club.subscription_paused_at = None
             club.save()

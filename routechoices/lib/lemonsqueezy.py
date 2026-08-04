@@ -1,11 +1,14 @@
 from curl_cffi import requests
 from django.conf import settings
 
+LEMONSQUEEZY_PREFIX = "LS-"
+
 
 def get_subscriptions(order_id=None, user_email=None):
     url = "https://api.lemonsqueezy.com/v1/subscriptions"
 
-    if order_id:
+    if order_id and order_id.startswith(LEMONSQUEEZY_PREFIX):
+        order_id = order_id[3:]
         url += f"?filter[order_id]={order_id}"
 
     if user_email:
