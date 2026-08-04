@@ -1338,8 +1338,7 @@ def event_data_delta(request, event_id, previous_key):
     req.method = "GET"
     req.user = request.user
     req.session = request.session
-    req.META["SERVER_NAME"] = request.META["SERVER_NAME"]
-    req.META["SERVER_PORT"] = request.META["SERVER_PORT"]
+    req.META = request.META
     if tag:
         req.GET.update({"category": tag})
     current_resp = event_data(req, event_id)
