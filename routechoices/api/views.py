@@ -58,7 +58,7 @@ from routechoices.core.models import (
     TooEarly,
 )
 from routechoices.lib import cache
-from routechoices.lib.duration_constants import DURATION_ONE_MINUTE
+from routechoices.lib.duration_constants import DURATION_ONE_MINUTE, DURATION_ONE_MONTH
 from routechoices.lib.helpers import (
     epoch_to_datetime,
     get_image_mime_from_request,
@@ -997,7 +997,6 @@ def competitor_api(request, competitor_id):
             color_hex_validator(new_color)
         except Exception:
             new_color = ""
-        new_color = new_color
 
     if not is_user_event_admin:
         if new_name and other_competitors.filter(name=new_name).exists():
@@ -1249,7 +1248,7 @@ def event_data_delta(request, event_id, previous_key):
     if not is_public:
         if not event:
             event = Event.objects.select_related("club").get(aid=event_id)
-        event.check_user_permission(viewer)
+        event.check_user_permission(request.user)
 
     t0 = time.time()
     cache_ts = int(t0 // EVENT_CACHE_INTERVAL_LIVE)
