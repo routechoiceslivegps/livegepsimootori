@@ -543,7 +543,7 @@ class EventSetAdmin(admin.ModelAdmin):
         "club",
     )
     show_facets = False
-    search_fields = ["Name"]
+    search_fields = ["name"]
     autocomplete_fields = ["club"]
 
     def get_queryset(self, request):
