@@ -8,23 +8,23 @@ asn1crypto==1.5.1
 attrs==26.1.0
 beautifulsoup4==4.15.0
 bleach==6.4.0
-boto3==1.43.63
-botocore==1.43.63
+boto3==1.43.69
+botocore==1.43.69
 cairocffi==1.7.1
 cairosvg==2.9.0
 cbor2==6.1.4
 certifi==2026.7.22
 cffi==2.1.1
 charset-normalizer==3.4.9
-coverage==7.15.3
+coverage==7.15.4
 cryptography==50.0.0
 cssselect2==0.9.0
 curl-cffi==0.16.0
 defusedxml==0.7.1
 diskcache==5.6.3
-django==5.2.16
+django==5.2.17
 django-admincommand @ git+https://github.com/rphlo/django-admincommand.git@09f8b0ad150754be88d20c0e7c6a1473b8006872
-django-allauth==65.18.0
+django-allauth==65.19.0
 django-appconf==1.2.0
 django-background-tasks @ git+https://github.com/rphlo/django-background-tasks@6b247d0b3a7565613656d0ec07b55f6c66aa03cc
 django-bootstrap5 @ git+https://github.com/rphlo/django-bootstrap5@9250748480a5862cfc94f76d96181f08bd022fff
@@ -32,7 +32,7 @@ django-compressor==4.6.0
 django-cors-headers==4.9.0
 django-csp==4.0
 django-environ==0.14.0
-django-health-check==4.4.4
+django-health-check==4.5.0
 django-hijack==3.7.8
 django-hosts==7.0.0
 django-markdownify==0.9.7
@@ -42,7 +42,7 @@ django-permissions-policy==4.32.0
 django-qr-code==4.2.0
 django-s3-storage==0.15.0
 django-user-sessions @ git+https://github.com/jazzband/django-user-sessions@1ad42f36758251f221e976683eca91a8c79df09e
-djangorestframework==3.17.1
+djangorestframework==3.18.0
 dnspython==2.8.0
 drf-orjson-renderer==1.8.0
 drf-yasg==1.21.15
@@ -50,7 +50,7 @@ emoji-country-flag==2.1.0
 frozenlist==1.8.0
 geoip2==5.3.0
 geojson-validator==0.7.0
-gps-data-codec @ git+https://github.com/routechoiceslivegps/gps-data-codec@c9c9f0da1088f8de0fa95ed340e1f57c2df3807b
+gps-data-codec @ git+https://github.com/routechoiceslivegps/gps-data-codec@1ceaef46a3e9937acc0c437c54b26b7e2c8dd668
 gpxpy==1.6.2
 gunicorn==26.0.0
 idna==3.18
@@ -64,11 +64,11 @@ markdown==3.10.3
 maxminddb==3.1.1
 minify-html==0.18.1
 multidict==6.7.1
-numpy==2.5.1
+numpy==2.5.2
 oauthlib==3.3.1
 opencv-python-headless==5.0.0.93
 orjson==3.11.9
-packaging==26.2
+packaging==26.3
 pillow==12.3.0
 propcache==0.5.2
 psutil==7.2.2
@@ -93,19 +93,19 @@ rjsmin==1.2.5
 s3transfer==0.19.2
 scipy==1.18.0
 segno==1.6.6
-sentry-sdk==2.66.1
-setuptools==83.0.0
+sentry-sdk==2.67.1
+setuptools==84.0.0
 sewer @ git+https://github.com/rphlo/sewer@10ad8f2885cb038a52fb3686a7e80590a8799349
 shapely==2.1.2
 six==1.17.0
-soupsieve==2.9.1
+soupsieve==2.9.2
 sqlparse==0.5.5
 staticmap==0.5.7
-time-machine==3.3.1
+time-machine==3.4.0
 tinycss2==1.5.1
-tornado==6.5.7
+tornado==6.5.8
 typing-extensions==4.16.0
-typing-inspection==0.4.2
+typing-inspection==0.4.4
 tzdata==2026.3
 uritemplate==4.2.0
 urllib3==2.7.0
