@@ -34,7 +34,7 @@ function saveGeoJSON(filename, data) {
 		reader.addEventListener("load", (event) => {
 			const parser = new gpxParser();
 			parser.parse(event.target.result);
-			for (const track of parser.tracks) {
+			for (const track of [...parser.tracks, ...parser.routes]) {
 				const latlons = track.points.map((pt) => [pt.lon, pt.lat]);
 				const startLatLon = latlons[0];
 				const endLatLon = latlons.at(-1);

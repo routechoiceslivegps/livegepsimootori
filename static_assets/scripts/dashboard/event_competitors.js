@@ -234,7 +234,7 @@ function showLocalTime(el) {
 								const newRouteTs = [];
 								const newRouteLats = [];
 								const newRouteLons = [];
-								for (const track of parser.tracks) {
+								for (const track of [...parser.tracks, ...parser.routes]) {
 									for (const point of track.points) {
 										if (point.time < endDate) {
 											newRouteTs.push(Math.round(+point.time / 1000));
