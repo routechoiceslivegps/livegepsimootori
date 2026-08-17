@@ -742,6 +742,21 @@ class UploadGPXForm(Form):
         end_time = None
         points = []
         missing_time_info = False
+        for route in gpx.routes:
+            for point, _ in route.walk():
+                if point.time and point.latitude and point.longitude:
+                    points.append(
+                        (
+                            int(point.time.timestamp()),
+                            round(point.latitude, 5),
+                            round(point.longitude, 5),
+                        )
+                    )
+                    if not start_time:
+                        start_time = point.time
+                    end_time = point.time
+                elif point.latitude and point.longitude:
+                    missing_time_info = True
         for track in gpx.tracks:
             for segment in track.segments:
                 for point in segment.points:
