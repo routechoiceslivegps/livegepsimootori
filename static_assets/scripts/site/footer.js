@@ -25,5 +25,6 @@
 			const className = `status-indicator-${status}`;
 			el.classList.add(className);
 			el.parentNode.title = statusTexts[status];
-		});
+		})
+		.catch(() => {});
 })();
