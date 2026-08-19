@@ -8,14 +8,14 @@ asn1crypto==1.5.1
 attrs==26.1.0
 beautifulsoup4==4.15.0
 bleach==6.4.0
-boto3==1.43.69
-botocore==1.43.69
+boto3==1.43.74
+botocore==1.43.74
 cairocffi==1.7.1
 cairosvg==2.9.0
 cbor2==6.1.4
 certifi==2026.7.22
 cffi==2.1.1
-charset-normalizer==3.4.9
+charset-normalizer==3.5.1
 coverage==7.15.4
 cryptography==50.0.0
 cssselect2==0.9.0
@@ -24,7 +24,7 @@ defusedxml==0.7.1
 diskcache==5.6.3
 django==5.2.17
 django-admincommand @ git+https://github.com/rphlo/django-admincommand.git@09f8b0ad150754be88d20c0e7c6a1473b8006872
-django-allauth==65.19.0
+django-allauth==65.19.1
 django-appconf==1.2.0
 django-background-tasks @ git+https://github.com/rphlo/django-background-tasks@6b247d0b3a7565613656d0ec07b55f6c66aa03cc
 django-bootstrap5 @ git+https://github.com/rphlo/django-bootstrap5@9250748480a5862cfc94f76d96181f08bd022fff
@@ -38,7 +38,7 @@ django-hosts==7.0.0
 django-markdownify==0.9.7
 django-minify-html==1.14.0
 django-oauth-toolkit==3.4.0
-django-permissions-policy==4.32.0
+django-permissions-policy==4.33.0
 django-qr-code==4.2.0
 django-s3-storage==0.15.0
 django-user-sessions @ git+https://github.com/jazzband/django-user-sessions@1ad42f36758251f221e976683eca91a8c79df09e
@@ -52,14 +52,14 @@ geoip2==5.3.0
 geojson-validator==0.7.0
 gps-data-codec @ git+https://github.com/routechoiceslivegps/gps-data-codec@1ceaef46a3e9937acc0c437c54b26b7e2c8dd668
 gpxpy==1.6.2
-gunicorn==26.0.0
-idna==3.18
+gunicorn==26.1.0
+idna==3.19
 inflection==0.5.1
 jmespath==1.1.0
 jwcrypto==1.5.8
 kagi @ git+https://github.com/rphlo/kagi@bfb7c5ea0a66d78e11a98bdb6cd1edb63a900455
 loguru==0.7.3
-lxml==6.1.1
+lxml==6.1.2
 markdown==3.10.3
 maxminddb==3.1.1
 minify-html==0.18.1
@@ -67,7 +67,7 @@ multidict==6.7.1
 numpy==2.5.2
 oauthlib==3.3.1
 opencv-python-headless==5.0.0.93
-orjson==3.11.9
+orjson==3.12.0
 packaging==26.3
 pillow==12.3.0
 propcache==0.5.2
@@ -93,13 +93,13 @@ rjsmin==1.2.5
 s3transfer==0.19.2
 scipy==1.18.0
 segno==1.6.6
-sentry-sdk==2.67.1
+sentry-sdk==2.68.0
 setuptools==84.0.0
 sewer @ git+https://github.com/rphlo/sewer@10ad8f2885cb038a52fb3686a7e80590a8799349
 shapely==2.1.2
 six==1.17.0
 soupsieve==2.9.2
-sqlparse==0.5.5
+sqlparse==0.6.0
 staticmap==0.5.7
 time-machine==3.4.0
 tinycss2==1.5.1
@@ -110,5 +110,5 @@ tzdata==2026.3
 uritemplate==4.2.0
 urllib3==2.7.0
 webauthn==1.11.1
-webencodings==0.5.1
+webencodings==0.6.1
 yarl==1.24.5
