@@ -290,7 +290,7 @@ class TCPConnectionsTest(AsyncTestCase, TransactionTestCase):
         client = IOStream(socket.socket())
         await client.connect(("localhost", port))
 
-        for nb_pos, gps_data in enumerate(gps_data_with_pos):
+        for nb_pos, gps_data in enumerate(gps_data_with_pos, 1):
             await client.write(gps_data)
             await asyncio.sleep(0.05)
             device = await refresh_device(device)
