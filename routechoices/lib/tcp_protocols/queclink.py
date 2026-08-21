@@ -144,12 +144,12 @@ class QueclinkConnection(GenericConnection):
                     f"Queclink - {self.imei} Error parsing battery level ({e!s})",
                     flush=True,
                 )
-            if batt is not None and 0 < batt < 100:
+            if batt is not None and 0 <= batt <= 100:
                 self.db_device.battery_level = batt
             await save_device(self.db_device)
 
     async def on_data(self, pts, batt=None):
-        if batt is not None and 0 < batt < 100:
+        if batt is not None and 0 <= batt <= 100:
             self.db_device.battery_level = batt
         loc_array = pts
         await add_locations(self.db_device, loc_array)

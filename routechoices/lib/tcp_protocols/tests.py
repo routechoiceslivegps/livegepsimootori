@@ -168,9 +168,10 @@ class TCPConnectionsTest(AsyncTestCase, TransactionTestCase):
             ),
             b"+RESP:GTINF,020102,860201061588748,,41,898600810906F8048812,16,0,0,0,,4.10,0,0,0,0,,020240201161534,69,,,+0800,0,20100214093254,11F0$",
             b"+BUFF:GTFRI,8020040200,860201061588748,,12194,10, 1,3, 0.0,  0, 20.1, -71.596533,-33.524718,20240201161533,0730,0001,772A,052B253E,02,0,0.0,,,,,0,420000,,,,20230926200340,1549$",
+            b"+RESP:GTFRI,C30303,860201061588748,,0,16,5,1,7.0,117,111.5,23.008179,60.577586,20260821155554,,,,,,1,8.4,121,110.7,23.008254,60.577567,20260821155556,,,,,,1,8.4,121,110.7,23.008254,60.577567,20260821155556,,,,,,1,8.5,122,110.6,23.008298,60.577556,20260821155557,,,,,,1,7.4,124,111.1,23.008335,60.577547,20260821155558,,,,,,100,20260821155600,254A$",
         ]
-        nb_data = [1, 5, 5, 6]
-        battery_data = [None, 83, 69, 69]
+        nb_data = [1, 5, 5, 6, 10]
+        battery_data = [None, 83, 69, 69, 100]
         server = client = None
         device = await create_imei_device("860201061588748")
         sock, port = bind_unused_port()
@@ -289,10 +290,8 @@ class TCPConnectionsTest(AsyncTestCase, TransactionTestCase):
         client = IOStream(socket.socket())
         await client.connect(("localhost", port))
 
-        nb_pos = 0
-        for gps_data in gps_data_with_pos:
+        for nb_pos, gps_data in enumerate(gps_data_with_pos):
             await client.write(gps_data)
-            nb_pos += 1
             await asyncio.sleep(0.05)
             device = await refresh_device(device)
             self.assertEqual(device.location_count, nb_pos)
