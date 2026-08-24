@@ -78,6 +78,14 @@ function RCEvent(infoURL, clockURL, locale) {
 	const activeCompetitorCategories = new Set();
 	const targetMSPerFrame = 1000 / 25;
 	let loaded = false;
+
+	function bringMarkerToTop(e) {
+		e.setZIndexOffset(1000);
+	}
+	function bringMarkerToNormal(e) {
+		e.setZIndexOffset(0);
+	}
+
 	const MAX_RUNNER_DISPLAYED = 200;
 
 	const fetchDataUrlSuffix = window.location.hash
@@ -2471,6 +2479,11 @@ function RCEvent(infoURL, clockURL, locale) {
 			competitor.iconScale = runnerIconScale;
 		} else {
 			competitor.mapMarker.setLatLng(coordinates);
+			if (competitor.highlighted) {
+				bringMarkerToTop(competitor.mapMarker);
+			} else {
+				bringMarkerToNormal(competitor.mapMarker);
+			}
 		}
 	}
 
@@ -2504,6 +2517,11 @@ function RCEvent(infoURL, clockURL, locale) {
 			competitor.scale = runnerIconScale;
 		} else {
 			competitor.nameMarker.setLatLng(coordinates);
+			if (competitor.highlighted) {
+				bringMarkerToTop(competitor.nameMarker);
+			} else {
+				bringMarkerToNormal(competitor.nameMarker);
+			}
 		}
 	}
 
@@ -2546,6 +2564,9 @@ function RCEvent(infoURL, clockURL, locale) {
 				competitor.tailScale = runnerIconScale;
 			} else {
 				competitor.tail.setLatLngs(tailLatLng);
+				if (competitor.highlighted) {
+					competitor.tail.bringToFront();
+				}
 			}
 			if (competitor.displayFullRoute && !competitor.tail.hasDir) {
 				competitor.tail.setText("    ➤    ", {
@@ -2581,6 +2602,15 @@ function RCEvent(infoURL, clockURL, locale) {
 			competitor.sidebarCard
 				?.find(".competitor-highlight-btn")
 				.addClass("highlighted");
+			if (competitor.tail) {
+				competitor.tail.bringToFront();
+			}
+			if (competitor.nameMarker) {
+				bringMarkerToTop(competitor.nameMarker);
+			}
+			if (competitor.mapMarker) {
+				bringMarkerToTop(competitor.mapMarker);
+			}
 		}
 		for (const layerName of ["mapMarker", "nameMarker", "tail"]) {
 			competitor[layerName]?.remove();
