@@ -8,8 +8,8 @@ asn1crypto==1.5.1
 attrs==26.1.0
 beautifulsoup4==4.15.0
 bleach==6.4.0
-boto3==1.43.74
-botocore==1.43.74
+boto3==1.43.79
+botocore==1.43.79
 cairocffi==1.7.1
 cairosvg==2.9.0
 cbor2==6.1.4
@@ -19,7 +19,7 @@ charset-normalizer==3.5.1
 coverage==7.15.4
 cryptography==50.0.0
 cssselect2==0.9.0
-curl-cffi==0.16.0
+curl-cffi==0.16.1
 defusedxml==0.7.1
 diskcache==5.6.3
 django==5.2.17
@@ -32,12 +32,12 @@ django-compressor==4.6.0
 django-cors-headers==4.9.0
 django-csp==4.0
 django-environ==0.14.0
-django-health-check==4.5.0
+django-health-check==4.5.1
 django-hijack==3.7.8
 django-hosts==7.0.0
 django-markdownify==0.9.7
 django-minify-html==1.14.0
-django-oauth-toolkit==3.4.0
+django-oauth-toolkit==3.4.1
 django-permissions-policy==4.33.0
 django-qr-code==4.2.0
 django-s3-storage==0.15.0
@@ -50,9 +50,9 @@ emoji-country-flag==2.1.0
 frozenlist==1.8.0
 geoip2==5.3.0
 geojson-validator==0.7.0
-gps-data-codec @ git+https://github.com/routechoiceslivegps/gps-data-codec@1ceaef46a3e9937acc0c437c54b26b7e2c8dd668
+gps-data-codec @ git+https://github.com/routechoiceslivegps/gps-data-codec@810620130bab29e66e4b724dd9e65a25de818467
 gpxpy==1.6.2
-gunicorn==26.1.0
+gunicorn==26.2.0
 idna==3.19
 inflection==0.5.1
 jmespath==1.1.0
@@ -91,9 +91,9 @@ requests==2.34.2
 reverse-geocode==1.6.6
 rjsmin==1.2.5
 s3transfer==0.19.2
-scipy==1.18.0
+scipy==1.18.1
 segno==1.6.6
-sentry-sdk==2.68.0
+sentry-sdk==2.68.1
 setuptools==84.0.0
 sewer @ git+https://github.com/rphlo/sewer@10ad8f2885cb038a52fb3686a7e80590a8799349
 shapely==2.1.2
@@ -101,7 +101,7 @@ six==1.17.0
 soupsieve==2.9.2
 sqlparse==0.6.0
 staticmap==0.5.7
-time-machine==3.4.0
+time-machine==3.5.0
 tinycss2==1.5.1
 tornado==6.5.8
 typing-extensions==4.16.0
