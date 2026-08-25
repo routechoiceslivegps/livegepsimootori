@@ -44,9 +44,11 @@
     </head>
     <body>
         <div id="map"></div>
-        <script src="https://browser.sentry-cdn.com/7.114.0/bundle.min.js"
-                integrity="sha384-ZI11RF8XfI7ic0+HK1UnGkClkyjeQrHLUX+42WJHeu8+O94vBhb5Wivro/pn5lhG"
-                crossorigin="anonymous"></script>
+        <script
+            src="https://browser.sentry-cdn.com/10.71.0/bundle.min.js"
+            integrity="sha384-Z0GeEnLeg0yvo3LU6sdGDESgTZCwpVvZBIgcnddmSR+ovRPe8Esn+19CrZdcxC4Z"
+            crossorigin="anonymous"
+        ></script>
         <script src="{% static 'scripts/load-local-variables.js' %}?v=2023112700"
                 data-api-root="{% host_url 'api_doc' host 'api' %}"></script>
         {% compress js %}
