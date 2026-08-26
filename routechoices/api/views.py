@@ -1242,12 +1242,14 @@ def event_data_delta(request, event_id, previous_key):
     event = None
     is_public_cache_key = f"event:{event_id}:is_public"
     if (is_public := cache.get(is_public_cache_key)) is None:
-        event = Event.objects.select_related("club").get(aid=event_id)
+        event = get_object_or_404(Event.objects.select_related("club"), aid=event_id)
         is_public = event.privacy != PRIVACY_PRIVATE
         cache.set(is_public_cache_key, is_public, DURATION_ONE_MONTH)
     if not is_public:
         if not event:
-            event = Event.objects.select_related("club").get(aid=event_id)
+            event = get_object_or_404(
+                Event.objects.select_related("club"), aid=event_id
+            )
         event.check_user_permission(request.user)
 
     t0 = time.time()
