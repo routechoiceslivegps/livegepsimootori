@@ -27,11 +27,11 @@ from django.utils.timezone import now
 from django.views.decorators.cache import cache_page
 from django_hosts.resolvers import reverse
 from hijack.views import ReleaseUserView
+from invitations.forms import InviteForm
 from kagi.views.backup_codes import BackupCodesView
 from oauth2_provider.models import AccessToken
 from user_sessions.views import SessionDeleteOtherView
 
-from invitations.forms import InviteForm
 from routechoices.api.views import device_ownership_api_view
 from routechoices.core.models import (
     PRIVACY_SECRET,
@@ -117,9 +117,8 @@ def requires_club_in_session(function):
             )
         elif obj_aid := kwargs.get("device_id"):
             obj = get_object_or_404(
-                DeviceClubOwnership.objects.select_related("club"),
-                device__aid=obj_aid,
-                club=club,
+                Device,
+                aid=obj_aid,
             )
 
         request.object = obj
@@ -617,7 +616,10 @@ def device_edit_view(request, device_id):
     device = request.object
     if request.method == "POST":
         # create a form instance and populate it with data from the request:
-        device_copy = deepcopy(device)
+        ownership = get_object_or_404(
+            DeviceClubOwnership.objects.select_related("club"), device=device, club=club
+        )
+        device_copy = deepcopy(ownership)
         form = DeviceClubOwnerShipForm(request.POST, instance=device_copy)
         # check whether it's valid:
         if form.is_valid():
@@ -631,14 +633,17 @@ def device_edit_view(request, device_id):
             request, club_slug=club.slug, device_id=device_id
         )
     else:
-        form = DeviceClubOwnerShipForm(instance=device)
+        ownership = get_object_or_404(
+            DeviceClubOwnership.objects.select_related("club"), device=device, club=club
+        )
+        form = DeviceClubOwnerShipForm(instance=ownership)
     return render(
         request,
         "dashboard/device_edit.html",
         {
             "club": club,
             "context": "edit",
-            "device": device,
+            "device": ownership,
             "form": form,
         },
     )
