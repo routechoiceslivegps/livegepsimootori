@@ -668,7 +668,7 @@ def device_delete_view(request, device_id):
         "dashboard/device_delete.html",
         {
             "club": club,
-            "device": device,
+            "device": ownership,
         },
     )
 
