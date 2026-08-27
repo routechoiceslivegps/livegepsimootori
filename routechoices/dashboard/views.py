@@ -654,9 +654,11 @@ def device_edit_view(request, device_id):
 def device_delete_view(request, device_id):
     club = request.club
     device = request.object
-
+    ownership = get_object_or_404(
+        DeviceClubOwnership.objects.select_related("club"), device=device, club=club
+    )
     if request.method == "POST":
-        device.delete()
+        ownership.delete()
         messages.success(request, "Tracker deleted")
         if link := request.GET.get("next"):
             return redirect(link)
