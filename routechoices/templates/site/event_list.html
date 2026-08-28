@@ -327,17 +327,14 @@
                         <span><i class="fa-solid fa-box-archive"></i> Archives</span>
                     </h2>
                     {% if home_url and not event_set_page %}
-                        <form class="mb-3 row" method="get">
-                            <div class="col-auto pe-1">
-                                <input class="form-control"
-                                       type="search"
-                                       placeholder="Search"
-                                       name="q"
-                                       value="{{ search_text }}">
-                            </div>
-                            <div class="col-auto ps-0">
-                                <input class="btn btn-primary" type="submit" value="Search">
-                            </div>
+                        <form class="d-flex gap-2" role="search">
+                          <input class="form-control"
+                                 type="search"
+                                 placeholder="Search..."
+                                 aria-label="Search"
+                                 name="q"
+                                 value="{{ search_text }}">
+                          <button class="btn btn-primary text-nowrap" type="submit"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
                         </form>
                         {% if search_text %}Results for search: "<i>{{ search_text }}</i>"{% endif %}
                         {% if years %}
@@ -474,9 +471,11 @@
             {% endfor %}
         </div>
     {% endfor %}
+    <div>
     {% if events_page.paginator.num_pages > 1 %}
         {% bootstrap_pagination events_page extra=request.GET.urlencode pages_to_show="6" %}
     {% endif %}
+    </div>
 </div>
 {% if not live_events and not events and not upcoming_events %}
     <div class="card border-0 shadow mb-3"
