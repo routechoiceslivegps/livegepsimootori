@@ -10,20 +10,9 @@
 {% block sub_sub_content %}
     <div class="row">
         <div class="col-12">
-            {% if event_set.url %}
-                <div class="text-center d-flex">
-                    <div>
-                        <p>
-                            {% qr_from_text event_set.shortcut size="t" image_format="png" error_correction="l" %}
-                            <br>
-                            <small><a class="small qrUrlText fw-bold" href="{{ event_set.shortcut }}">{{ event_set.shortcut_text }}</a></small>
-                        </p>
-                    </div>
-                </div>
-            {% endif %}
             <h2>
                 {% if context == 'edit' %}
-                    Edit Tracker <i>{{ device.nickname }}</i>
+                    Edit Tracker <i>{{ ownership.nickname }}</i>
                 {% endif %}
             </h2>
             <form action="" method="post">
@@ -33,7 +22,7 @@
                     <i class="fa-solid fa-floppy-disk"></i> <span>Save</span>
                 </button>
                 {% if context == 'edit' %}
-                    <a href="{% url 'dashboard_club:device:delete_view' device_id=device.device.aid club_slug=request.club.slug %}"
+                    <a href="{% url 'dashboard_club:device:delete_view' device_id=ownership.device.aid club_slug=request.club.slug %}"
                        class="btn btn-danger dashboard-link"><i class="fa-solid fa-trash"></i> <span>Delete</span></a>
                 {% endif %}
             </form>

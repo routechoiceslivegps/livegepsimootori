@@ -50,7 +50,7 @@ from routechoices.dashboard.forms import (
     ClubForm,
     CompetitorFormSet,
     CompetitorUploadGPSForm,
-    DeviceClubOwnerShipForm,
+    DeviceClubOwnershipForm,
     DeviceForm,
     EventForm,
     EventSetForm,
@@ -617,10 +617,12 @@ def device_edit_view(request, device_id):
     if request.method == "POST":
         # create a form instance and populate it with data from the request:
         ownership = get_object_or_404(
-            DeviceClubOwnership.objects.select_related("club"), device=device, club=club
+            DeviceClubOwnership.objects.select_related("device"),
+            device=device,
+            club=club,
         )
-        device_copy = deepcopy(ownership)
-        form = DeviceClubOwnerShipForm(request.POST, instance=device_copy)
+        ownership_copy = deepcopy(ownership)
+        form = DeviceClubOwnershipForm(request.POST, instance=ownership_copy)
         # check whether it's valid:
         if form.is_valid():
             form.save()
@@ -634,16 +636,18 @@ def device_edit_view(request, device_id):
         )
     else:
         ownership = get_object_or_404(
-            DeviceClubOwnership.objects.select_related("club"), device=device, club=club
+            DeviceClubOwnership.objects.select_related("device"),
+            device=device,
+            club=club,
         )
-        form = DeviceClubOwnerShipForm(instance=ownership)
+        form = DeviceClubOwnershipForm(instance=ownership)
     return render(
         request,
         "dashboard/device_edit.html",
         {
             "club": club,
             "context": "edit",
-            "device": ownership,
+            "ownership": ownership,
             "form": form,
         },
     )
@@ -668,7 +672,7 @@ def device_delete_view(request, device_id):
         "dashboard/device_delete.html",
         {
             "club": club,
-            "device": ownership,
+            "ownership": ownership,
         },
     )
 

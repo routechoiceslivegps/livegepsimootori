@@ -315,7 +315,7 @@ class DeviceForm(Form):
     nickname = CharField(max_length=12)
 
 
-class DeviceClubOwnerShipForm(ModelForm):
+class DeviceClubOwnershipForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -922,9 +922,7 @@ class UploadKmzForm(Form):
                 file_data = None
                 if not name:
                     name = "Untitled"
-                if image_path.startswith("http://") or image_path.startswith(
-                    "https://"
-                ):
+                if image_path.startswith(("http://", "https://")):
                     try:
                         r = requests.get(image_path, timeout=10)
                         r.raise_for_status()
