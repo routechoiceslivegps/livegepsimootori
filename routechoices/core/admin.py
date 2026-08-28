@@ -487,7 +487,7 @@ class DeviceBrandFilter(admin.SimpleListFilter):
         if self.value() == "queclink":
             return queryset.filter(user_agent="Queclink")
         if self.value() == "teltonika":
-            return queryset.filter(user_agent="Teltonika")
+            return queryset.filter(Q(user_agent="Codec8") | Q(user_agent="Teltonika"))
         if self.value() == "tracktape":
             return queryset.filter(user_agent="TrackTape")
         if self.value() == "xexun":

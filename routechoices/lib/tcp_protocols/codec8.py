@@ -121,7 +121,7 @@ class Codec8Connection(GenericConnection):
         try:
             imei = data[2:17].decode("ascii")
             if imei_len != len(imei):
-                raise Exception("Invlid IMEI length")
+                raise Exception("Invalid IMEI length")
             await self.process_identification(imei)
         except Exception:
             await self.stream.write(b"\x00")
@@ -184,7 +184,7 @@ class Codec8Connection(GenericConnection):
             for r in decoded.get("records", []):
                 loc_array.append((int(r["timestamp"]), r["latlon"][0], r["latlon"][1]))
             if not self.db_device.user_agent:
-                self.db_device.user_agent = "Teltonika"
+                self.db_device.user_agent = self.protocol_name
             if self.decoder.battery_level:
                 self.db_device.battery_level = self.decoder.battery_level
             await add_locations(self.db_device, loc_array)
