@@ -3,17 +3,11 @@
 		$el = u(el);
 		$el.text(dayjs($el.data("date")).local().format("LLLL"));
 	});
-	const tooltipTriggerList = [].slice.call(
-		document.querySelectorAll('[data-bs-toggle="tooltip"]'),
-	);
-	tooltipTriggerList.map(
-		(tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl),
-	);
 
 	if ("IntersectionObserver" in window) {
 		document.addEventListener("DOMContentLoaded", () => {
 			function handleIntersection(entries) {
-				entries.map((entry) => {
+				entries.forEach((entry) => {
 					if (entry.isIntersecting && entry.target.dataset.bgImg) {
 						// Item has crossed our observation
 						// threshold - load src from data-src
