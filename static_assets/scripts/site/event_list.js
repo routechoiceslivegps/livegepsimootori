@@ -31,7 +31,7 @@
 		const events = document.querySelectorAll(".event-card");
 		for (const event of events) {
 			if (event.dataset.bgImg) {
-				event.style.background = `linear-gradient(to right, var(--rc-color-from-trans), var(--rc-color-to-trans)), url('${header.dataset.bgImg}') 100%`;
+				event.style.background = `linear-gradient(to right, var(--rc-color-from-trans), var(--rc-color-to-trans)), url('${event.dataset.bgImg}') 100%`;
 			}
 		}
 	}
