@@ -934,7 +934,7 @@ class DeviceAdmin(admin.ModelAdmin):
             and obj.original_ref is not None
         ):
             extra_fields += ("original_link",)
-        if obj and obj.locations:
+        if obj and obj.locations_encoded:
             extra_fields += ("locations_sample", "download_gpx")
         return self.readonly_fields + extra_fields
 

@@ -1505,13 +1505,12 @@ def locations_api_gw(request):
     if not device_id:
         raise ValidationError("Missing device_id parameter")
     device_id = str(device_id)
-    if re.match(r"^[0-9]+$", device_id):
-        if secret_provided not in settings.POST_LOCATION_SECRETS and (
-            not request.user.is_authenticated or not request.user.is_superuser
-        ):
-            raise PermissionDenied(
-                "Authentication Failed. Only validated apps are allowed"
-            )
+    if (
+        re.match(r"^[0-9]+$", device_id)
+        and secret_provided not in settings.POST_LOCATION_SECRETS
+        and (not request.user.is_authenticated or not request.user.is_superuser)
+    ):
+        raise PermissionDenied("Authentication Failed. Only validated apps are allowed")
 
     device = Device.objects.filter(aid=device_id).first()
     if not device:
@@ -1644,12 +1643,14 @@ def create_device_id(request):
             status_code = status.HTTP_201_CREATED
         else:
             device = idevice.device
-            if re.search(r"[^0-9]", device.aid):
-                if not device.competitor_set.filter(
+            if (
+                re.search(r"[^0-9]", device.aid)
+                and not device.competitor_set.filter(
                     event__end_date__gte=now()
-                ).exists():
-                    device.aid = random_device_id()
-                    status_code = status.HTTP_201_CREATED
+                ).exists()
+            ):
+                device.aid = random_device_id()
+                status_code = status.HTTP_201_CREATED
         return Response(
             {"status": "ok", "device_id": device.aid, "imei": imei}, status=status_code
         )
@@ -1790,9 +1791,12 @@ def device_ownership_api_view(request, club_slug, device_id):
 
         activate_gpsseuranta = request.data.get("activate-gpsseuranta-relay")
         deactivate_gpsseuranta = request.data.get("deactivate-gpsseuranta-relay")
-        if activate_gpsseuranta or deactivate_gpsseuranta:
-            if not device.gpsseuranta_known:
-                raise ValidationError("Device is not known by GPSSeuranta.net")
+        if (
+            activate_gpsseuranta
+            or deactivate_gpsseuranta
+            and not device.gpsseuranta_known
+        ):
+            raise ValidationError("Device is not known by GPSSeuranta.net")
 
         if activate_gpsseuranta:
             device.gpsseuranta_relay_until = now() + timedelta(hours=24)
@@ -1884,7 +1888,7 @@ def event_map_list(request, event_id):
         if len(title_input) > 255:
             raise ValidationError("Invalid title value (Too long)")
 
-        other_titles = set([title for _, title, _ in event.enumerate_maps()])
+        other_titles = {title for _, title, _ in event.enumerate_maps()}
         if title_input in other_titles:
             raise ValidationError(
                 "Invalid title value (Event can not include 2 maps with same title)"
@@ -1937,7 +1941,7 @@ def event_map_detail(request, event_id, index="1", **kwargs):
     if request.method in ("PATCH", "DELETE") and not request.user.is_authenticated:
         raise NotAuthenticated()
 
-    event, raster_map, title, assignation = Event.get_map_at_index(
+    event, raster_map, _, assignation = Event.get_map_at_index(
         request.user, event_id, index
     )
     is_event_admin = event.club.is_admin(request.user)

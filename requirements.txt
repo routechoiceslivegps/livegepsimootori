@@ -8,18 +8,18 @@ asn1crypto==1.5.1
 attrs==26.1.0
 beautifulsoup4==4.15.0
 bleach==6.4.0
-boto3==1.43.79
-botocore==1.43.79
+boto3==1.43.83
+botocore==1.43.83
 cairocffi==1.7.1
 cairosvg==2.9.0
 cbor2==6.1.4
 certifi==2026.7.22
 cffi==2.1.1
 charset-normalizer==3.5.1
-coverage==7.15.4
-cryptography==50.0.0
+coverage==7.16.0
+cryptography==50.0.1
 cssselect2==0.9.0
-curl-cffi==0.16.1
+curl-cffi==0.16.2
 defusedxml==0.7.1
 diskcache==5.6.3
 django==5.2.17
@@ -50,13 +50,13 @@ emoji-country-flag==2.1.0
 frozenlist==1.8.0
 geoip2==5.3.0
 geojson-validator==0.7.0
-gps-data-codec @ git+https://github.com/routechoiceslivegps/gps-data-codec@810620130bab29e66e4b724dd9e65a25de818467
+gps-data-codec @ git+https://github.com/routechoiceslivegps/gps-data-codec@567b5e1f86990d5ff203684491e8869017768dab
 gpxpy==1.6.2
 gunicorn==26.2.0
 idna==3.19
 inflection==0.5.1
 jmespath==1.1.0
-jwcrypto==1.5.8
+jwcrypto==1.5.9
 kagi @ git+https://github.com/rphlo/kagi@bfb7c5ea0a66d78e11a98bdb6cd1edb63a900455
 loguru==0.7.3
 lxml==6.1.2
@@ -76,8 +76,8 @@ psycopg==3.3.4
 psycopg-binary==3.3.4
 psycopg-pool==3.3.1
 pycparser==3.0
-pydantic==2.13.4
-pydantic-core==2.46.4
+pydantic==2.13.5
+pydantic-core==2.46.5
 pyopenssl==26.4.0
 pypng==0.20220715.0
 pyproj==3.7.2

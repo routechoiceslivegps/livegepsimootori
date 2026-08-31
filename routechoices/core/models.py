@@ -144,8 +144,8 @@ def events_to_sets_for_type(
     selected_month=None,
     search_text_query=None,
 ):
-    event_ids = set([e[0] for e in first_event_of_each_set])
-    event_set_ids = set([e[1] for e in first_event_of_each_set])
+    event_ids = {e[0] for e in first_event_of_each_set}
+    event_set_ids = {e[1] for e in first_event_of_each_set}
 
     event_list_by_set = {}
     if event_set_ids:
@@ -966,7 +966,6 @@ class Map(models.Model, SomewhereOnEarth):
 
     @cached_property
     def rotation(self):
-        width, height = self.quick_size
         tl, tr, br, bl = (corner.xy_meters for corner in self.bound)
 
         left_diff = Point(tl.x - bl.x, tl.y - bl.y)
@@ -1879,7 +1878,7 @@ class Event(models.Model, SomewhereOnEarth):
         ]
         constraints = [
             models.CheckConstraint(
-                condition=models.Q(backdrop_map__in=list(zip(*MAP_CHOICES))[0]),
+                condition=models.Q(backdrop_map__in=next(zip(*MAP_CHOICES))),
                 name="%(app_label)s_%(class)s_bgmap_valid",
             ),
             models.UniqueConstraint(
@@ -1936,7 +1935,6 @@ class Event(models.Model, SomewhereOnEarth):
             return []
         return self.acceptable_tags.split(TAGS_SEPARATOR)
 
-    @property
     def map_categories(self, idx=0):
         if idx == 0:
             if not self.map or not self.map_tags:
@@ -2427,12 +2425,11 @@ class Event(models.Model, SomewhereOnEarth):
 
         sample_competitors = self.competitors.all()
         for competitor in sample_competitors:
-            if device := competitor.device:
-                if device._location_count != 0:
-                    return [
-                        device._last_location_latitude,
-                        device._last_location_longitude,
-                    ]
+            if (device := competitor.device) and device._location_count != 0:
+                return [
+                    device._last_location_latitude,
+                    device._last_location_longitude,
+                ]
         return None
 
     @classmethod
@@ -2666,7 +2663,7 @@ class Device(models.Model, SomewhereOnEarth):
     def update_cached_data(self):
         self._location_count = self.location_count
         if self._location_count > 0:
-            last_loc = self.locations[-1]
+            last_loc = gps_data_codec.decode_last_location(self.locations_encoded)
             self._last_location_datetime = epoch_to_datetime(
                 last_loc[LOCATION_TIMESTAMP_INDEX]
             )
@@ -2678,8 +2675,8 @@ class Device(models.Model, SomewhereOnEarth):
             self._last_location_longitude = None
 
     def get_locations_between_dates(self, from_date, end_date, /, *, encode=False):
-        from_ts = int(round(from_date.timestamp()))
-        end_ts = int(round(end_date.timestamp()))
+        from_ts = round(from_date.timestamp())
+        end_ts = round(end_date.timestamp())
 
         if encode:
             return gps_data_codec.extract_encoded_interval(
@@ -2736,7 +2733,7 @@ class Device(models.Model, SomewhereOnEarth):
         gpx.tracks.append(gpx_track)
 
         gpx_segment = gpxpy.gpx.GPXTrackSegment()
-        locs, n = self.get_locations_between_dates(from_date, end_date)
+        locs, _ = self.get_locations_between_dates(from_date, end_date)
         for location in locs:
             gpx_segment.points.append(
                 gpxpy.gpx.GPXTrackPoint(
@@ -2879,12 +2876,7 @@ class Device(models.Model, SomewhereOnEarth):
     @property
     def location_count(self):
         # This use a property of the GPS encoding format
-        n = 0
-        encoded = self.locations_encoded
-        for x in encoded:
-            if ord(x) - 63 < 0x20:
-                n += 1
-        return n // 3
+        return gps_data_codec.location_count(self.locations_encoded)
 
     @property
     def first_location(self):
