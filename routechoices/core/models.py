@@ -7,6 +7,7 @@ import re
 import socket
 import time
 import uuid
+from array import array
 from datetime import timedelta
 from io import BytesIO
 from operator import itemgetter
@@ -2683,16 +2684,31 @@ class Device(models.Model, SomewhereOnEarth):
                 self.locations_encoded, from_ts, end_ts
             )
 
-        locs = self.locations
-        if locs and locs[0][0] >= from_ts:
+        if not self.locations_encoded:
+            return [], 0
+
+        tsb, latb, lngb = gps_data_codec.decode_buffers(self.locations_encoded)
+        ts = array("q")
+        ts.frombytes(tsb)
+
+        if ts[0] >= from_ts:
             from_idx = 0
         else:
-            from_idx = bisect.bisect_left(locs, from_ts, key=itemgetter(0))
-        if locs and locs[-1][0] <= end_ts:
+            from_idx = bisect.bisect_left(ts, from_ts)
+
+        if ts[-1] <= end_ts:
             end_idx = None
         else:
-            end_idx = bisect.bisect_right(locs, end_ts, key=itemgetter(0))
-        return locs[from_idx:end_idx], len(locs)
+            end_idx = bisect.bisect_right(ts, end_ts)
+
+        lat = array("d")
+        lng = array("d")
+        lat.frombytes(latb)
+        lng.frombytes(lngb)
+        ts = ts[from_idx:end_idx]
+        lat = lat[from_idx:end_idx]
+        lng = lng[from_idx:end_idx]
+        return list(zip(ts, lat, lng)), len(ts)
 
     def get_active_periods(self):
         periods_used = []

@@ -1018,7 +1018,7 @@ class CompetitorUploadGPSForm(Form):
         for competitor, from_date, end_date in event.iterate_competitors():
             if competitor.device_id:
                 _, nb_pts = competitor.device.get_locations_between_dates(
-                    from_date, end_date
+                    from_date, end_date, encode=True
                 )
                 if nb_pts == 0:
                     competitors_who_can_upload.append(competitor)
