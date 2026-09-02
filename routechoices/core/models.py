@@ -7,7 +7,6 @@ import re
 import socket
 import time
 import uuid
-from array import array
 from datetime import timedelta
 from io import BytesIO
 from operator import itemgetter
@@ -2678,41 +2677,17 @@ class Device(models.Model, SomewhereOnEarth):
     def get_locations_between_dates(self, from_date, end_date, /, *, encode=False):
         from_ts = round(from_date.timestamp())
         end_ts = round(end_date.timestamp())
-
-        if encode:
-            return gps_data_codec.extract_encoded_interval(
-                self.locations_encoded, from_ts, end_ts
-            )
-
-        if not self.locations_encoded:
-            return [], 0
-
-        tsb, latb, lngb = gps_data_codec.decode_buffers(self.locations_encoded)
-        ts = array("q")
-        ts.frombytes(tsb)
-
-        if ts[0] >= from_ts:
-            from_idx = 0
-        else:
-            from_idx = bisect.bisect_left(ts, from_ts)
-
-        if ts[-1] <= end_ts:
-            end_idx = None
-        else:
-            end_idx = bisect.bisect_right(ts, end_ts)
-
-        ts = ts[from_idx:end_idx]
-        if not ts:
-            return [], 0
-
-        lat = array("d")
-        lng = array("d")
-        lat.frombytes(latb)
-        lng.frombytes(lngb)
         
-        lat = lat[from_idx:end_idx]
-        lng = lng[from_idx:end_idx]
-        return list(zip(ts, lat, lng)), len(ts)
+        
+        encoded, nb_pts = gps_data_codec.extract_encoded_interval(
+            self.locations_encoded, from_ts, end_ts
+        )
+        if encode:
+            return encoded, nb_pts
+
+        if not encoded:
+            return [], 0
+        return gps_data_codec.decode(encoded), nb_pts
 
     def get_active_periods(self):
         periods_used = []
