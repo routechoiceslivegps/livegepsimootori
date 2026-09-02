@@ -2701,11 +2701,15 @@ class Device(models.Model, SomewhereOnEarth):
         else:
             end_idx = bisect.bisect_right(ts, end_ts)
 
+        ts = ts[from_idx:end_idx]
+        if not ts:
+            return [], 0
+
         lat = array("d")
         lng = array("d")
         lat.frombytes(latb)
         lng.frombytes(lngb)
-        ts = ts[from_idx:end_idx]
+        
         lat = lat[from_idx:end_idx]
         lng = lng[from_idx:end_idx]
         return list(zip(ts, lat, lng)), len(ts)
