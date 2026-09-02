@@ -8,8 +8,8 @@ asn1crypto==1.5.1
 attrs==26.1.0
 beautifulsoup4==4.15.0
 bleach==6.4.0
-boto3==1.43.83
-botocore==1.43.83
+boto3==1.43.86
+botocore==1.43.86
 cairocffi==1.7.1
 cairosvg==2.9.0
 cbor2==6.1.4
@@ -18,13 +18,13 @@ cffi==2.1.1
 charset-normalizer==3.5.1
 coverage==7.16.0
 cryptography==50.0.1
-cssselect2==0.9.0
+cssselect2==0.10.1
 curl-cffi==0.16.2
 defusedxml==0.7.1
 diskcache==5.6.3
 django==5.2.17
 django-admincommand @ git+https://github.com/rphlo/django-admincommand.git@09f8b0ad150754be88d20c0e7c6a1473b8006872
-django-allauth==65.19.1
+django-allauth==65.19.2
 django-appconf==1.2.0
 django-background-tasks @ git+https://github.com/rphlo/django-background-tasks@6b247d0b3a7565613656d0ec07b55f6c66aa03cc
 django-bootstrap5 @ git+https://github.com/rphlo/django-bootstrap5@9250748480a5862cfc94f76d96181f08bd022fff
@@ -50,13 +50,13 @@ emoji-country-flag==2.1.0
 frozenlist==1.8.0
 geoip2==5.3.0
 geojson-validator==0.7.0
-gps-data-codec @ git+https://github.com/routechoiceslivegps/gps-data-codec@567b5e1f86990d5ff203684491e8869017768dab
+gps-data-codec @ git+https://github.com/routechoiceslivegps/gps-data-codec@1e7cda1a0b2ad763ddafd43649cb98370eb85d7c
 gpxpy==1.6.2
 gunicorn==26.2.0
 idna==3.19
 inflection==0.5.1
 jmespath==1.1.0
-jwcrypto==1.5.9
+jwcrypto==1.6.0
 kagi @ git+https://github.com/rphlo/kagi@bfb7c5ea0a66d78e11a98bdb6cd1edb63a900455
 loguru==0.7.3
 lxml==6.1.2
@@ -72,8 +72,8 @@ packaging==26.3
 pillow==12.3.0
 propcache==0.5.2
 psutil==7.2.2
-psycopg==3.3.4
-psycopg-binary==3.3.4
+psycopg==3.3.5
+psycopg-binary==3.3.5
 psycopg-pool==3.3.1
 pycparser==3.0
 pydantic==2.13.5
