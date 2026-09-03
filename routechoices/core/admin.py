@@ -20,6 +20,7 @@ from django.db.models import (
     Value,
     When,
 )
+from django.db.models.functions import Coalesce
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.timezone import now
@@ -270,9 +271,9 @@ class HasDeviceFilter(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value() == "false":
-            return queryset.filter(device_count__isnull=True)
+            return queryset.filter(device_count=0)
         if self.value():
-            return queryset.filter(device_count__isnull=False)
+            return queryset.filter(device_count__gt=0)
 
 
 class HasCompetitorFilter(admin.SimpleListFilter):
@@ -615,12 +616,15 @@ class ClubAdmin(admin.ModelAdmin):
             .get_queryset(request)
             .prefetch_related("admins")
             .annotate(
-                device_count=Subquery(
-                    DeviceClubOwnership.objects.filter(club_id=OuterRef("pk"))
-                    .order_by()
-                    .values("club_id")
-                    .annotate(count=Count("club_id"))
-                    .values("count")
+                device_count=Coalesce(
+                    Subquery(
+                        DeviceClubOwnership.objects.filter(club_id=OuterRef("pk"))
+                        .order_by()
+                        .values("club_id")
+                        .annotate(count=Count("club_id"))
+                        .values("count")
+                    ),
+                    0,
                 ),
                 event_count=Count("events", distinct=True),
                 map_count=Count("maps", distinct=True),
@@ -653,7 +657,7 @@ class ClubAdmin(admin.ModelAdmin):
         return format_html(
             '<a href="/admin/core/deviceclubownership/?club__id__exact={}">{}</a>',
             obj.pk,
-            obj.device_count or 0,
+            obj.device_count,
         )
 
     def geojson_count(self, obj):

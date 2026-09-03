@@ -1,5 +1,4 @@
 import base64
-import bisect
 import logging
 import math
 import os.path
@@ -2677,8 +2676,7 @@ class Device(models.Model, SomewhereOnEarth):
     def get_locations_between_dates(self, from_date, end_date, /, *, encode=False):
         from_ts = round(from_date.timestamp())
         end_ts = round(end_date.timestamp())
-        
-        
+
         encoded, nb_pts = gps_data_codec.extract_encoded_interval(
             self.locations_encoded, from_ts, end_ts
         )
@@ -3049,7 +3047,7 @@ class DeviceClubOwnership(models.Model):
         on_delete=models.CASCADE,
     )
     club = models.ForeignKey(
-        Club, related_name="device_owner", on_delete=models.CASCADE, db_index=True
+        Club, related_name="device_ownerships", on_delete=models.CASCADE, db_index=True
     )
     creation_date = models.DateTimeField(auto_now_add=True)
     nickname = models.CharField(max_length=12, default="")
