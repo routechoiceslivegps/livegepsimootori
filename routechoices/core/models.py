@@ -1,5 +1,4 @@
 import base64
-import bisect
 import logging
 import math
 import os.path
@@ -2700,8 +2699,7 @@ class Device(models.Model, SomewhereOnEarth):
     def get_locations_between_dates(self, from_date, end_date, /, *, encode=False):
         from_ts = round(from_date.timestamp())
         end_ts = round(end_date.timestamp())
-        
-        
+
         encoded, nb_pts = gps_data_codec.extract_encoded_interval(
             self.locations_encoded, from_ts, end_ts
         )
