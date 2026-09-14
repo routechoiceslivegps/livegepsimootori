@@ -904,7 +904,7 @@ function RCEvent(infoURL, clockURL, locale) {
 
 	(function initialize() {
 		const urlParams = new URLSearchParams(window.location.search);
-		if (urlParams.get("embeded")) {
+		if (urlParams.get("embedded")) {
 			u("#event-navbar").addClass("d-none");
 		}
 

@@ -202,7 +202,7 @@ def event_view(request, slug):
     if event.privacy == PRIVACY_PRIVATE:
         response["Cache-Control"] = "private"
 
-    # Allow embeding in external site iframe
+    # Allow embedding in external site iframe
     response.xframe_options_exempt = True
 
     return response
