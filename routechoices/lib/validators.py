@@ -79,8 +79,8 @@ def validate_nice_slug(slug):
         )
     if len(slug) < 2:
         errors.append(_("Too short. (min. 2 characters)"))
-    elif len(slug) > 32:
-        errors.append(_("Too long. (max. 32 characters)"))
+    elif len(slug) > 50:
+        errors.append(_("Too long. (max. 50 characters)"))
     if slug[0] in "_-":
         errors.append(_("Must start with an alphanumeric character."))
     if slug[-1] in "_-":
@@ -119,13 +119,13 @@ def validate_calibration_string(val):
         raise ValidationError(
             _("Corners coordinates must be 8 float values separated by commas.")
         )
-    for i, val in enumerate(cal_values):
-        if not FLOAT_RE.match(val):
+    for i, coord in enumerate(cal_values):
+        if not FLOAT_RE.match(coord):
             raise ValidationError(
                 _("Corners coordinates must contain only float values.")
             )
         if i % 2 == 0:
-            validate_latitude(val)
+            validate_latitude(coord)
         # do not validate longitude for map over the international date line
 
 
