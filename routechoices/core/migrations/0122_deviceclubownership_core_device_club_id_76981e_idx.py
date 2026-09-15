@@ -6,12 +6,14 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0121_usersettings_third_party_oauth_credentials'),
+        ("core", "0121_usersettings_third_party_oauth_credentials"),
     ]
 
     operations = [
         migrations.AddIndex(
-            model_name='deviceclubownership',
-            index=models.Index(fields=['club', 'device'], name='core_device_club_id_76981e_idx'),
+            model_name="deviceclubownership",
+            index=models.Index(
+                fields=["club", "device"], name="core_device_club_id_76981e_idx"
+            ),
         ),
     ]
