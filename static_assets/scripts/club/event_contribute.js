@@ -131,7 +131,8 @@ function onRouteLoaded(newRoute, missingTimeInfo) {
 	}
 }
 
-route = {};
+let route = {};
+let signUpRoute = {};
 
 function getGpxData(node, resultRaw) {
 	const result = resultRaw ?? { segments: [] };
@@ -251,6 +252,7 @@ function selectizeDeviceInput(field) {
 				event_id: window.local.eventId,
 				name: formData.get("name"),
 				short_name: formData.get("short_name"),
+				route: signUpRoute,
 			};
 			if (formData.get("tag")) {
 				data.tag = formData.get("tag");
@@ -302,6 +304,37 @@ function selectizeDeviceInput(field) {
 				},
 			});
 		});
+
+		u("#id_gps_file").on("change", function (e) {
+			signUpRoute = {};
+			if (this.files.length > 0) {
+				const gpsFile = this.files[0];
+				const filename = gpsFile.name;
+				const fr = new FileReader();
+				let onload = null;
+				let readFunction = "readAsText";
+				if (filename.toLowerCase().endsWith(".tcx")) {
+					onload = onTCXLoaded;
+				} else if (filename.toLowerCase().endsWith(".fit")) {
+					onload = onFitLoaded;
+					readFunction = "readAsArrayBuffer";
+				} else {
+					onload = onGPXLoaded;
+				}
+				fr.onload = (e) => {
+					onload(e);
+					const isEmpty = Object.keys(route).length === 0;
+					if (!isEmpty) {
+						signUpRoute = route;
+						const selectEl = document.getElementById("id_device_id");
+						const control = selectEl?.tomselect;
+						control?.clear();
+					}
+				};
+				fr[readFunction](gpsFile);
+			}
+		});
+
 		if (window.local.eventEnded) {
 			u("#id_device_id").parent().remove();
 		} else {
@@ -309,6 +342,10 @@ function selectizeDeviceInput(field) {
 			u("select[name='device_id']").on("change", (e) => {
 				if (e.target.value) {
 					u("#warning-if-device-id").removeClass("d-none");
+					signUpRoute = null;
+					u("#id_gps_file").val(null);
+				} else {
+					u("#warning-if-device-id").addClass("d-none");
 				}
 			});
 			let deviceIdfromHash = false;
@@ -341,11 +378,6 @@ function selectizeDeviceInput(field) {
 					deviceIdfromHash = true;
 				}
 			}
-		}
-		if (u("#upload-form").nodes.length) {
-			u("#id_device_id-ts-label").text(
-				"Tracker ID (Leave blank if you intend to upload a GPS File)",
-			);
 		}
 	}
 

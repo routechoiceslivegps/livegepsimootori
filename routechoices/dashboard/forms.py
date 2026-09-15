@@ -26,6 +26,7 @@ from django.forms import (
     DateTimeInput,
     FileField,
     Form,
+    HiddenInput,
     ModelChoiceField,
     ModelForm,
     inlineformset_factory,
@@ -1023,16 +1024,31 @@ ExtraMapFormSet = inlineformset_factory(
 
 class RegisterForm(Form):
     name = CharField(max_length=64, required=True)
-    short_name = CharField(max_length=32, required=False)
-    tag = ChoiceField(label="Category", required=False)
+    short_name = CharField(
+        max_length=32,
+        required=False,
+        help_text="Optional - Will be derived from your name if blank",
+    )
+    tag = ChoiceField(label="Category", required=False, help_text="Optional")
     device_id = ModelChoiceField(
-        required=False, queryset=Device.objects.none(), label="Tracker ID"
+        required=False,
+        queryset=Device.objects.none(),
+        label="Tracker ID",
+        help_text="Optional - Leave blank if uploading a GPS File",
+    )
+    gps_file = FileField(
+        label="GPS File ",
+        max_length=255,
+        help_text="Optional - GPX, FIT, or TCX, Can be uploaded later",
+        validators=[FileExtensionValidator(allowed_extensions=["gpx", "tcx", "fit"])],
+        required=False,
     )
 
     def __init__(self, *args, **kwargs):
         self.event = kwargs.pop("event", None)
-
         super().__init__(*args, **kwargs)
+        if not self.event.allow_route_upload:
+            self.fields["gps_file"].widget = HiddenInput()
 
 
 class CompetitorUploadGPSForm(Form):

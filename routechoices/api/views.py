@@ -817,11 +817,66 @@ def create_competitor(request):
     if start_time and (event_start > start_time or start_time > event_end):
         errors.append("Competitor start time should be during the event time")
 
+    device = None
     device_id = request.data.get("device_id")
-    device = Device.objects.filter(aid=device_id).defer("locations_encoded").first()
-
-    if not device and device_id:
-        errors.append("Tracker ID not found")
+    route = request.data.get("route[timestamps]")
+    if route:
+        device_id = None
+        try:
+            lats = [
+                float(x)
+                for x in request.data.get("route[latitudes]", "").split(",")
+                if x
+            ]
+            lons = [
+                float(x)
+                for x in request.data.get("route[longitudes]", "").split(",")
+                if x
+            ]
+            times = [
+                int(float(x))
+                for x in request.data.get("route[timestamps]", "").split(",")
+                if x
+            ]
+        except ValueError:
+            errors.append("Invalid route")
+        else:
+            if not ((loc_count := len(lats)) == len(lons) == len(times)):
+                errors.append("Invalid route")
+            elif loc_count == 0:
+                errors.append("Empty route")
+            else:
+                try:
+                    loc_array = []
+                    start_time = None
+                    for tim, lat, lon in zip(times, lats, lons):
+                        if tim and lat and lon:
+                            validate_longitude(lon)
+                            validate_latitude(lat)
+                            int(tim)
+                            if (
+                                event.start_date.timestamp()
+                                <= tim
+                                <= event.end_date.timestamp()
+                            ):
+                                if not start_time or tim < start_time:
+                                    start_time = int(tim)
+                                loc_array.append((int(tim), lat, lon))
+                except Exception:
+                    errors.append("Invalid route data")
+                else:
+                    if len(loc_array) > 0:
+                        device = Device.objects.create(
+                            aid=f"{short_random_key()}_GPX",
+                            user_agent=request.session.user_agent[:200],
+                            virtual=True,
+                        )
+                        device.add_locations(loc_array)
+                        start_time = arrow.get(start_time).datetime
+    elif device_id:
+        device = Device.objects.filter(aid=device_id).defer("locations_encoded").first()
+        if not device:
+            errors.append("Tracker ID not found")
 
     if not is_event_admin:
         if event.competitors.filter(name=name).exists():
