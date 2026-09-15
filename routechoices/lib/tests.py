@@ -114,7 +114,7 @@ class HelperTestCase(TestCase):
 
     def test_import_kml(self):
         kml = '<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2"><Folder><name>Ground Overlays</name><description>Examples of ground overlays</description><GroundOverlay><name>Large-scale overlay on terrain</name><description>Overlay shows Mount Etna erupting on July 13th, 2001.</description><Icon><href>https://developers.google.com/kml/documentation/images/etna.jpg</href></Icon><LatLonBox><north>37.91904192681665</north><south>37.46543388598137</south><east>15.35832653742206</east><west>14.60128369746704</west><rotation>-0.1556640799496235</rotation></LatLonBox></GroundOverlay></Folder></kml>'
-        name, url, coordinates = extract_ground_overlays_info(kml)[0]
+        name, url, _ = extract_ground_overlays_info(kml)[0]
         self.assertEqual(name, "Ground Overlays - Large-scale overlay on terrain")
         self.assertEqual(
             url, "https://developers.google.com/kml/documentation/images/etna.jpg"
@@ -213,12 +213,14 @@ class ValidatorsTestCase(TestCase):
         validate_nice_slug("a-b-c-0-1")
         validate_nice_slug("123")
         validate_nice_slug("1_23")
-        validate_nice_slug("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+        validate_nice_slug("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
         self.assertRaises(ValidationError, validate_nice_slug, "r a@a.aa")
         self.assertRaises(ValidationError, validate_nice_slug, "r")
         self.assertRaises(ValidationError, validate_nice_slug, "a.a")
         self.assertRaises(
-            ValidationError, validate_nice_slug, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            ValidationError,
+            validate_nice_slug,
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",  # 51 characters
         )
         self.assertRaises(ValidationError, validate_nice_slug, "-abc")
         self.assertRaises(ValidationError, validate_nice_slug, "_abc")
