@@ -1047,7 +1047,10 @@ class RegisterForm(Form):
     def __init__(self, *args, **kwargs):
         self.event = kwargs.pop("event", None)
         super().__init__(*args, **kwargs)
-        if not self.event.allow_route_upload:
+        if (
+            not self.event.allow_route_upload
+            or self.event.start_date > arrow.now().datetime
+        ):
             self.fields["gps_file"].widget = HiddenInput()
 
 
