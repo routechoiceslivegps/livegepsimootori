@@ -339,13 +339,17 @@ function selectizeDeviceInput(field) {
 			u("#id_device_id").parent().remove();
 		} else {
 			const tsDevId = selectizeDeviceInput("select[name='device_id']");
+			const warningHTML = u("<div>")
+				.append(u("#warning-if-device-id").html())
+				.addClass("d-none");
+			u("#id_device_id_helptext").append(warningHTML);
 			u("select[name='device_id']").on("change", (e) => {
 				if (e.target.value) {
-					u("#warning-if-device-id").removeClass("d-none");
 					signUpRoute = null;
 					u("#id_gps_file").val(null);
+					warningHTML.removeClass("d-none");
 				} else {
-					u("#warning-if-device-id").addClass("d-none");
+					warningHTML.addClass("d-none");
 				}
 			});
 			let deviceIdfromHash = false;

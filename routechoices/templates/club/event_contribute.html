@@ -67,12 +67,15 @@
                             {% csrf_token %}
                             {% bootstrap_form register_form %}
                             <p id="warning-if-device-id" class="d-none">
-                                <i class="fa-solid fa-triangle-exclamation"></i> You can stream your GPS data to only one competitor at a time. If you register now, your GPS data stream from this device will be switched to this event competitor
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                                <span>
+                                    You can stream your GPS data to only one competitor at a time. If you register now with this tracker, the GPS data stream from it will be switched to this newly registered competitor
                                 {% if not event.hidden %}
                                     immediately.
                                 {% else %}
                                     at latest on <span class="date-utc" data-date="{{ event.start_date|date:'c' }}">{{ event.start_date }} UTC</span>.
                                 {% endif %}
+                                </span>
                             </p>
                             <button type="submit" class="btn btn-primary">
                                 <i class="fa-solid fa-file-signature"></i> Register
