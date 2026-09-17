@@ -427,4 +427,8 @@ urlpatterns = [
     path("logout", allauth_views.logout, name="account_logout"),
     path("signup", site_views.CustomSignupView.as_view(), name="account_signup"),
     path("map", TemplateView.as_view(template_name="site/map.html"), name="map"),
+    path(
+        ".well-known/change-password",
+        RedirectView.as_view(pattern_name="account_password_change_view"),
+    ),
 ]
