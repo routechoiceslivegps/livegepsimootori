@@ -24,7 +24,7 @@ django-oauth-toolkit
 django-permissions-policy
 django-qr-code
 django-s3-storage
-django-user-sessions @ git+https://github.com/jazzband/django-user-sessions@1ad42f36758251f221e976683eca91a8c79df09e
+django-user-sessions @ git+https://github.com/jazzband/django-user-sessions@2811b95d7fe76eb00666e3fecaf8133bcc5e3da2
 djangorestframework
 drf-orjson-renderer
 drf-yasg
