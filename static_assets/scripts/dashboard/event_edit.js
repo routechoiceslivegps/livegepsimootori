@@ -422,7 +422,6 @@ function showLocalTime(el) {
 	if (window.local.eventId) {
 		const editMapLink = u("<a>")
 			.addClass("btn btn-info btn-sm float-end my-2")
-			.attr("target", "_blank")
 			.attr(
 				"href",
 				`/clubs/${window.local.clubSlug}/events/${window.local.eventId}/map`,
