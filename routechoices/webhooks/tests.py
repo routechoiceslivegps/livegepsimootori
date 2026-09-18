@@ -793,7 +793,26 @@ class RLWebHookTestCase(EssentialApiBase):
         self.assertEqual(data_sent["data"]["courses"][0]["course_id"], "1514276621")
         self.assertEqual(
             data_sent["data"]["courses"][0]["gps_replay_url"],
-            "https://kiilat.routechoices.dev/rr",
+            "https://kiilat.routechoices.dev/rr/",
+        )
+
+        event.club.domain = "example.com"
+        event.club.save()
+        self.assertEqual(
+            event.get_absolute_url(), "http://example.com/rr"
+        )  # HTTP as there is no certificate generated
+
+        self.assertEqual(mock_requests.post.call_count, 1)
+        rastilippu_update_event_url.now(event.id)
+        self.assertEqual(mock_requests.post.call_count, 2)
+
+        data_sent = json.loads(mock_requests.post.call_args.kwargs["data"])
+        self.assertEqual(data_sent["action"], "update_courses_gps_replay_pages")
+        self.assertEqual(data_sent["data"]["irma_id"], "6353")
+        self.assertEqual(data_sent["data"]["courses"][0]["course_id"], "1514276621")
+        self.assertEqual(
+            data_sent["data"]["courses"][0]["gps_replay_url"],
+            "https://kiilat.routechoices.dev/rr/",
         )
 
         with patch(
@@ -805,9 +824,9 @@ class RLWebHookTestCase(EssentialApiBase):
             event.save()
             self.assertEqual(mock_rl_update.call_count, 1)
 
-        self.assertEqual(mock_requests.post.call_count, 1)
-        rastilippu_update_event_url.now(event.id)
         self.assertEqual(mock_requests.post.call_count, 2)
+        rastilippu_update_event_url.now(event.id)
+        self.assertEqual(mock_requests.post.call_count, 3)
 
         data_sent = json.loads(mock_requests.post.call_args.kwargs["data"])
         self.assertEqual(data_sent["action"], "update_courses_gps_replay_pages")

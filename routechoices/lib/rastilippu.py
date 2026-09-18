@@ -6,6 +6,7 @@ import orjson as json
 import slugify
 from curl_cffi import requests
 from django.conf import settings
+from django_hosts.resolvers import reverse
 
 from routechoices.core.models import Event, EventSet
 from routechoices.lib.helpers import short_random_slug
@@ -34,7 +35,15 @@ def update_event_url(event):
                     {
                         "course_id": event.external_id[len(RASTILIPPU_PREFIX) :],
                         "gps_replay_url": (
-                            event.get_absolute_url() if event.map_id else ""
+                            reverse(
+                                "event_view",
+                                host="clubs",
+                                host_kwargs={"club_slug": event.club.slug},
+                                kwargs={"slug": event.slug},
+                                scheme="https",
+                            )
+                            if event.map_id
+                            else ""
                         ),
                     }
                 ],
