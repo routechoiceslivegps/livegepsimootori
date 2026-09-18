@@ -418,6 +418,18 @@ function showLocalTime(el) {
 	const newSlug = u("#id_name").val() === "";
 	let slugEdited = false;
 	makeFieldRandomizable("#id_slug");
+
+	if (window.local.eventId) {
+		const editMapLink = u("<a>")
+			.addClass("btn btn-info btn-sm float-end my-2")
+			.attr("target", "_blank")
+			.attr(
+				"href",
+				`/clubs/${window.local.clubSlug}/events/${window.local.eventId}/map`,
+			)
+			.html('<i class="fa-solid fa-pen-to-square"></i> Edit Map');
+		u("#id_map").after(u("<div>").html("&nbsp;").append(editMapLink));
+	}
 	u("#id_name").on("keyup", (e) => {
 		if (!slugEdited) {
 			const value = e.target.value;
@@ -529,7 +541,9 @@ function showLocalTime(el) {
 			new tempusDominus.TempusDominus(el);
 			el.autocomplete = "off";
 			u(el).on([tempusDominus.Namespace.events.change, "change"], (e) => {
-				const value = dayjs(e.target.value).local().format("YYYY-MM-DD HH:mm:ss");
+				const value = dayjs(e.target.value)
+					.local()
+					.format("YYYY-MM-DD HH:mm:ss");
 				if (value === "Invalid Date") {
 					e.target.value = "";
 					return;
@@ -538,7 +552,7 @@ function showLocalTime(el) {
 				showLocalTime(e.target);
 			});
 		}
-		
+
 		showLocalTime(el);
 	});
 	const originalEventStart = u("#id_start_date").val();
