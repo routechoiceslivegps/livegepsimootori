@@ -1379,20 +1379,12 @@ class CompetitionTestCase(EssentialApiBase):
         )
         device.add_location(arrow.get().timestamp(), 12.34567, 123.45678)
         device.send_sos()
-        self.assertEqual(len(mail.outbox), 1)
-        self.assertTrue(
-            "Routechoices.com - SOS from competitor Alice" in mail.outbox[0].subject
-        )
-        self.assertTrue(
-            "Latest SOS known location is latitude, longitude: 12.34567, 123.45678"
-            in mail.outbox[0].body
-        )
-        self.assertEqual([self.user.email], mail.outbox[0].to)
+        self.assertEqual(len(mail.outbox), 0)
         event.emergency_contacts = "beargrills@discovery.com"
         event.save()
         device.send_sos()
-        self.assertEqual(len(mail.outbox), 2)
-        self.assertEqual(["beargrills@discovery.com"], mail.outbox[1].to)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(["beargrills@discovery.com"], mail.outbox[0].to)
 
 
 class RegistrationApiTestCase(EssentialApiBase):
