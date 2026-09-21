@@ -20,7 +20,6 @@ import gpxpy.gpx
 import magic
 import numpy as np
 import orjson as json
-from allauth.account.models import EmailAddress
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import BadRequest, PermissionDenied, ValidationError
@@ -2995,14 +2994,6 @@ class Device(models.Model, SomewhereOnEarth):
             to_emails = set()
             if event.emergency_contacts:
                 to_emails = event.emergency_contacts.split(" ")
-            else:
-                club = event.club
-                admin_ids = list(club.admins.values_list("id", flat=True))
-                to_emails = list(
-                    EmailAddress.objects.filter(
-                        primary=True, user__in=admin_ids
-                    ).values_list("email", flat=True)
-                )
             if to_emails:
                 msg = EmailMessage(
                     (
