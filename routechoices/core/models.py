@@ -2988,8 +2988,19 @@ class Device(models.Model, SomewhereOnEarth):
 
         if not competitors:
             return self.aid, lat, lon, None
+
+        fifteen_minutes_ago = (now() - timedelta(minutes=15),)
+        sent_sos_lately = set(
+            SosAlert.objects.filter(
+                creation_date__gte=fifteen_minutes_ago, competitor__in=competitors
+            ).values_list("competitor_id", flat=True)
+        )
+
         all_to_emails = set()
         for competitor in competitors:
+            if competitor.id in sent_sos_lately:
+                continue
+            SosAlert.objects.create(competitor=competitor)
             event = competitor.event
             to_emails = set()
             if event.emergency_contacts:
@@ -3347,6 +3358,11 @@ class UserSettings(models.Model):
     class Meta:
         verbose_name = "user settings"
         verbose_name_plural = "user settings"
+
+
+class SosAlert(models.Model):
+    creation_date = models.DateTimeField(auto_now_add=True)
+    competitor = models.ForeignKey(Competitor, on_delete=models.CASCADE)
 
 
 User.settings = property(lambda u: UserSettings.objects.get_or_create(user=u)[0])
