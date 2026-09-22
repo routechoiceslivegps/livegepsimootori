@@ -2989,7 +2989,7 @@ class Device(models.Model, SomewhereOnEarth):
         if not competitors:
             return self.aid, lat, lon, None
 
-        fifteen_minutes_ago = (now() - timedelta(minutes=15),)
+        fifteen_minutes_ago = now() - timedelta(minutes=15)
         sent_sos_lately = set(
             SosAlert.objects.filter(
                 creation_date__gte=fifteen_minutes_ago, competitor__in=competitors
@@ -3000,7 +3000,6 @@ class Device(models.Model, SomewhereOnEarth):
         for competitor in competitors:
             if competitor.id in sent_sos_lately:
                 continue
-            SosAlert.objects.create(competitor=competitor)
             event = competitor.event
             to_emails = set()
             if event.emergency_contacts:
@@ -3021,6 +3020,7 @@ class Device(models.Model, SomewhereOnEarth):
                     list(to_emails),
                 )
                 msg.send()
+                SosAlert.objects.create(competitor=competitor)
             all_to_emails = all_to_emails.union(to_emails)
         return self.aid, lat, lon, list(all_to_emails)
 

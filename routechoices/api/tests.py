@@ -4,7 +4,7 @@ import socket
 import threading
 import time
 from datetime import UTC, datetime
-
+import time_machine
 import arrow
 import time_machine
 from allauth.account.models import EmailAddress
@@ -1357,35 +1357,44 @@ class RouteUploadApiTestCase(EssentialApiBase):
 
 class CompetitionTestCase(EssentialApiBase):
     def test_send_sos(self):
-        self.club = Club.objects.create(name="Kemiön Kiilat", slug="kiilat")
-        self.club.admins.set([self.user])
-        EmailAddress.objects.create(
-            user=self.user, email=self.user.email, primary=True, verified=True
-        )
-        device = Device.objects.create()
-        event = Event.objects.create(
-            club=self.club,
-            name="Test event",
-            open_registration=True,
-            start_date=arrow.get().shift(hours=-2).datetime,
-            end_date=arrow.get().shift(hours=1).datetime,
-        )
-        Competitor.objects.create(
-            name="Alice A",
-            short_name="A",
-            event=event,
-            device=device,
-            start_time=arrow.get().shift(minutes=-70).datetime,
-        )
-        device.add_location(arrow.get().timestamp(), 12.34567, 123.45678)
-        device.send_sos()
-        self.assertEqual(len(mail.outbox), 0)
-        event.emergency_contacts = "beargrills@discovery.com"
-        event.save()
-        device.send_sos()
-        self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(["beargrills@discovery.com"], mail.outbox[0].to)
-
+        with time_machine.travel("2026-09-22 15:10 +0300", tick=False) as traveller:
+            self.club = Club.objects.create(name="Kemiön Kiilat", slug="kiilat")
+            self.club.admins.set([self.user])
+            EmailAddress.objects.create(
+                user=self.user, email=self.user.email, primary=True, verified=True
+            )
+            device = Device.objects.create()
+            event = Event.objects.create(
+                club=self.club,
+                name="Test event",
+                open_registration=True,
+                start_date=arrow.get().shift(hours=-2).datetime,
+                end_date=arrow.get().shift(hours=1).datetime,
+            )
+            Competitor.objects.create(
+                name="Alice A",
+                short_name="A",
+                event=event,
+                device=device,
+                start_time=arrow.get().shift(minutes=-70).datetime,
+            )
+            device.add_location(arrow.get().timestamp(), 12.34567, 123.45678)
+            device.send_sos()
+            self.assertEqual(len(mail.outbox), 0)
+            event.emergency_contacts = "beargrills@discovery.com"
+            event.save()
+        
+            device.send_sos()
+            self.assertEqual(len(mail.outbox), 1)
+            self.assertEqual(["beargrills@discovery.com"], mail.outbox[0].to)
+            # Should not send a new email right away, if triggered again 
+            device.add_location(arrow.get().timestamp() + 10, 12.34568, 123.45679)
+            device.send_sos()
+            self.assertEqual(len(mail.outbox), 1)
+            # test 15 minute later, it should then send a new email
+            traveller.shift(15 * 60 + 1)
+            device.send_sos()
+            self.assertEqual(len(mail.outbox), 2)
 
 class RegistrationApiTestCase(EssentialApiBase):
     def test_registration(self):
