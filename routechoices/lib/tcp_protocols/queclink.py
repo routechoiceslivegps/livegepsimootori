@@ -148,6 +148,9 @@ class QueclinkConnection(GenericConnection):
                 self.db_device.battery_level = batt
             await save_device(self.db_device)
 
+        if not parts[0].startswith("+ACK"):
+            await self.stream.write(f"+SACK:{parts[-1]}".encode("ascii"))
+
     async def on_data(self, pts, batt=None):
         if batt is not None and 0 <= batt <= 100:
             self.db_device.battery_level = batt

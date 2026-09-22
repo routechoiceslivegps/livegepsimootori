@@ -184,6 +184,9 @@ class TCPConnectionsTest(AsyncTestCase, TransactionTestCase):
         self.assertEqual(data, ack_data)
         for data, nb, batt in zip(gps_data, nb_data, battery_data):
             await client.write(data)
+            data_tail = data.decode().split(",")[-1]
+            data_in = await client.read_bytes(255, partial=True)
+            self.assertEqual(data_in, f"+SACK:{data_tail}".encode())
             await asyncio.sleep(0.05)
             device = await refresh_device(device)
             self.assertEqual(device.location_count, nb)
