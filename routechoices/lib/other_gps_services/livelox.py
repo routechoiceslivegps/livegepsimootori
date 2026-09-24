@@ -30,6 +30,17 @@ from routechoices.lib.other_gps_services.commons import (
 )
 
 
+def simplify_overlaps(arr, width, height):
+    if not arr:
+        return []
+    a = arr[0]
+    arr_b = []
+    for b in arr[1:]:
+        if abs(a[0] - b[0]) > width or abs(a[1] - b[1]) > height:
+            arr_b.append(b)
+    return [a] + simplify_overlaps(arr_b, width, height)
+
+
 class Livelox(ThirdPartyTrackingSolutionWithProxy):
     slug = "livelox"
     name = "Livelox"
@@ -40,6 +51,10 @@ class Livelox(ThirdPartyTrackingSolutionWithProxy):
     hashstr = base64.b64decode(
         "UGxlYXNlIHBsYXkgZmFpciBhbmQgcmVzcGVjdCBvdXIgVXNlciBBZ3JlZW1lbnQuIFNjcmFwaW5nIGFuZCByZXZlcnNlIGVuZ2luZWVyaW5nIGFyZSBub3QgcGVybWl0dGVkLg=="
     ).decode()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.session = requests.Session(impersonate="chrome")
 
     def parse_init_data(self, uid):
         self.uid = uid
@@ -73,7 +88,7 @@ class Livelox(ThirdPartyTrackingSolutionWithProxy):
                 "hash": f"/{class_id}/{self.hashstr}",
             }
         )
-        r = requests.post(
+        r = self.session.post(
             "https://www.livelox.com/Data/ClassInfo",
             data=post_data,
             headers=self.HEADERS,
@@ -83,7 +98,7 @@ class Livelox(ThirdPartyTrackingSolutionWithProxy):
         self.init_data = r.json().get("general", {})
 
         if blobUrl := self.init_data.get("classBlobUrl"):
-            r = requests.get(blobUrl)
+            r = self.session.get(blobUrl)
         else:
             post_data = json.dumps(
                 {
@@ -95,7 +110,7 @@ class Livelox(ThirdPartyTrackingSolutionWithProxy):
                     "includeCourses": True,
                 }
             )
-            r = requests.post(
+            r = self.session.post(
                 "https://www.livelox.com/Data/ClassBlob",
                 data=post_data,
                 headers=self.HEADERS,
@@ -199,7 +214,7 @@ class Livelox(ThirdPartyTrackingSolutionWithProxy):
         else:
             courses = self.init_data["xtra"]["courses"]
 
-        r = requests.get(map_url)
+        r = self.session.get(map_url)
         if r.status_code != 200:
             raise MapsImportError("Could not download image")
 
@@ -235,7 +250,7 @@ class Livelox(ThirdPartyTrackingSolutionWithProxy):
                 course_map = Map(name=f"Course {i+1}")
                 course_map.bound = bound
 
-                r = requests.get(course_url)
+                r = self.session.get(course_url)
                 if r.status_code != 200:
                     raise MapsImportError("Could not download image")
 
@@ -500,22 +515,7 @@ class Livelox(ThirdPartyTrackingSolutionWithProxy):
                     left, top, right, bottom = fnt.getbbox(text)
                     width = right - left
                     height = bottom - top
-                    text_size = (width, height)
-
-                    def do_overlap(a, b):
-                        return abs(a[0] - b[0]) <= width and abs(a[1] - b[1]) <= height
-
-                    def simplify_overlaps(arr):
-                        if not arr:
-                            return []
-                        a = arr[0]
-                        arr_b = []
-                        for b in arr[1:]:
-                            if not do_overlap(a, b):
-                                arr_b.append(b)
-                        return [a] + simplify_overlaps(arr_b)
-
-                    finalLoc[text] = simplify_overlaps(locs)
+                    finalLoc[text] = simplify_overlaps(locs, width, height)
 
                 for text, locs in finalLoc.items():
                     for loc in locs:
