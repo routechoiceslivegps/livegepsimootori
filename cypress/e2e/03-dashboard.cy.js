@@ -228,7 +228,7 @@ context("Dashboard actions", () => {
 
 		// Create Event with minimal info
 		cy.visit("https://dashboard.routechoices.dev/clubs/kimito-sk/events/");
-		cy.get("a").contains("Create Event").click();
+		cy.get("a").contains("Setup new Event").click();
 		cy.location("pathname").should("eq", "/clubs/kimito-sk/events/new");
 
 		cy.get("#id_name").type("Jukola 2019 - 1st Leg");
