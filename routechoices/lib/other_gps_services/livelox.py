@@ -1,3 +1,4 @@
+import base64
 import bisect
 import json
 import math
@@ -36,6 +37,9 @@ class Livelox(ThirdPartyTrackingSolutionWithProxy):
         "content-type": "application/json",
         "X-Requested-With": "XMLHttpRequest",
     }
+    hashstr = base64.b64decode(
+        "UGxlYXNlIHBsYXkgZmFpciBhbmQgcmVzcGVjdCBvdXIgVXNlciBBZ3JlZW1lbnQuIFNjcmFwaW5nIGFuZCByZXZlcnNlIGVuZ2luZWVyaW5nIGFyZSBub3QgcGVybWl0dGVkLg=="
+    ).decode()
 
     def parse_init_data(self, uid):
         self.uid = uid
@@ -66,6 +70,7 @@ class Livelox(ThirdPartyTrackingSolutionWithProxy):
                 "courseIds": [],
                 "relayLegs": relay_legs,
                 "relayLegGroupIds": [],
+                "hash": f"/{class_id}/{self.hashstr}",
             }
         )
         r = requests.post(
@@ -155,12 +160,12 @@ class Livelox(ThirdPartyTrackingSolutionWithProxy):
             raise MapsImportError("Could not extract basic map info")
 
         map_obj = Map()
-        bound = list(
-            [Wgs84Coordinate((b["latitude"], b["longitude"])) for b in map_bounds[::-1]]
-        )
+        bound = [
+            Wgs84Coordinate((b["latitude"], b["longitude"])) for b in map_bounds[::-1]
+        ]
         map_obj.bound = bound
 
-        length, size = get_remote_image_sizes(map_url)
+        _, size = get_remote_image_sizes(map_url)
         if not size:
             return None
         width, height = size
@@ -498,11 +503,7 @@ class Livelox(ThirdPartyTrackingSolutionWithProxy):
                     text_size = (width, height)
 
                     def do_overlap(a, b):
-                        if abs(a[0] - b[0]) > text_size[0]:
-                            return False
-                        if abs(a[1] - b[1]) > text_size[1]:
-                            return False
-                        return True
+                        return abs(a[0] - b[0]) <= width and abs(a[1] - b[1]) <= height
 
                     def simplify_overlaps(arr):
                         if not arr:

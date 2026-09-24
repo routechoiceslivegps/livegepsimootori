@@ -843,4 +843,41 @@ function showLocalTime(el) {
 			location.reload();
 		}
 	}
+
+	const queryString = window.location.search;
+	const urlParams = new URLSearchParams(queryString);
+
+	if (urlParams.has("simple") && !local.eventId) {
+		const hiddenFields = [
+			"id_slug",
+			"id_event_set",
+			"id_open_registration",
+			"id_allow_route_upload",
+			"id_privacy",
+			"id_visibility",
+			"id_send_interval",
+			"id_tail_length",
+			"id_emergency_contacts",
+			"announcement_form > h3",
+			"id_backdrop_map",
+			"id_geojson_layer",
+			"id_map_title",
+			"extra_map_formset > h4",
+			"id_map_tags",
+			"iof-upload",
+		];
+		for (const field of hiddenFields) {
+			u(`#${field}`).parent().hide();
+		}
+
+		const styleEl = document.createElement("style");
+		document.head.appendChild(styleEl);
+		const sheet = styleEl.sheet;
+		for (const n of [2, 4, 5, 6]) {
+			sheet.insertRule(
+				`.competitor-table th:nth-child(${n}), .competitor-table td:nth-child(${n}) {display: none;}`,
+				0,
+			);
+		}
+	}
 })();

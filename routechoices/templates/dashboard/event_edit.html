@@ -155,55 +155,57 @@
                             </tr>
                         {% endfor %}
                     </table>
-                    <div class="iof-upload">
-                        <div id="iof-step-1">
-                            <label for="iof_input" class="form-label">Import competitors from IOF XML 3.0</label>
+                    <div>
+                        <div id="iof-upload">
+                            <div id="iof-step-1">
+                                <label for="iof_input" class="form-label">Import competitors from IOF XML 3.0</label>
+                                <input type="file"
+                                    name="iof_input"
+                                    id="iof_input"
+                                    class="form-control"
+                                    accept="text/xml" />
+                            </div>
+                            <div id="iof-step-2" class="d-none">
+                                <label for="iof_class_input" class="form-label">Select Class</label>
+                                <select type="select"
+                                        name="iof_class_input"
+                                        id="iof_class_input"
+                                        class="form-control mb-1"></select>
+                                <button class="btn btn-info me-1" id="iof-class-submit-btn" type="button">Import</button>
+                                <button class="btn btn-danger" id="iof-class-cancel-btn" type="button">Cancel</button>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="csv-upload">
+                            <label for="csv_input" class="form-label">Import competitors from CSV</label>
                             <input type="file"
-                                name="iof_input"
-                                id="iof_input"
+                                name="csv_input"
+                                id="csv_input"
                                 class="form-control"
-                                accept="text/xml" />
+                                accept="text/csv" />
+                            <div class="form-text">
+                                Follow the following format for the CSV:
+                                <br />
+                                Column A - Full name - displayed in the menu on the left during the event
+                                <br />
+                                Column B - Shortname - displayed next to the marker on the event
+                                <br />
+                                Column C - Start time for the competitor in the ISO format (e.g. 2014-05-31T08:57:00Z). Make sure this column is formatted as Text if you use Excel.
+                                <br />
+                                Column D - The ID of the GPS device
+                                <br />
+                                Column E - Color - in hexadecimal format (e.g. #f5e803)
+                                <br />
+                                Column F - Categories - values separated by space (e.g. "MenElite 8km")
+                                <br />
+                                File must be UTF-8 encoded
+                                <br />
+                                <a href="{% static 'assets/startlist.csv' %}">Download example file</a>
+                            </div>
                         </div>
-                        <div id="iof-step-2" class="d-none">
-                            <label for="iof_class_input" class="form-label">Select Class</label>
-                            <select type="select"
-                                    name="iof_class_input"
-                                    id="iof_class_input"
-                                    class="form-control mb-1"></select>
-                            <button class="btn btn-info me-1" id="iof-class-submit-btn" type="button">Import</button>
-                            <button class="btn btn-danger" id="iof-class-cancel-btn" type="button">Cancel</button>
-                        </div>
-                    </div>
-                    <hr />
-                    <div class="csv-upload">
-                        <label for="csv_input" class="form-label">Import competitors from CSV</label>
-                        <input type="file"
-                            name="csv_input"
-                            id="csv_input"
-                            class="form-control"
-                            accept="text/csv" />
-                        <div class="form-text">
-                            Follow the following format for the CSV:
-                            <br />
-                            Column A - Full name - displayed in the menu on the left during the event
-                            <br />
-                            Column B - Shortname - displayed next to the marker on the event
-                            <br />
-                            Column C - Start time for the competitor in the ISO format (e.g. 2014-05-31T08:57:00Z). Make sure this column is formatted as Text if you use Excel.
-                            <br />
-                            Column D - The ID of the GPS device
-                            <br />
-                            Column E - Color - in hexadecimal format (e.g. #f5e803)
-                            <br />
-                            Column F - Categories - values separated by space (e.g. "MenElite 8km")
-                            <br />
-                            File must be UTF-8 encoded
-                            <br />
-                            <a href="{% static 'assets/startlist.csv' %}">Download example file</a>
-                        </div>
+                        <hr />
                     </div>
                 </div>
-                <hr />
                 <button class="btn btn-primary dashboard-link float-end" id="submit-btn" type="submit">
                     <i class="fa-solid fa-floppy-disk"></i> <span>Save</span>
                 </button>
